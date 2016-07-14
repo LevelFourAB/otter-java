@@ -1,0 +1,31 @@
+package se.l4.otter.operations.string;
+
+/**
+ * Handler for string operations.
+ * 
+ * @author Andreas Holstenson
+ *
+ */
+public interface StringOperationHandler
+{
+	/**
+	 * Insert characters.
+	 * 
+	 * @param s
+	 */
+	void insert(String s);
+
+	/**
+	 * Delete characters.
+	 * 
+	 * @param s
+	 */
+	void delete(String s);
+	
+	/**
+	 * Retain a number of characters.
+	 * 
+	 * @param count
+	 */
+	void retain(int count);
+}
