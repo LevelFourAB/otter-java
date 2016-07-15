@@ -1,6 +1,8 @@
 package se.l4.otter.operations;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -32,6 +34,26 @@ public interface CompoundOperation<Handler>
 		if(op instanceof CompoundOperation)
 		{
 			return ((CompoundOperation) op).getOperations();
+		}
+		
+		return Collections.singletonList(op);
+	}
+	
+	/**
+	 * Turn a operation into a list of operations while sorting the
+	 * operations.
+	 * 
+	 * @param op
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static <T> List<Operation<T>> toList(Operation<T> op, Comparator<Operation<T>> comparator)
+	{
+		if(op instanceof CompoundOperation)
+		{
+			List<Operation<T>> list = new ArrayList<>(((CompoundOperation) op).getOperations());
+			Collections.sort(list, comparator);
+			return list;
 		}
 		
 		return Collections.singletonList(op);

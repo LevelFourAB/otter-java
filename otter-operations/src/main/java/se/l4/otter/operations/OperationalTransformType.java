@@ -7,21 +7,24 @@ public interface OperationalTransformType<Op extends Operation<?>>
 	/**
 	 * Compose the given operations.
 	 * 
-	 * @param ops
+	 * @param left
+	 *   left operation
+	 * @param right
+	 *   operation to compose over left
 	 * @return
 	 */
-	Op compose(Op op1, Op op2);
+	Op compose(Op left, Op right);
 	
 	/**
-	 * Transform 
+	 * Transform one operation over another.
 	 * 
-	 * @param client
-	 *   operation performed by client
-	 * @param op2
-	 *   operation performed by server
+	 * @param left
+	 *   left operation
+	 * @param right
+	 *   right operation
 	 * @return
 	 */
-	OperationPair<Op> transform(Op client, Op server);
+	OperationPair<Op> transform(Op left, Op right);
 	
 	/**
 	 * Get a serializer that can be used to read and write operations handled

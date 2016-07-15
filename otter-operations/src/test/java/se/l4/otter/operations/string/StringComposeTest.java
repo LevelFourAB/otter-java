@@ -24,15 +24,14 @@ public class StringComposeTest
 			.insert("Cookies")
 			.done();
 		
-		StringType helper = new StringType();
-		Operation<StringOperationHandler> r = helper.compose(op1, op2);
+		Operation<StringOperationHandler> r = compose(op1, op2);
 		
 		assertThat(r, is(StringDelta.builder()
 			.insert("Hello Cookies")
 			.done())
 		);
 	}
-	
+
 	@Test
 	public void testCompose2()
 	{
@@ -47,8 +46,7 @@ public class StringComposeTest
 			.insert("Cookies")
 			.done();
 		
-		StringType helper = new StringType();
-		Operation<StringOperationHandler> r = helper.compose(op1, op2);
+		Operation<StringOperationHandler> r = compose(op1, op2);
 		
 		assertThat(r, is(StringDelta.builder()
 			.retain(6)
@@ -73,8 +71,7 @@ public class StringComposeTest
 			.insert("Cookies")
 			.done();
 		
-		StringType helper = new StringType();
-		Operation<StringOperationHandler> r = helper.compose(op1, op2);
+		Operation<StringOperationHandler> r = compose(op1, op2);
 		
 		assertThat(r, is(StringDelta.builder()
 			.retain(6)
@@ -96,8 +93,7 @@ public class StringComposeTest
 			.retain(11)
 			.done();
 		
-		StringType helper = new StringType();
-		Operation<StringOperationHandler> r = helper.compose(op1, op2);
+		Operation<StringOperationHandler> r = compose(op1, op2);
 		
 		assertThat(r, is(StringDelta.builder()
 			.insert("Hello ")
@@ -119,8 +115,7 @@ public class StringComposeTest
 			.retain(5)
 			.done();
 		
-		StringType helper = new StringType();
-		Operation<StringOperationHandler> r = helper.compose(op1, op2);
+		Operation<StringOperationHandler> r = compose(op1, op2);
 		
 		assertThat(r, is(StringDelta.builder()
 			.delete("Hello ")
@@ -153,5 +148,12 @@ public class StringComposeTest
 		catch(ComposeException e)
 		{
 		}
+	}
+	
+	private Operation<StringOperationHandler> compose(Operation<StringOperationHandler> op1,
+			Operation<StringOperationHandler> op2)
+	{
+		StringType helper = new StringType();
+		return helper.compose(op1, op2);
 	}
 }
