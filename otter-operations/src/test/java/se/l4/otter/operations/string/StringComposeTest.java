@@ -134,20 +134,84 @@ public class StringComposeTest
 			.done();
 		
 		Operation<StringOperationHandler> op2 = StringDelta.builder()
-			.delete("Hello ")
+			.delete("Cookie")
 			.retain(5)
 			.done();
 		
-		StringType helper = new StringType();
-		
 		try
 		{
-			Operation<StringOperationHandler> o = helper.compose(op1, op2);
+			Operation<StringOperationHandler> o = compose(op1, op2);
 			fail("Should not be composable, but got " + o);
 		}
 		catch(ComposeException e)
 		{
 		}
+	}
+	
+	@Test
+	public void testCompose7()
+	{
+		Operation<StringOperationHandler> op1 = StringDelta.builder()
+			.insert("Hello Cookie")
+			.done();
+		
+		Operation<StringOperationHandler> op2 = StringDelta.builder()
+			.retain(6)
+			.insert("!")
+			.retain(6)
+			.done();
+		
+		Operation<StringOperationHandler> r = compose(op1, op2);
+		
+		assertThat(r, is(StringDelta.builder()
+			.insert("Hello !Cookie")
+			.done()
+		));
+	}
+	
+	@Test
+	public void testCompose8()
+	{
+		Operation<StringOperationHandler> op1 = StringDelta.builder()
+			.retain(6)
+			.insert("!")
+			.done();
+		
+		Operation<StringOperationHandler> op2 = StringDelta.builder()
+			.insert("Cookie")
+			.retain(7)
+			.done();
+		
+		Operation<StringOperationHandler> r = compose(op1, op2);
+		
+		assertThat(r, is(StringDelta.builder()
+			.insert("Cookie")
+			.retain(6)
+			.insert("!")
+			.done()
+		));
+	}
+	
+	@Test
+	public void testCompose9()
+	{
+		Operation<StringOperationHandler> op1 = StringDelta.builder()
+			.insert("Hello World!")
+			.done();
+		
+		Operation<StringOperationHandler> op2 = StringDelta.builder()
+			.retain(6)
+			.delete("World")
+			.insert("Cookies")
+			.retain(1)
+			.done();
+		
+		Operation<StringOperationHandler> r = compose(op1, op2);
+		
+		assertThat(r, is(StringDelta.builder()
+			.insert("Hello Cookies!")
+			.done()
+		));
 	}
 	
 	private Operation<StringOperationHandler> compose(Operation<StringOperationHandler> op1,

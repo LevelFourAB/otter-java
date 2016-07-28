@@ -91,7 +91,7 @@ public class StringTypeComposer
 				
 				right.replace(new StringRetain(length2 - length1));
 			}
-			else if(length2 > length1)
+			else if(length1 > length2)
 			{
 				// Right operation is shorter, retain right and rewrite left
 				delta.retain(length2);
@@ -106,11 +106,13 @@ public class StringTypeComposer
 		}
 		else if(op2 instanceof StringInsert)
 		{
-			// Second operation is an insert so we add it to the delta and replace ourselves with a retain
+			/*
+			 * Right operation is an insert, simply insert and then handle
+			 * left retain again.
+			 */
 			String value = ((StringInsert) op2).getValue();
 			delta.insert(value);
-			
-			left.replace(new StringRetain(length1 - value.length()));
+			left.back();
 		}
 		else if(op2 instanceof StringDelete)
 		{
@@ -162,11 +164,13 @@ public class StringTypeComposer
 		}
 		else if(op2 instanceof StringInsert)
 		{
-			// Combine the two insert operations into a single one
+			/*
+			 * Two inserts, right is inserted first and then we handle left
+			 * again.
+			 */
 			String value2 = ((StringInsert) op2).getValue();
-			
-			// TODO: Timestamp or revision to determine order?
-			delta.insert(value1 + value2);
+			delta.insert(value2);
+			left.back();
 		}
 		else if(op2 instanceof StringDelete)
 		{
@@ -179,7 +183,7 @@ public class StringTypeComposer
 				 * Left insert is longer than right delete, replace left with
 				 * remaining text from left.
 				 */
-				left.replace(new StringInsert(value1.substring(0, length2)));
+				left.replace(new StringInsert(value1.substring(length2)));
 			}
 			else if(length1 < length2)
 			{
@@ -191,7 +195,7 @@ public class StringTypeComposer
 			}
 			else
 			{
-				// Exact same length, do nothing
+				// Exact same length, do nothing as they cancel each other
 			}
 		}
 	}
@@ -222,7 +226,7 @@ public class StringTypeComposer
 		else if(op2 instanceof StringDelete)
 		{
 			/**
-			 * Right operation is also a delete. Push right delete and back
+			 * Right operation is also a delete. Push left delete and back
 			 * up so right is handled again.
 			 */
 			delta.delete(value1);

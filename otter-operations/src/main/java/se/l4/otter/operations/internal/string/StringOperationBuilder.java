@@ -21,6 +21,23 @@ public class StringOperationBuilder
 	@Override
 	public void insert(String s)
 	{
+		if(! operations.isEmpty())
+		{
+			/*
+			 * Check if the last operation was a delete, in which case we
+			 * normalize a bit and enforce that the insert always comes
+			 * before the delete. This makes transformation a bit easier
+			 * to deal with.
+			 */
+			Operation<StringOperationHandler> previous = operations.get(operations.size() - 1);
+			if(previous instanceof StringDelete)
+			{
+				operations.set(operations.size() - 1, new StringInsert(s));
+				operations.add(previous);
+				return;
+			}
+		}
+
 		operations.add(new StringInsert(s));
 	}
 

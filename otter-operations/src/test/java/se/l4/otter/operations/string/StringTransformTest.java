@@ -11,7 +11,7 @@ import se.l4.otter.operations.OperationPair;
 public class StringTransformTest
 {
 	@Test
-	public void testInsertionBeforeServer()
+	public void testInsertionBeforeRight()
 	{
 		reversibleTest(
 			insert(20, 1, "a"),
@@ -22,7 +22,7 @@ public class StringTransformTest
 	}
 	
 	@Test
-	public void testInsertionAtSameLocationAsServer()
+	public void testInsertionAtSameLocation()
 	{
 		test(
 			insert(20, 2, "abc"),
@@ -44,7 +44,7 @@ public class StringTransformTest
 	}
 	
 	@Test
-	public void testOther()
+	public void testOther1()
 	{
 		reversibleTest(
 		    delete(20, 1, "abcde"),
@@ -52,14 +52,22 @@ public class StringTransformTest
 		    delete(18, 1, "abcde"),
 		    delete(15, 2, "fg")
 		);
-		
+	}
+	
+	@Test
+	public void testOther2()
+	{
 		reversibleTest(
 			delete(20, 1, "abcde"),
 			delete(20, 6, "fg"),
 			delete(18, 1, "abcde"),
 			delete(15, 1, "fg")
 		);
-
+	}
+	
+	@Test
+	public void testOther3()
+	{
 		// A's deletion overlaps B's deletion
 		reversibleTest(
 			delete(20, 1, "abcde"),
@@ -67,7 +75,11 @@ public class StringTransformTest
 			delete(13, 1, "ab"),
 			delete(15, 1, "fghi")
 		);
-		
+	}
+	
+	@Test
+	public void testOther4()
+	{
 		// A's deletion a subset of B's deletion
 		reversibleTest(
 			delete(20, 1, "abcdefg"),
@@ -75,13 +87,46 @@ public class StringTransformTest
 			delete(18, 1, "abefg"),
 			retain(13)
 		);
-		
+	}
+	
+	@Test
+	public void testOther5()
+	{
 		// A's deletion identical to B's deletion
 		reversibleTest(
 			delete(20, 1, "abcdefg"),
 			delete(20, 1, "abcdefg"),
 			retain(13),
 			retain(13)
+		);
+	}
+	
+	@Test
+	public void testMix1()
+	{
+		reversibleTest(
+			StringDelta.builder()
+				.retain(6)
+				.delete("World")
+				.insert("Cookies")
+				.done(),
+				
+			StringDelta.builder()
+				.retain(11)
+				.insert("!")
+				.done(),
+				
+			StringDelta.builder()
+				.retain(6)
+				.delete("World")
+				.insert("Cookies")
+				.retain(1)
+				.done(),
+				
+			StringDelta.builder()
+				.retain(13)
+				.insert("!")
+				.done()
 		);
 	}
 
@@ -110,13 +155,14 @@ public class StringTransformTest
 			.done();
 	}
 	
-	private void test(Operation<StringOperationHandler> client, Operation<StringOperationHandler> server,
-			Operation<StringOperationHandler> expectedClient, Operation<StringOperationHandler> expectedServer)
+	private void test(Operation<StringOperationHandler> left, Operation<StringOperationHandler> right,
+			Operation<StringOperationHandler> expectedLeft, Operation<StringOperationHandler> expectedRight)
 	{
 		StringType type = new StringType();
-		OperationPair<Operation<StringOperationHandler>> op = type.transform(client, server);
-		assertThat("client", op.getFirst(), is(expectedClient));
-		assertThat("server", op.getSecond(), is(expectedServer));
+		
+		OperationPair<Operation<StringOperationHandler>> op = type.transform(left, right);
+		assertThat("left", op.getLeft(), is(expectedLeft));
+		assertThat("right", op.getRight(), is(expectedRight));
 	}
 	
 	private void reversibleTest(Operation<StringOperationHandler> client, Operation<StringOperationHandler> server,
