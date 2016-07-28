@@ -72,7 +72,7 @@ public class MapType
 						MapSet s2 = (MapSet) op2;
 					
 						// Take old value from left and new value from right
-						result.add(new MapSet(s1.getKey(), s1.getOldValue(), s2.getNewValue()));
+						it1.replace(new MapSet(s1.getKey(), s1.getOldValue(), s2.getNewValue()));
 					}
 					
 					handled = true;

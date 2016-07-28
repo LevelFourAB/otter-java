@@ -2,7 +2,6 @@ package se.l4.otter.operations.map;
 
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.internal.map.DefaultMapDelta;
-import se.l4.otter.operations.string.StringDelta;
 
 /**
  * Utility for building a delta for a map structure.
@@ -33,7 +32,7 @@ public interface MapDelta<ReturnPath>
 	ReturnPath done();
 	
 	/**
-	 * Get {@link StringDelta} that builds a {@link Operation}.
+	 * Get {@link MapDelta} that builds a {@link Operation}.
 	 * 
 	 * @return
 	 */

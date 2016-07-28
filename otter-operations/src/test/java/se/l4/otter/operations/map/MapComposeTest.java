@@ -164,6 +164,25 @@ public class MapComposeTest
 		));
 	}
 	
+	@Test
+	public void testMultipleSameKey()
+	{
+		Operation<MapOperationHandler> op1 = MapDelta.builder()
+			.set("one", null, "abc")
+			.done();
+		
+		Operation<MapOperationHandler> op2 = MapDelta.builder()
+			.set("one", "abc", "def")
+			.set("one", "def", "ghi")
+			.done();
+		
+		Operation<MapOperationHandler> r = compose(op1, op2);
+		assertThat(r, is(MapDelta.builder()
+			.set("one", null, "ghi")
+			.done()
+		));
+	}
+	
 	private Operation<MapOperationHandler> compose(Operation<MapOperationHandler> op1,
 			Operation<MapOperationHandler> op2)
 	{

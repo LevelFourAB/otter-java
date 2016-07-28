@@ -46,11 +46,11 @@ public class MapSet
 	{
 		if(newValue == null)
 		{
-			handler.remove(key);
+			handler.remove(key, oldValue);
 		}
 		else
 		{
-			handler.put(key, newValue);
+			handler.put(key, oldValue, newValue);
 		}
 	}
 	

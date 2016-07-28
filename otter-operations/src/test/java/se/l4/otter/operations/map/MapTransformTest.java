@@ -75,8 +75,8 @@ public class MapTransformTest
 	{
 		MapType type = new MapType();
 		OperationPair op = type.transform((Operation) client, (Operation) server);
-		assertThat("left", op.getFirst(), is(expectedClient));
-		assertThat("right", op.getSecond(), is(expectedServer));
+		assertThat("left", op.getLeft(), is(expectedClient));
+		assertThat("right", op.getRight(), is(expectedServer));
 	}
 	
 	private void reversibleTest(Operation<?> client, Operation<?> server,

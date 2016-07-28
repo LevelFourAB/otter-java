@@ -17,7 +17,7 @@ public interface MapOperationHandler
 	 * @param value
 	 * @see Map#put(Object, Object)
 	 */
-	void put(String key, Object value);
+	void put(String key, Object oldValue, Object newValue);
 	
 	/**
 	 * Remove the given key.
@@ -25,7 +25,7 @@ public interface MapOperationHandler
 	 * @param key
 	 * @see Map#remove(Object)
 	 */
-	void remove(String key);
+	void remove(String key, Object oldValue);
 	
 	/**
 	 * Create a new handler over the given map.
@@ -40,13 +40,13 @@ public interface MapOperationHandler
 		return new MapOperationHandler()
 		{
 			@Override
-			public void put(String key, Object value)
+			public void put(String key, Object oldValue, Object value)
 			{
 				m.put(key, value);
 			}
 			
 			@Override
-			public void remove(String key)
+			public void remove(String key, Object oldValue)
 			{
 				m.remove(key);
 			}
