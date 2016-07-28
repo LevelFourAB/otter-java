@@ -24,6 +24,7 @@
 		<module>otter-operations</module>
 
 		<module>otter-engine</module>
+		<module>otter-model</module>
  	</modules>
  	
  	<dependencies>
