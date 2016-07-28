@@ -1,8 +1,9 @@
 package se.l4.otter.operations;
 
 import se.l4.commons.serialization.Serializer;
+import se.l4.otter.operations.internal.DefaultComposer;
 
-public interface OperationalTransformType<Op extends Operation<?>>
+public interface OTType<Op extends Operation<?>>
 {
 	/**
 	 * Compose the given operations.
@@ -33,4 +34,9 @@ public interface OperationalTransformType<Op extends Operation<?>>
 	 * @return
 	 */
 	Serializer<Op> getSerializer();
+	
+	default Composer<Op> newComposer()
+	{
+		return new DefaultComposer<>(this);
+	}
 }

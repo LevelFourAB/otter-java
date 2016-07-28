@@ -6,15 +6,15 @@ import java.util.List;
 import se.l4.commons.serialization.Serializer;
 import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.DefaultCompoundOperation;
+import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationPair;
-import se.l4.otter.operations.OperationalTransformType;
 import se.l4.otter.operations.internal.map.MapOperation;
 import se.l4.otter.operations.internal.map.MapSet;
 import se.l4.otter.operations.util.MutableOperationIterator;
 
 /**
- * {@link OperationalTransformType Operational Transformation type} for basic
+ * {@link OTType Operational Transformation type} for basic
  * operations against a map structure.
  * 
  * <p>
@@ -26,7 +26,7 @@ import se.l4.otter.operations.util.MutableOperationIterator;
  *
  */
 public class MapType
-	implements OperationalTransformType<Operation<MapOperationHandler>>
+	implements OTType<Operation<MapOperationHandler>>
 {
 	@Override
 	public Operation<MapOperationHandler> compose(Operation<MapOperationHandler> left, Operation<MapOperationHandler> right)

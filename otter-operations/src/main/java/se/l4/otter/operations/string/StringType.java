@@ -5,14 +5,14 @@ import java.util.List;
 import se.l4.commons.serialization.Serializer;
 import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.Operation;
-import se.l4.otter.operations.OperationalTransformType;
+import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.OperationPair;
 import se.l4.otter.operations.internal.string.StringOperationSerializer;
 import se.l4.otter.operations.internal.string.StringTypeComposer;
 import se.l4.otter.operations.internal.string.StringTypeTransformer;
 
 public class StringType
-	implements OperationalTransformType<Operation<StringOperationHandler>>
+	implements OTType<Operation<StringOperationHandler>>
 {
 	private final Serializer<Operation<StringOperationHandler>> serializer;
 	
