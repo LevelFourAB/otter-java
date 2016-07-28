@@ -58,4 +58,9 @@ public interface CompoundOperation<Handler>
 		
 		return Collections.singletonList(op);
 	}
+
+	static <T> Operation<T> empty()
+	{
+		return new DefaultCompoundOperation<>(Collections.emptyList());
+	}
 }
