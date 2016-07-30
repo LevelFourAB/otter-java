@@ -4,6 +4,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import se.l4.otter.operations.Composer;
+import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationPair;
 
@@ -34,6 +35,12 @@ public class DefaultEditorControl<Op extends Operation<?>>
 	{
 		this.lock = lock;
 		this.history = history;
+	}
+	
+	@Override
+	public OTType<Op> getType()
+	{
+		return history.getType();
 	}
 	
 	@Override

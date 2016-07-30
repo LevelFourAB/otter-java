@@ -1,5 +1,6 @@
 package se.l4.otter.engine;
 
+import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
 
 /**
@@ -10,6 +11,13 @@ import se.l4.otter.operations.Operation;
  */
 public interface EditorControl<Op extends Operation<?>>
 {
+	/**
+	 * Get the type this control handles.
+	 * 
+	 * @return
+	 */
+	OTType<Op> getType();
+	
 	/**
 	 * Get the operation that describes the document that a new client should
 	 * start with.

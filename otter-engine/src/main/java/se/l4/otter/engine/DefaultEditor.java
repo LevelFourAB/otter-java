@@ -39,11 +39,11 @@ public class DefaultEditor<Op extends Operation<?>>
 	private Op current;
 	
 	@SuppressWarnings("unchecked")
-	public DefaultEditor(String id, OTType<Op> type, OperationSync<Op> sync)
+	public DefaultEditor(String id, OperationSync<Op> sync)
 	{
 		this.id = id;
-		this.type = type;
 		this.sync = sync;
+		this.type = sync.getType();
 		lock = new ReentrantLock();
 		
 		state = State.SYNCHRONIZED;

@@ -3,6 +3,7 @@ package se.l4.otter.engine;
 import java.io.Closeable;
 import java.util.function.Consumer;
 
+import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
 
 /**
@@ -15,6 +16,13 @@ import se.l4.otter.operations.Operation;
 public interface OperationSync<Op extends Operation<?>>
 	extends Closeable
 {
+	/**
+	 * Get the type this sync handles.
+	 * 
+	 * @return
+	 */
+	OTType<Op> getType();
+	
 	/**
 	 * Connect and start listening for changes. This will return the latest
 	 * version of the document/model being edited.

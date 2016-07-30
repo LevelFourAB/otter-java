@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
 
 /**
@@ -50,6 +51,12 @@ public class LocalOperationSync<Op extends Operation<?>>
 		triggerThread.start();
 	}
 	
+	@Override
+	public OTType<Op> getType()
+	{
+		return control.getType();
+	}
+	
 	/**
 	 * Suspend sending of events.
 	 */
@@ -77,7 +84,7 @@ public class LocalOperationSync<Op extends Operation<?>>
 			
 			try
 			{
-				Thread.sleep(10);
+				Thread.sleep(50);
 			}
 			catch(InterruptedException e)
 			{

@@ -47,7 +47,7 @@ public class DefaultModelTest
 	
 	private Editor<Operation<CombinedTarget>> editor(String id)
 	{
-		return new DefaultEditor<>(id, TYPE, sync);
+		return new DefaultEditor<>(id, sync);
 	}
 	
 	private Model model(String id)
