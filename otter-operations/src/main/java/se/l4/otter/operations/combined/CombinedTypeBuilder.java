@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 
 import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
+import se.l4.otter.operations.list.ListType;
 import se.l4.otter.operations.map.MapType;
 import se.l4.otter.operations.string.StringType;
 
@@ -22,6 +23,7 @@ public class CombinedTypeBuilder
 		types = ImmutableMap.builder();
 		
 		withSubType("map", new MapType());
+		withSubType("list", new ListType());
 		withSubType("string", new StringType());
 	}
 	

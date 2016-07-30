@@ -22,6 +22,13 @@ public interface Model
 	SharedString newString();
 	
 	/**
+	 * Create a new shared list.
+	 * 
+	 * @return
+	 */
+	<T> SharedList<T> newList();
+	
+	/**
 	 * Get the intitial operation that a new model represents.
 	 * 
 	 * @return

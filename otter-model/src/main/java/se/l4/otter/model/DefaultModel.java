@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import se.l4.otter.engine.Editor;
+import se.l4.otter.model.internal.SharedListImpl;
 import se.l4.otter.model.internal.SharedMapImpl;
 import se.l4.otter.model.internal.SharedObjectEditorImpl;
 import se.l4.otter.model.internal.SharedStringImpl;
@@ -157,9 +158,21 @@ public class DefaultModel
 				return new SharedStringImpl(create(id, type));
 			case "map":
 				return new SharedMapImpl(create(id, type));
+			case "list":
+				return new SharedListImpl<>(create(id, type));
 			default:
 				throw new OperationException("Unknown type: " + type);
 		}
+	}
+	
+	private <T extends SharedObject> T initObject(String type)
+	{
+		String id = nextId();
+		values.put(id, CompoundOperation.empty());
+		
+		SharedObject result = createObject(id, type);
+		objects.put(id, result);
+		return (T) result;
 	}
 	
 	private String nextId()
@@ -170,18 +183,19 @@ public class DefaultModel
 	@Override
 	public SharedMap newMap()
 	{
-		return null;
+		return initObject("map");
 	}
 	
 	@Override
 	public SharedString newString()
 	{
-		String id = nextId();
-		values.put(id, CompoundOperation.empty());
-		
-		SharedString result = (SharedString) createObject(id, "string");
-		objects.put(id, result);
-		return result;
+		return initObject("string");
+	}
+	
+	@Override
+	public <T> SharedList<T> newList()
+	{
+		return initObject("list");
 	}
 	
 	@Override
