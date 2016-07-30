@@ -10,6 +10,7 @@ import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationPair;
 import se.l4.otter.operations.internal.map.MapOperation;
+import se.l4.otter.operations.internal.map.MapOperationSerializer;
 import se.l4.otter.operations.internal.map.MapSet;
 import se.l4.otter.operations.util.MutableOperationIterator;
 
@@ -172,8 +173,7 @@ public class MapType
 	@Override
 	public Serializer<Operation<MapOperationHandler>> getSerializer()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return MapOperationSerializer.INSTANCE;
 	}
 
 }

@@ -20,6 +20,7 @@ import se.l4.commons.serialization.format.Token;
 public class DataSerializer
 	implements Serializer<Object>
 {
+	public static final DataSerializer INSTANCE = new DataSerializer();
 
 	@Override
 	public Object read(StreamingInput in)
@@ -98,7 +99,11 @@ public class DataSerializer
 	public void write(Object object, String name, StreamingOutput out)
 		throws IOException
 	{
-		if(object instanceof DataObject)
+		if(object == null)
+		{
+			out.writeNull(name);
+		}
+		else if(object instanceof DataObject)
 		{
 			out.writeObjectStart(name);
 			for(Map.Entry<String, Object> e : ((DataObject) object).entrySet())
@@ -131,6 +136,10 @@ public class DataSerializer
 		else if(object instanceof Boolean)
 		{
 			out.write(name, (Boolean) object);
+		}
+		else
+		{
+			throw new SerializationException("Unsupported type of data: " + object);
 		}
 	}
 

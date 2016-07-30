@@ -5,9 +5,22 @@ import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationPair;
+import se.l4.otter.operations.internal.list.ListOperationSerializer;
 import se.l4.otter.operations.internal.list.ListTypeComposer;
 import se.l4.otter.operations.internal.list.ListTypeTransformer;
+import se.l4.otter.operations.string.StringType;
 
+/**
+ * Operation Transformation type for lists. Use {@link ListDelta} to construct
+ * operations.
+ * 
+ * <p>
+ * The support for list is very similar to {@link StringType strings}. It
+ * uses three operations, retain, insert and delete.
+ * 
+ * @author Andreas Holstenson
+ *
+ */
 public class ListType
 	implements OTType<Operation<ListHandler>>
 {
@@ -32,9 +45,7 @@ public class ListType
 	@Override
 	public Serializer<Operation<ListHandler>> getSerializer()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return ListOperationSerializer.INSTANCE;
 	}
-	
 	
 }

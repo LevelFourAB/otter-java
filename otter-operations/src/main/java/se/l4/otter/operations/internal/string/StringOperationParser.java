@@ -90,16 +90,16 @@ public class StringOperationParser
 	
 	protected String readQuotedString()
 	{
-		consume('"');
+		consume('\'');
 		for(; index<length; index++)
 		{
 			char c = input.charAt(index);
 			if(c == '\\')
 			{
 				c = input.charAt(--index);
-				if(c == '"')
+				if(c == '\'')
 				{
-					buffer.append("\"");
+					buffer.append("'");
 				}
 				else
 				{
@@ -107,7 +107,7 @@ public class StringOperationParser
 					index--;
 				}
 			}
-			else if(c == '"')
+			else if(c == '\'')
 			{
 				String result = buffer.toString();
 				buffer.setLength(0);

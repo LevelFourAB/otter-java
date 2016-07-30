@@ -13,6 +13,7 @@ import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationPair;
 import se.l4.otter.operations.TransformException;
 import se.l4.otter.operations.internal.combined.CombinedOperation;
+import se.l4.otter.operations.internal.combined.CombinedOperationSerializer;
 import se.l4.otter.operations.internal.combined.IdComparator;
 import se.l4.otter.operations.internal.combined.Update;
 import se.l4.otter.operations.util.MutableOperationIterator;
@@ -29,10 +30,13 @@ public class CombinedType
 	implements OTType<Operation<CombinedTarget>>
 {
 	private final Map<String, OTType<Operation<?>>> types;
+	private final CombinedOperationSerializer serializer;
 
 	public CombinedType(Map<String, OTType<Operation<?>>> types)
 	{
 		this.types = types;
+		
+		serializer = new CombinedOperationSerializer(types);
 	}
 	
 	public OTType<Operation<?>> getSubType(String type)
@@ -210,8 +214,7 @@ public class CombinedType
 	@Override
 	public Serializer<Operation<CombinedTarget>> getSerializer()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return serializer;
 	}
 	
 	/**

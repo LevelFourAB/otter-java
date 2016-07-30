@@ -43,15 +43,13 @@ public class StringOperationSerializer
 			}
 			else if(op instanceof StringInsert)
 			{
-				builder.append("++\"");
+				builder.append("++");
 				quote(builder, ((StringInsert) op).getValue());
-				builder.append("\"");
 			}
 			else if(op instanceof StringDelete)
 			{
-				builder.append("--\"");
+				builder.append("--");
 				quote(builder, ((StringDelete) op).getValue());
-				builder.append("\"");
 			}
 			else
 			{
@@ -71,20 +69,20 @@ public class StringOperationSerializer
 			return;
 		}
 		
-		builder.append("\"");
+		builder.append("'");
 		for(int i=0, n=s.length(); i<n; i++)
 		{
 			char c = s.charAt(i);
-			if(c == '"')
+			if(c == '\'')
 			{
-				builder.append("\\\"");
+				builder.append("\\'");
 			}
 			else
 			{
 				builder.append(c);
 			}
 		}
-		builder.append("\"");
+		builder.append("'");
 	}
 	
 }
