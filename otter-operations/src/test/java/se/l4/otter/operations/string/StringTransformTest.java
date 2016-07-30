@@ -33,6 +33,17 @@ public class StringTransformTest
 	}
 	
 	@Test
+	public void testInsertionWhenEmpty()
+	{
+		test(
+			insert(0, 0, "a"),
+			insert(0, 0, "b"),
+			insert(1, 0, "a"),
+			insert(1, 1, "b")
+		);
+	}
+	
+	@Test
 	public void testDelete()
 	{
 		reversibleTest(

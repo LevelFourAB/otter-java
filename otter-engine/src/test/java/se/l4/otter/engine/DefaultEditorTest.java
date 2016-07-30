@@ -22,7 +22,7 @@ public class DefaultEditorTest
 	public void setupEditor()
 	{
 		control = new DefaultEditorControl<>(
-				new InMemoryOperationHistory<>(TYPE, StringDelta.builder()
+			new InMemoryOperationHistory<>(TYPE, StringDelta.builder()
 				.insert("Hello World")
 				.done()
 			)
@@ -32,7 +32,7 @@ public class DefaultEditorTest
 	
 	private Editor<Operation<StringOperationHandler>> editor(String id)
 	{
-		return new DefaultEditor<>(id, TYPE, sync);
+		return new DefaultEditor<>(id, sync);
 	}
 	
 	@Test
@@ -194,6 +194,129 @@ public class DefaultEditorTest
 		
 		assertThat(e2.getCurrent(), is(StringDelta.builder()
 			.insert("Hello Cookie!!")
+			.done()
+		));
+	}
+	
+	@Test
+	public void testMultiple5()
+	{
+		Editor<Operation<StringOperationHandler>> e1 = editor("1");
+		Editor<Operation<StringOperationHandler>> e2 = editor("2");
+		
+		sync.suspend();
+		e1.apply(StringDelta.builder()
+			.insert("a")
+			.retain(11)
+			.done()
+		);
+		
+		e2.apply(StringDelta.builder()
+			.insert("b")
+			.retain(11)
+			.done()
+		);
+		
+		sync.resume();
+		
+		sync.waitForEmpty();
+		
+		assertThat(e1.getCurrent(), is(StringDelta.builder()
+			.insert("abHello World")
+			.done()
+		));
+		
+		assertThat(e2.getCurrent(), is(StringDelta.builder()
+			.insert("abHello World")
+			.done()
+		));
+	}
+	
+	@Test
+	public void testMultiple6()
+	{
+		Editor<Operation<StringOperationHandler>> e1 = editor("1");
+		Editor<Operation<StringOperationHandler>> e2 = editor("2");
+		
+		sync.suspend();
+		e1.apply(StringDelta.builder()
+			.insert("a")
+			.retain(11)
+			.done()
+		);
+		
+		e2.apply(StringDelta.builder()
+			.insert("b")
+			.retain(11)
+			.done()
+		);
+		
+		e2.apply(StringDelta.builder()
+			.retain(1)
+			.insert("c")
+			.retain(11)
+			.done()
+		);
+		
+		sync.resume();
+		
+		sync.waitForEmpty();
+		
+		assertThat(e1.getCurrent(), is(StringDelta.builder()
+			.insert("abcHello World")
+			.done()
+		));
+		
+		assertThat(e2.getCurrent(), is(StringDelta.builder()
+			.insert("abcHello World")
+			.done()
+		));
+	}
+	
+	@Test
+	public void testMultiple7()
+	{
+		Editor<Operation<StringOperationHandler>> e1 = editor("1");
+		Editor<Operation<StringOperationHandler>> e2 = editor("2");
+		
+		sync.suspend();
+		e1.apply(StringDelta.builder()
+			.insert("a")
+			.retain(11)
+			.done()
+		);
+		
+		e2.apply(StringDelta.builder()
+			.insert("b")
+			.retain(11)
+			.done()
+		);
+		
+		e2.apply(StringDelta.builder()
+			.retain(1)
+			.insert("c")
+			.retain(11)
+			.done()
+		);
+		
+		e1.apply(StringDelta.builder()
+			.retain(1)
+			.insert("d")
+			.retain(11)
+			.done()
+		);
+		
+		sync.resume();
+		
+		sync.waitForEmpty();
+		
+		assertThat(e1.getCurrent(), is(StringDelta.builder()
+			.insert("abdcHello World")
+			.done()
+		));
+		
+		assertThat(e2.getCurrent(), is(StringDelta.builder()
+			.insert("abdcHello World")
 			.done()
 		));
 	}

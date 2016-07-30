@@ -130,8 +130,8 @@ public class DefaultEditor<Op extends Operation<?>>
 						 * over our sent operation.
 						 */
 						OperationPair<Op> transformed = type.transform(
-							lastSent.getOperation(),
-							op.getOperation()
+							op.getOperation(),
+							lastSent.getOperation()
 						);
 						
 						/*
@@ -142,11 +142,11 @@ public class DefaultEditor<Op extends Operation<?>>
 						lastSent = new TaggedOperation<>(
 							op.getHistoryId(),
 							lastSent.getToken(),
-							transformed.getLeft()
+							transformed.getRight()
 						);
 						
 						parentHistoryId = op.getHistoryId();
-						triggerListeners(transformed.getRight());
+						triggerListeners(transformed.getLeft());
 					}
 					break;
 				case AWAITING_CONFIRM_WITH_BUFFER:
@@ -176,8 +176,8 @@ public class DefaultEditor<Op extends Operation<?>>
 						 * both the incoming and our buffered operation.
 						 */
 						OperationPair<Op> transformed = type.transform(
-							lastSent.getOperation(),
-							op.getOperation()
+							op.getOperation(),
+							lastSent.getOperation()
 						);
 						
 						/*
@@ -187,7 +187,7 @@ public class DefaultEditor<Op extends Operation<?>>
 						lastSent = new TaggedOperation<>(
 							op.getHistoryId(),
 							lastSent.getToken(),
-							transformed.getLeft()
+							transformed.getRight()
 						);
 						
 						/*
@@ -196,7 +196,7 @@ public class DefaultEditor<Op extends Operation<?>>
 						 */
 						transformed = type.transform(
 							buffer.getOperation(),
-							transformed.getRight()
+							transformed.getLeft()
 						);
 						
 						buffer = new TaggedOperation<>(
