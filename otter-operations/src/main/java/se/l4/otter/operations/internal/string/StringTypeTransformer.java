@@ -41,8 +41,6 @@ public class StringTypeTransformer
 			{
 				Operation<StringOperationHandler> op2 = right.next();
 				
-				System.out.println(op1 + " " + op2);
-				
 				if(op1 instanceof StringRetain)
 				{
 					handleRetain(op1, op2);

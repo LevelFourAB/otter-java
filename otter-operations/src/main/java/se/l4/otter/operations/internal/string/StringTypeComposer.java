@@ -203,7 +203,6 @@ public class StringTypeComposer
 	private void handleDelete(Operation<StringOperationHandler> op1, Operation<StringOperationHandler> op2)
 	{
 		String value1 = ((StringDelete) op1).getValue();
-		int length1 = value1.length();
 		
 		if(op2 instanceof StringRetain)
 		{
