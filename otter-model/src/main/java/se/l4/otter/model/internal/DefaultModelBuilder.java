@@ -11,15 +11,15 @@ import se.l4.otter.model.SharedObject;
 import se.l4.otter.model.spi.SharedObjectEditor;
 import se.l4.otter.model.spi.SharedObjectFactory;
 import se.l4.otter.operations.Operation;
-import se.l4.otter.operations.combined.CombinedTarget;
+import se.l4.otter.operations.combined.CombinedHandler;
 
 public class DefaultModelBuilder
 	implements ModelBuilder
 {
-	private final Editor<Operation<CombinedTarget>> editor;
+	private final Editor<Operation<CombinedHandler>> editor;
 	private final Map<String, SharedObjectFactory<?, ?>> types;
 
-	public DefaultModelBuilder(Editor<Operation<CombinedTarget>> editor)
+	public DefaultModelBuilder(Editor<Operation<CombinedHandler>> editor)
 	{
 		this.editor = editor;
 		

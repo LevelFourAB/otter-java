@@ -1,6 +1,6 @@
 package se.l4.otter.operations.internal.string;
 
-import se.l4.otter.operations.string.StringOperationHandler;
+import se.l4.otter.operations.string.StringHandler;
 
 /**
  * Normalizer that takes operations that follow each other and combines them.
@@ -9,7 +9,7 @@ import se.l4.otter.operations.string.StringOperationHandler;
  *
  */
 public class StringNormalizer
-	implements StringOperationHandler
+	implements StringHandler
 {
 	private enum State
 	{
@@ -19,13 +19,13 @@ public class StringNormalizer
 		DELETE
 	}
 	
-	private final StringOperationHandler target;
+	private final StringHandler target;
 	
 	private final StringBuilder characters;
 	private int retainCount;
 	private State state;
 	
-	public StringNormalizer(StringOperationHandler target)
+	public StringNormalizer(StringHandler target)
 	{
 		this.target = target;
 	

@@ -35,7 +35,7 @@ public interface CombinedDelta<ReturnPath>
 	 * 
 	 * @return
 	 */
-	static CombinedDelta<Operation<CombinedTarget>> builder()
+	static CombinedDelta<Operation<CombinedHandler>> builder()
 	{
 		return new DefaultCombinedDelta<>(o -> o);
 	}

@@ -36,7 +36,7 @@ public interface MapDelta<ReturnPath>
 	 * 
 	 * @return
 	 */
-	static MapDelta<Operation<MapOperationHandler>> builder()
+	static MapDelta<Operation<MapHandler>> builder()
 	{
 		return new DefaultMapDelta<>(o -> o);
 	}

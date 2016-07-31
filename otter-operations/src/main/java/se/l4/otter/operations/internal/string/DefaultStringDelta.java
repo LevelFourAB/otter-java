@@ -4,16 +4,16 @@ import java.util.function.Function;
 
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.string.StringDelta;
-import se.l4.otter.operations.string.StringOperationHandler;
+import se.l4.otter.operations.string.StringHandler;
 
 public class DefaultStringDelta<ReturnPath>
 	implements StringDelta<ReturnPath>
 {
-	private final Function<Operation<StringOperationHandler>, ReturnPath> resultHandler;
+	private final Function<Operation<StringHandler>, ReturnPath> resultHandler;
 	private final StringOperationBuilder builder;
 	private final StringNormalizer normalizer;
 	
-	public DefaultStringDelta(Function<Operation<StringOperationHandler>, ReturnPath> resultHandler)
+	public DefaultStringDelta(Function<Operation<StringHandler>, ReturnPath> resultHandler)
 	{
 		this.resultHandler = resultHandler;
 		builder = new StringOperationBuilder();
@@ -42,7 +42,7 @@ public class DefaultStringDelta<ReturnPath>
 	}
 	
 	@Override
-	public StringOperationHandler asHandler()
+	public StringHandler asHandler()
 	{
 		return normalizer;
 	}

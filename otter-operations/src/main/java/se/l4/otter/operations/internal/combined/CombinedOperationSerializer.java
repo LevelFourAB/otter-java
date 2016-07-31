@@ -14,10 +14,10 @@ import se.l4.otter.operations.DefaultCompoundOperation;
 import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationException;
-import se.l4.otter.operations.combined.CombinedTarget;
+import se.l4.otter.operations.combined.CombinedHandler;
 
 public class CombinedOperationSerializer
-	implements Serializer<Operation<CombinedTarget>>
+	implements Serializer<Operation<CombinedHandler>>
 {
 	private final Map<String, OTType<Operation<?>>> types;
 
@@ -27,12 +27,12 @@ public class CombinedOperationSerializer
 	}
 	
 	@Override
-	public Operation<CombinedTarget> read(StreamingInput in)
+	public Operation<CombinedHandler> read(StreamingInput in)
 		throws IOException
 	{
 		in.next(Token.LIST_START);
 		
-		List<Operation<CombinedTarget>> ops = new ArrayList<>();
+		List<Operation<CombinedHandler>> ops = new ArrayList<>();
 		
 		while(in.peek() != Token.LIST_END)
 		{
@@ -70,7 +70,7 @@ public class CombinedOperationSerializer
 		return new DefaultCompoundOperation<>(ops);
 	}
 	
-	private Operation<CombinedTarget> readUpdate(StreamingInput in)
+	private Operation<CombinedHandler> readUpdate(StreamingInput in)
 		throws IOException
 	{
 		in.next(Token.VALUE);
@@ -86,11 +86,11 @@ public class CombinedOperationSerializer
 	}
 
 	@Override
-	public void write(Operation<CombinedTarget> object, String name, StreamingOutput out)
+	public void write(Operation<CombinedHandler> object, String name, StreamingOutput out)
 		throws IOException
 	{
 		out.writeListStart(name);
-		for(Operation<CombinedTarget> op : CompoundOperation.toList(object))
+		for(Operation<CombinedHandler> op : CompoundOperation.toList(object))
 		{
 			if(op instanceof Update)
 			{

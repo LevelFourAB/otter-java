@@ -1,7 +1,7 @@
 package se.l4.otter.operations.internal.string;
 
 import se.l4.otter.operations.Operation;
-import se.l4.otter.operations.string.StringOperationHandler;
+import se.l4.otter.operations.string.StringHandler;
 
 /**
  * Operation on a {@link String} where a number of characters are retained.
@@ -10,7 +10,7 @@ import se.l4.otter.operations.string.StringOperationHandler;
  *
  */
 public class StringRetain
-	implements Operation<StringOperationHandler>
+	implements Operation<StringHandler>
 {
 	private final int length;
 
@@ -25,13 +25,13 @@ public class StringRetain
 	}
 	
 	@Override
-	public void apply(StringOperationHandler target)
+	public void apply(StringHandler target)
 	{
 		target.retain(length);
 	}
 	
 	@Override
-	public Operation<StringOperationHandler> invert()
+	public Operation<StringHandler> invert()
 	{
 		return this;
 	}

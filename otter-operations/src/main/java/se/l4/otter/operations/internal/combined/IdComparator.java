@@ -3,7 +3,7 @@ package se.l4.otter.operations.internal.combined;
 import java.util.Comparator;
 
 import se.l4.otter.operations.Operation;
-import se.l4.otter.operations.combined.CombinedTarget;
+import se.l4.otter.operations.combined.CombinedHandler;
 
 /**
  * Comparator that sorts {@link CombinedOperation} by their identifier.
@@ -12,7 +12,7 @@ import se.l4.otter.operations.combined.CombinedTarget;
  *
  */
 public class IdComparator
-	implements Comparator<Operation<CombinedTarget>>
+	implements Comparator<Operation<CombinedHandler>>
 {
 	public static IdComparator INSTANCE = new IdComparator();
 	
@@ -21,7 +21,7 @@ public class IdComparator
 	}
 	
 	@Override
-	public int compare(Operation<CombinedTarget> o1, Operation<CombinedTarget> o2)
+	public int compare(Operation<CombinedHandler> o1, Operation<CombinedHandler> o2)
 	{
 		return ((CombinedOperation) o1).getId().compareTo(((CombinedOperation) o2).getId());
 	}

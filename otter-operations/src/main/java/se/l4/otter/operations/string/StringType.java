@@ -12,9 +12,9 @@ import se.l4.otter.operations.internal.string.StringTypeComposer;
 import se.l4.otter.operations.internal.string.StringTypeTransformer;
 
 public class StringType
-	implements OTType<Operation<StringOperationHandler>>
+	implements OTType<Operation<StringHandler>>
 {
-	private final Serializer<Operation<StringOperationHandler>> serializer;
+	private final Serializer<Operation<StringHandler>> serializer;
 	
 	public StringType()
 	{
@@ -22,7 +22,7 @@ public class StringType
 	}
 
 	@Override
-	public Operation<StringOperationHandler> compose(Operation<StringOperationHandler> op1, Operation<StringOperationHandler> op2)
+	public Operation<StringHandler> compose(Operation<StringHandler> op1, Operation<StringHandler> op2)
 	{
 		return compose(
 			CompoundOperation.toList(op1),
@@ -30,19 +30,19 @@ public class StringType
 		);
 	}
 	
-	private Operation<StringOperationHandler> compose(List<Operation<StringOperationHandler>> ops1, List<Operation<StringOperationHandler>> ops2)
+	private Operation<StringHandler> compose(List<Operation<StringHandler>> ops1, List<Operation<StringHandler>> ops2)
 	{
 		return new StringTypeComposer(ops1, ops2).perform();
 	}
 
 	@Override
-	public OperationPair<Operation<StringOperationHandler>> transform(Operation<StringOperationHandler> left, Operation<StringOperationHandler> right)
+	public OperationPair<Operation<StringHandler>> transform(Operation<StringHandler> left, Operation<StringHandler> right)
 	{
 		return new StringTypeTransformer(left, right).perform();
 	}
 	
 	@Override
-	public Serializer<Operation<StringOperationHandler>> getSerializer()
+	public Serializer<Operation<StringHandler>> getSerializer()
 	{
 		return serializer;
 	}

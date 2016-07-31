@@ -3,7 +3,7 @@ package se.l4.otter.operations.internal.map;
 import java.util.Map;
 
 import se.l4.otter.operations.Operation;
-import se.l4.otter.operations.map.MapOperationHandler;
+import se.l4.otter.operations.map.MapHandler;
 
 /**
  * Operation that sets a value in a {@link Map}.
@@ -42,7 +42,7 @@ public class MapSet
 	}
 	
 	@Override
-	public void apply(MapOperationHandler handler)
+	public void apply(MapHandler handler)
 	{
 		if(newValue == null)
 		{
@@ -55,7 +55,7 @@ public class MapSet
 	}
 	
 	@Override
-	public Operation<MapOperationHandler> invert()
+	public Operation<MapHandler> invert()
 	{
 		return new MapSet(key, newValue, oldValue);
 	}

@@ -1,7 +1,7 @@
 package se.l4.otter.operations.internal.string;
 
 import se.l4.otter.operations.Operation;
-import se.l4.otter.operations.string.StringOperationHandler;
+import se.l4.otter.operations.string.StringHandler;
 import se.l4.otter.operations.string.StringType;
 
 /**
@@ -184,7 +184,7 @@ public class StringOperationParser
 		builder.delete(chars);
 	}
 	
-	public Operation<StringOperationHandler> parse()
+	public Operation<StringHandler> parse()
 	{
 		while(readOperation())
 		{

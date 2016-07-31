@@ -34,11 +34,11 @@ public interface StringDelta<ReturnPath>
 	StringDelta<ReturnPath> retain(int count);
 	
 	/**
-	 * Get this delta as a {@link StringOperationHandler}.
+	 * Get this delta as a {@link StringHandler}.
 	 * 
 	 * @return
 	 */
-	StringOperationHandler asHandler();
+	StringHandler asHandler();
 	
 	/**
 	 * Indicate that we are done building this delta.
@@ -52,7 +52,7 @@ public interface StringDelta<ReturnPath>
 	 * 
 	 * @return
 	 */
-	static StringDelta<Operation<StringOperationHandler>> builder()
+	static StringDelta<Operation<StringHandler>> builder()
 	{
 		return new DefaultStringDelta<>(o -> o);
 	}

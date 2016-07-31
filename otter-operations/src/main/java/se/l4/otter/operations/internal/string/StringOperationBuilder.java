@@ -6,12 +6,12 @@ import java.util.List;
 import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.DefaultCompoundOperation;
 import se.l4.otter.operations.Operation;
-import se.l4.otter.operations.string.StringOperationHandler;
+import se.l4.otter.operations.string.StringHandler;
 
 public class StringOperationBuilder
-	implements StringOperationHandler
+	implements StringHandler
 {
-	private final List<Operation<StringOperationHandler>> operations;
+	private final List<Operation<StringHandler>> operations;
 	
 	public StringOperationBuilder()
 	{
@@ -29,7 +29,7 @@ public class StringOperationBuilder
 			 * before the delete. This makes transformation a bit easier
 			 * to deal with.
 			 */
-			Operation<StringOperationHandler> previous = operations.get(operations.size() - 1);
+			Operation<StringHandler> previous = operations.get(operations.size() - 1);
 			if(previous instanceof StringDelete)
 			{
 				operations.set(operations.size() - 1, new StringInsert(s));
@@ -53,7 +53,7 @@ public class StringOperationBuilder
 		operations.add(new StringRetain(count));
 	}
 
-	public CompoundOperation<StringOperationHandler> build()
+	public CompoundOperation<StringHandler> build()
 	{
 		return new DefaultCompoundOperation<>(operations);
 	}

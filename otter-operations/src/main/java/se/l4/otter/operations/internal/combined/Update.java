@@ -1,7 +1,7 @@
 package se.l4.otter.operations.internal.combined;
 
 import se.l4.otter.operations.Operation;
-import se.l4.otter.operations.combined.CombinedTarget;
+import se.l4.otter.operations.combined.CombinedHandler;
 
 public class Update
 	implements CombinedOperation
@@ -34,13 +34,13 @@ public class Update
 	}
 
 	@Override
-	public void apply(CombinedTarget target)
+	public void apply(CombinedHandler target)
 	{
 		target.update(id, type, operation);
 	}
 
 	@Override
-	public Operation<CombinedTarget> invert()
+	public Operation<CombinedHandler> invert()
 	{
 		return new Update(id, type, operation.invert());
 	}

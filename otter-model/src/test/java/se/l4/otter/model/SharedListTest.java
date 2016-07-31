@@ -12,11 +12,11 @@ import org.junit.Test;
 
 import se.l4.otter.engine.LocalOperationSync;
 import se.l4.otter.operations.Operation;
-import se.l4.otter.operations.combined.CombinedTarget;
+import se.l4.otter.operations.combined.CombinedHandler;
 
 public class SharedListTest
 {
-	private LocalOperationSync<Operation<CombinedTarget>> sync;
+	private LocalOperationSync<Operation<CombinedHandler>> sync;
 
 	@Before
 	public void before()

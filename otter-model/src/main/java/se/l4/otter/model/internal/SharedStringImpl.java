@@ -12,22 +12,22 @@ import se.l4.otter.model.spi.SharedObjectEditor;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationException;
 import se.l4.otter.operations.string.StringDelta;
-import se.l4.otter.operations.string.StringOperationHandler;
+import se.l4.otter.operations.string.StringHandler;
 
 public class SharedStringImpl
-	extends AbstractSharedObject<Operation<StringOperationHandler>>
+	extends AbstractSharedObject<Operation<StringHandler>>
 	implements SharedString
 {
 	private static final DiffMatchPatch DIFF = new DiffMatchPatch();
 	
 	private StringBuilder value;
 
-	public SharedStringImpl(SharedObjectEditor<Operation<StringOperationHandler>> editor)
+	public SharedStringImpl(SharedObjectEditor<Operation<StringHandler>> editor)
 	{
 		super(editor);
 		
 		value = new StringBuilder();
-		editor.getCurrent().apply(new StringOperationHandler()
+		editor.getCurrent().apply(new StringHandler()
 		{
 			@Override
 			public void retain(int count)
@@ -51,9 +51,9 @@ public class SharedStringImpl
 		editor.setOperationHandler(this::apply);
 	}
 	
-	private void apply(Operation<StringOperationHandler> op, boolean local)
+	private void apply(Operation<StringHandler> op, boolean local)
 	{
-		op.apply(new StringOperationHandler()
+		op.apply(new StringHandler()
 		{
 			int index = 0;
 			
@@ -96,7 +96,7 @@ public class SharedStringImpl
 				DIFF.diff_cleanupEfficiency(diffs);
 			}
 			
-			StringDelta<Operation<StringOperationHandler>> builder = StringDelta.builder();
+			StringDelta<Operation<StringHandler>> builder = StringDelta.builder();
 			for(Diff d : diffs)
 			{
 				switch(d.operation)

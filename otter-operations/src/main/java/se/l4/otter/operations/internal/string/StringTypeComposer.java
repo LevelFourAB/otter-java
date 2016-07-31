@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import se.l4.otter.operations.ComposeException;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.string.StringDelta;
-import se.l4.otter.operations.string.StringOperationHandler;
+import se.l4.otter.operations.string.StringHandler;
 import se.l4.otter.operations.string.StringType;
 import se.l4.otter.operations.util.MutableOperationIterator;
 
@@ -21,12 +21,12 @@ public class StringTypeComposer
 {
 	private static final Logger log = LoggerFactory.getLogger(StringTypeComposer.class);
 	
-	private final MutableOperationIterator<StringOperationHandler> left;
-	private final MutableOperationIterator<StringOperationHandler> right;
+	private final MutableOperationIterator<StringHandler> left;
+	private final MutableOperationIterator<StringHandler> right;
 
-	private final StringDelta<Operation<StringOperationHandler>> delta;
+	private final StringDelta<Operation<StringHandler>> delta;
 	
-	public StringTypeComposer(List<Operation<StringOperationHandler>> first, List<Operation<StringOperationHandler> >second)
+	public StringTypeComposer(List<Operation<StringHandler>> first, List<Operation<StringHandler> >second)
 	{
 		log.debug("Composing {} with {}", first, second);
 		
@@ -36,12 +36,12 @@ public class StringTypeComposer
 		right = new MutableOperationIterator<>(second);
 	}
 	
-	public Operation<StringOperationHandler> perform()
+	public Operation<StringHandler> perform()
 	{
 		while(left.hasNext() && right.hasNext())
 		{
-			Operation<StringOperationHandler> op1 = left.next();
-			Operation<StringOperationHandler> op2 = right.next();
+			Operation<StringHandler> op1 = left.next();
+			Operation<StringHandler> op2 = right.next();
 			
 			log.trace("  Compose {} with {}", op1, op2);
 			
@@ -67,15 +67,15 @@ public class StringTypeComposer
 		// Apply all of the remaining operations
 		while(right.hasNext())
 		{
-			Operation<StringOperationHandler> op = right.next();
+			Operation<StringHandler> op = right.next();
 			op.apply(delta.asHandler());
 		}
 		
 		return delta.done();
 	}
 
-	private void handleRetain(Operation<StringOperationHandler> op1,
-			Operation<StringOperationHandler> op2)
+	private void handleRetain(Operation<StringHandler> op1,
+			Operation<StringHandler> op2)
 	{
 		int length1 = ((StringRetain) op1).getLength();
 		
@@ -129,8 +129,8 @@ public class StringTypeComposer
 		}
 	}
 
-	private void handleInsert(Operation<StringOperationHandler> op1,
-			Operation<StringOperationHandler> op2)
+	private void handleInsert(Operation<StringHandler> op1,
+			Operation<StringHandler> op2)
 	{
 		String value1 = ((StringInsert) op1).getValue();
 		int length1 = value1.length();
@@ -200,7 +200,7 @@ public class StringTypeComposer
 		}
 	}
 	
-	private void handleDelete(Operation<StringOperationHandler> op1, Operation<StringOperationHandler> op2)
+	private void handleDelete(Operation<StringHandler> op1, Operation<StringHandler> op2)
 	{
 		String value1 = ((StringDelete) op1).getValue();
 		

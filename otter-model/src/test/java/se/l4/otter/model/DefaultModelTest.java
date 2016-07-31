@@ -17,7 +17,7 @@ import se.l4.otter.engine.InMemoryOperationHistory;
 import se.l4.otter.engine.LocalOperationSync;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.combined.CombinedDelta;
-import se.l4.otter.operations.combined.CombinedTarget;
+import se.l4.otter.operations.combined.CombinedHandler;
 import se.l4.otter.operations.combined.CombinedType;
 import se.l4.otter.operations.combined.CombinedTypeBuilder;
 
@@ -26,8 +26,8 @@ public class DefaultModelTest
 	private static final CombinedType TYPE = new CombinedTypeBuilder()
 		.build();
 	
-	private DefaultEditorControl<Operation<CombinedTarget>> control;
-	private LocalOperationSync<Operation<CombinedTarget>> sync;
+	private DefaultEditorControl<Operation<CombinedHandler>> control;
+	private LocalOperationSync<Operation<CombinedHandler>> sync;
 
 	@Before
 	public void setupEditor()
@@ -45,7 +45,7 @@ public class DefaultModelTest
 		sync.close();
 	}
 	
-	private Editor<Operation<CombinedTarget>> editor(String id)
+	private Editor<Operation<CombinedHandler>> editor(String id)
 	{
 		return new DefaultEditor<>(id, sync);
 	}

@@ -5,7 +5,7 @@ import se.l4.otter.lock.CloseableLock;
 import se.l4.otter.model.internal.DefaultModelBuilder;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.combined.CombinedDelta;
-import se.l4.otter.operations.combined.CombinedTarget;
+import se.l4.otter.operations.combined.CombinedHandler;
 
 public interface Model
 	extends SharedMap
@@ -45,7 +45,7 @@ public interface Model
 	 * 
 	 * @return
 	 */
-	static Operation<CombinedTarget> getInitialModel()
+	static Operation<CombinedHandler> getInitialModel()
 	{
 		return CombinedDelta.builder()
 			.done();
@@ -75,7 +75,7 @@ public interface Model
 	 *   the editor to use for receiving and performing changes
 	 * @return
 	 */
-	static ModelBuilder builder(Editor<Operation<CombinedTarget>> editor)
+	static ModelBuilder builder(Editor<Operation<CombinedHandler>> editor)
 	{
 		return new DefaultModelBuilder(editor);
 	}

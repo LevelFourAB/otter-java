@@ -9,7 +9,7 @@ import se.l4.commons.serialization.format.StreamingOutput;
 import se.l4.commons.serialization.format.Token;
 import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.Operation;
-import se.l4.otter.operations.string.StringOperationHandler;
+import se.l4.otter.operations.string.StringHandler;
 import se.l4.otter.operations.string.StringType;
 
 /**
@@ -20,10 +20,10 @@ import se.l4.otter.operations.string.StringType;
  *
  */
 public class StringOperationSerializer
-	implements Serializer<Operation<StringOperationHandler>>
+	implements Serializer<Operation<StringHandler>>
 {
 	@Override
-	public Operation<StringOperationHandler> read(StreamingInput in)
+	public Operation<StringHandler> read(StreamingInput in)
 		throws IOException
 	{
 		in.next(Token.VALUE);
@@ -31,11 +31,11 @@ public class StringOperationSerializer
 	}
 	
 	@Override
-	public void write(Operation<StringOperationHandler> object, String name, StreamingOutput stream)
+	public void write(Operation<StringHandler> object, String name, StreamingOutput stream)
 		throws IOException
 	{
 		StringBuilder builder = new StringBuilder();
-		for(Operation<StringOperationHandler> op : CompoundOperation.toList(object))
+		for(Operation<StringHandler> op : CompoundOperation.toList(object))
 		{
 			if(op instanceof StringRetain)
 			{

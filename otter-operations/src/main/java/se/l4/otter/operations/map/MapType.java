@@ -27,16 +27,16 @@ import se.l4.otter.operations.util.MutableOperationIterator;
  *
  */
 public class MapType
-	implements OTType<Operation<MapOperationHandler>>
+	implements OTType<Operation<MapHandler>>
 {
 	@Override
-	public Operation<MapOperationHandler> compose(Operation<MapOperationHandler> left, Operation<MapOperationHandler> right)
+	public Operation<MapHandler> compose(Operation<MapHandler> left, Operation<MapHandler> right)
 	{
 		MapKeyComparator comparator = MapKeyComparator.INSTANCE;
-		MutableOperationIterator<MapOperationHandler> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left, comparator));
-		MutableOperationIterator<MapOperationHandler> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right, comparator));
+		MutableOperationIterator<MapHandler> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left, comparator));
+		MutableOperationIterator<MapHandler> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right, comparator));
 		
-		List<Operation<MapOperationHandler>> result = new ArrayList<>();
+		List<Operation<MapHandler>> result = new ArrayList<>();
 		while(it1.hasNext())
 		{
 			MapOperation op1 = (MapOperation) it1.next();
@@ -90,7 +90,7 @@ public class MapType
 		
 		while(it2.hasNext())
 		{
-			Operation<MapOperationHandler> op = it2.next();
+			Operation<MapHandler> op = it2.next();
 			result.add(op);
 		}
 		
@@ -99,14 +99,14 @@ public class MapType
 	}
 
 	@Override
-	public OperationPair<Operation<MapOperationHandler>> transform(Operation<MapOperationHandler> left, Operation<MapOperationHandler> right)
+	public OperationPair<Operation<MapHandler>> transform(Operation<MapHandler> left, Operation<MapHandler> right)
 	{
 		MapKeyComparator comparator = MapKeyComparator.INSTANCE;
-		MutableOperationIterator<MapOperationHandler> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left, comparator));
-		MutableOperationIterator<MapOperationHandler> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right, comparator));
+		MutableOperationIterator<MapHandler> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left, comparator));
+		MutableOperationIterator<MapHandler> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right, comparator));
 
-		List<Operation<MapOperationHandler>> deltaLeft = new ArrayList<>();
-		List<Operation<MapOperationHandler>> deltaRight = new ArrayList<>();
+		List<Operation<MapHandler>> deltaLeft = new ArrayList<>();
+		List<Operation<MapHandler>> deltaRight = new ArrayList<>();
 		
 		while(it1.hasNext())
 		{
@@ -160,18 +160,18 @@ public class MapType
 		
 		while(it2.hasNext())
 		{
-			Operation<MapOperationHandler> op = it2.next();
+			Operation<MapHandler> op = it2.next();
 			deltaRight.add(op);
 		}
 		
-		return new OperationPair<Operation<MapOperationHandler>>(
+		return new OperationPair<Operation<MapHandler>>(
 			new DefaultCompoundOperation<>(deltaLeft),
 			new DefaultCompoundOperation<>(deltaRight)
 		);
 	}
 
 	@Override
-	public Serializer<Operation<MapOperationHandler>> getSerializer()
+	public Serializer<Operation<MapHandler>> getSerializer()
 	{
 		return MapOperationSerializer.INSTANCE;
 	}

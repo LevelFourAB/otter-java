@@ -60,12 +60,12 @@ public class MapTransformTest
 	}
 	
 	
-	private static Operation<MapOperationHandler> set(String key, Object oldValue, Object newValue)
+	private static Operation<MapHandler> set(String key, Object oldValue, Object newValue)
 	{
 		return new MapSet(key, oldValue, newValue);
 	}
 	
-	private static CompoundOperation<MapOperationHandler> of(Operation<MapOperationHandler>... ops)
+	private static CompoundOperation<MapHandler> of(Operation<MapHandler>... ops)
 	{
 		return new DefaultCompoundOperation<>(Arrays.asList(ops));
 	}

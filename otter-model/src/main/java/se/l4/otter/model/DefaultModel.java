@@ -16,7 +16,7 @@ import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationException;
 import se.l4.otter.operations.combined.CombinedDelta;
-import se.l4.otter.operations.combined.CombinedTarget;
+import se.l4.otter.operations.combined.CombinedHandler;
 import se.l4.otter.operations.combined.CombinedType;
 
 /**
@@ -29,7 +29,7 @@ import se.l4.otter.operations.combined.CombinedType;
 public class DefaultModel
 	implements Model
 {
-	private final Editor<Operation<CombinedTarget>> editor;
+	private final Editor<Operation<CombinedHandler>> editor;
 	private final CombinedType otType;
 	private final Map<String, SharedObjectFactory<?, ?>> types;
 	
@@ -48,7 +48,7 @@ public class DefaultModel
 	 * @param editor
 	 * @param types 
 	 */
-	public DefaultModel(Editor<Operation<CombinedTarget>> editor, Map<String, SharedObjectFactory<?, ?>> types)
+	public DefaultModel(Editor<Operation<CombinedHandler>> editor, Map<String, SharedObjectFactory<?, ?>> types)
 	{
 		this.editor = editor;
 		this.types = types;
@@ -60,15 +60,15 @@ public class DefaultModel
 		objects = new HashMap<>();
 		values = new HashMap<>();
 		
-		CombinedTarget handler = createHandler();
+		CombinedHandler handler = createHandler();
 		
 		try(CloseableLock lock = editor.lock())
 		{
 			editor.getCurrent().apply(handler);
-			editor.addListener(new EditorListener<Operation<CombinedTarget>>()
+			editor.addListener(new EditorListener<Operation<CombinedHandler>>()
 			{
 				@Override
-				public void editorChanged(ChangeEvent<Operation<CombinedTarget>> event)
+				public void editorChanged(ChangeEvent<Operation<CombinedHandler>> event)
 				{
 					if(event.isRemote())
 					{
@@ -100,9 +100,9 @@ public class DefaultModel
 		return "map";
 	}
 	
-	private CombinedTarget createHandler()
+	private CombinedHandler createHandler()
 	{
-		return new CombinedTarget()
+		return new CombinedHandler()
 		{
 			@Override
 			public void update(String id, String type, Operation<?> change)

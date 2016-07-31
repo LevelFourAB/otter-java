@@ -141,14 +141,14 @@ public class StringTransformTest
 		);
 	}
 
-	private static Operation<StringOperationHandler> retain(int i)
+	private static Operation<StringHandler> retain(int i)
 	{
 		return StringDelta.builder()
 			.retain(i)
 			.done();
 	}
 
-	public static Operation<StringOperationHandler> insert(int size, int location, String characters)
+	public static Operation<StringHandler> insert(int size, int location, String characters)
 	{
 		return StringDelta.builder()
 			.retain(location)
@@ -157,7 +157,7 @@ public class StringTransformTest
 			.done();
 	}
 	
-	public static Operation<StringOperationHandler> delete(int size, int location, String characters)
+	public static Operation<StringHandler> delete(int size, int location, String characters)
 	{
 		return StringDelta.builder()
 			.retain(location)
@@ -166,18 +166,18 @@ public class StringTransformTest
 			.done();
 	}
 	
-	private void test(Operation<StringOperationHandler> left, Operation<StringOperationHandler> right,
-			Operation<StringOperationHandler> expectedLeft, Operation<StringOperationHandler> expectedRight)
+	private void test(Operation<StringHandler> left, Operation<StringHandler> right,
+			Operation<StringHandler> expectedLeft, Operation<StringHandler> expectedRight)
 	{
 		StringType type = new StringType();
 		
-		OperationPair<Operation<StringOperationHandler>> op = type.transform(left, right);
+		OperationPair<Operation<StringHandler>> op = type.transform(left, right);
 		assertThat("left", op.getLeft(), is(expectedLeft));
 		assertThat("right", op.getRight(), is(expectedRight));
 	}
 	
-	private void reversibleTest(Operation<StringOperationHandler> client, Operation<StringOperationHandler> server,
-			Operation<StringOperationHandler> expectedClient, Operation<StringOperationHandler> expectedServer)
+	private void reversibleTest(Operation<StringHandler> client, Operation<StringHandler> server,
+			Operation<StringHandler> expectedClient, Operation<StringHandler> expectedServer)
 	{
 		test(client, server, expectedClient, expectedServer);
 		test(server, client, expectedServer, expectedClient);

@@ -84,7 +84,7 @@ public class LocalOperationSync<Op extends Operation<?>>
 			
 			try
 			{
-				Thread.sleep(50);
+				Thread.sleep(100);
 			}
 			catch(InterruptedException e)
 			{

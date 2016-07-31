@@ -23,21 +23,21 @@ public class CombinedComposeTest
 	@Test
 	public void testSimpleCompose()
 	{
-		Operation<CombinedTarget> op1 = CombinedDelta.builder()
+		Operation<CombinedHandler> op1 = CombinedDelta.builder()
 			.update("1", "map", MapDelta.builder()
 				.set("one", null, "abc")
 				.done()
 			)
 			.done();
 		
-		Operation<CombinedTarget> op2 = CombinedDelta.builder()
+		Operation<CombinedHandler> op2 = CombinedDelta.builder()
 			.update("1", "map", MapDelta.builder()
 				.set("one", null, "def")
 				.done()
 			)
 			.done();
 		
-		Operation<CombinedTarget> r = type.compose(op1, op2);
+		Operation<CombinedHandler> r = type.compose(op1, op2);
 		assertThat(r, is(CombinedDelta.builder()
 			.update("1", "map", MapDelta.builder()
 				.set("one", null, "def")
@@ -50,7 +50,7 @@ public class CombinedComposeTest
 	@Test
 	public void testComposeSeveral()
 	{
-		Operation<CombinedTarget> op1 = CombinedDelta.builder()
+		Operation<CombinedHandler> op1 = CombinedDelta.builder()
 			.update("1", "map", MapDelta.builder()
 				.set("one", null, "abc")
 				.done()
@@ -61,14 +61,14 @@ public class CombinedComposeTest
 			)
 			.done();
 		
-		Operation<CombinedTarget> op2 = CombinedDelta.builder()
+		Operation<CombinedHandler> op2 = CombinedDelta.builder()
 			.update("1", "map", MapDelta.builder()
 				.set("one", null, "def")
 				.done()
 			)
 			.done();
 		
-		Operation<CombinedTarget> r = type.compose(op1, op2);
+		Operation<CombinedHandler> r = type.compose(op1, op2);
 		assertThat(r, is(CombinedDelta.builder()
 			.update("1", "map", MapDelta.builder()
 				.set("one", null, "def")

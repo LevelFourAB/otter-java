@@ -8,7 +8,7 @@ import java.util.Map;
  * @author Andreas Holstenson
  *
  */
-public interface MapOperationHandler
+public interface MapHandler
 {
 	/**
 	 * Set the key to the given value.
@@ -34,10 +34,10 @@ public interface MapOperationHandler
 	 * @return
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	static MapOperationHandler over(Map<String, ?> map)
+	static MapHandler over(Map<String, ?> map)
 	{
 		Map m = (Map) map;
-		return new MapOperationHandler()
+		return new MapHandler()
 		{
 			@Override
 			public void put(String key, Object oldValue, Object value)

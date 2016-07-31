@@ -8,12 +8,12 @@ import org.junit.Test;
 
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.string.StringDelta;
-import se.l4.otter.operations.string.StringOperationHandler;
+import se.l4.otter.operations.string.StringHandler;
 import se.l4.otter.operations.string.StringType;
 
 public class DefaultEditorControlTest
 {
-	private EditorControl<Operation<StringOperationHandler>> control;
+	private EditorControl<Operation<StringHandler>> control;
 
 	@Before
 	public void setupEditorControl()
@@ -29,7 +29,7 @@ public class DefaultEditorControlTest
 	@Test
 	public void testGetLatest()
 	{
-		TaggedOperation<Operation<StringOperationHandler>> latest = control.getLatest();
+		TaggedOperation<Operation<StringHandler>> latest = control.getLatest();
 		assertThat(latest.getOperation(), is(StringDelta.builder()
 			.insert("Hello World")
 			.done()
@@ -47,7 +47,7 @@ public class DefaultEditorControlTest
 			.done()
 		);
 		
-		TaggedOperation<Operation<StringOperationHandler>> latest = control.getLatest();
+		TaggedOperation<Operation<StringHandler>> latest = control.getLatest();
 		assertThat(latest.getOperation(), is(StringDelta.builder()
 			.insert("Hello Cookie")
 			.done()
@@ -71,7 +71,7 @@ public class DefaultEditorControlTest
 			.done()
 		);
 		
-		TaggedOperation<Operation<StringOperationHandler>> latest = control.getLatest();
+		TaggedOperation<Operation<StringHandler>> latest = control.getLatest();
 		assertThat(latest.getOperation(), is(StringDelta.builder()
 			.insert("Hello Cookie!")
 			.done()

@@ -6,7 +6,7 @@ package se.l4.otter.operations.string;
  * @author Andreas Holstenson
  *
  */
-public interface StringOperationHandler
+public interface StringHandler
 {
 	/**
 	 * Insert characters.

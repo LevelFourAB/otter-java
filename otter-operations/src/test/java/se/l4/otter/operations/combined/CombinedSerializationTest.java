@@ -59,15 +59,15 @@ public class CombinedSerializationTest
 		);
 	}
 	
-	private void test(Operation<CombinedTarget> op)
+	private void test(Operation<CombinedHandler> op)
 	{
-		Serializer<Operation<CombinedTarget>> serializer = TYPE.getSerializer();
+		Serializer<Operation<CombinedHandler>> serializer = TYPE.getSerializer();
 		SerializerTestHelper.testSymmetry(serializer, op);
 	}
 	
-	private void test(String json, Operation<CombinedTarget> op)
+	private void test(String json, Operation<CombinedHandler> op)
 	{
-		Serializer<Operation<CombinedTarget>> serializer = TYPE.getSerializer();
+		Serializer<Operation<CombinedHandler>> serializer = TYPE.getSerializer();
 		SerializerTestHelper.testStatic(json, serializer, op);
 	}
 }

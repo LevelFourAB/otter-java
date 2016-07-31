@@ -30,17 +30,17 @@ public class StringSerializationTest
 		);
 	}
 	
-	private void test(Operation<StringOperationHandler> op)
+	private void test(Operation<StringHandler> op)
 	{
 		StringType type = new StringType();
-		Serializer<Operation<StringOperationHandler>> serializer = type.getSerializer();
+		Serializer<Operation<StringHandler>> serializer = type.getSerializer();
 		SerializerTestHelper.testSymmetry(serializer, op);
 	}
 	
-	private void test(String json, Operation<StringOperationHandler> op)
+	private void test(String json, Operation<StringHandler> op)
 	{
 		StringType type = new StringType();
-		Serializer<Operation<StringOperationHandler>> serializer = type.getSerializer();
+		Serializer<Operation<StringHandler>> serializer = type.getSerializer();
 		SerializerTestHelper.testStatic(json, serializer, op);
 	}
 }

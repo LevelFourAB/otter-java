@@ -6,7 +6,7 @@ import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.internal.map.MapOperation;
 
 public class MapKeyComparator
-	implements Comparator<Operation<MapOperationHandler>>
+	implements Comparator<Operation<MapHandler>>
 {
 	public static MapKeyComparator INSTANCE = new MapKeyComparator();
 	
@@ -15,7 +15,7 @@ public class MapKeyComparator
 	}
 	
 	@Override
-	public int compare(Operation<MapOperationHandler> o1, Operation<MapOperationHandler> o2)
+	public int compare(Operation<MapHandler> o1, Operation<MapHandler> o2)
 	{
 		return ((MapOperation) o1).getKey().compareTo(((MapOperation) o2).getKey());
 	}

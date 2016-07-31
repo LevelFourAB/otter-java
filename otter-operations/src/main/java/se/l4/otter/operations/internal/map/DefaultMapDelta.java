@@ -11,7 +11,7 @@ import se.l4.otter.operations.DefaultCompoundOperation;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationException;
 import se.l4.otter.operations.map.MapDelta;
-import se.l4.otter.operations.map.MapOperationHandler;
+import se.l4.otter.operations.map.MapHandler;
 
 /**
  * Default implementation of {@link MapDelta}. Supports multiple {@link #set(String, Object, Object)}
@@ -25,10 +25,10 @@ import se.l4.otter.operations.map.MapOperationHandler;
 public class DefaultMapDelta<ReturnPath>
 	implements MapDelta<ReturnPath>
 {
-	private final Function<Operation<MapOperationHandler>, ReturnPath> resultHandler;
+	private final Function<Operation<MapHandler>, ReturnPath> resultHandler;
 	private final Map<String, ValuePair> changes;
 
-	public DefaultMapDelta(Function<Operation<MapOperationHandler>, ReturnPath> resultHandler)
+	public DefaultMapDelta(Function<Operation<MapHandler>, ReturnPath> resultHandler)
 	{
 		this.resultHandler = resultHandler;
 		
@@ -58,7 +58,7 @@ public class DefaultMapDelta<ReturnPath>
 	@Override
 	public ReturnPath done()
 	{
-		List<Operation<MapOperationHandler>> operations = new ArrayList<>();
+		List<Operation<MapHandler>> operations = new ArrayList<>();
 		for(Map.Entry<String, ValuePair> e : changes.entrySet())
 		{
 			operations.add(new MapSet(e.getKey(), e.getValue().oldValue, e.getValue().newValue));

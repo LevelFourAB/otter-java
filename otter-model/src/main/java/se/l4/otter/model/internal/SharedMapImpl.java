@@ -11,18 +11,18 @@ import se.l4.otter.model.spi.DataValues;
 import se.l4.otter.model.spi.SharedObjectEditor;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.map.MapDelta;
-import se.l4.otter.operations.map.MapOperationHandler;
+import se.l4.otter.operations.map.MapHandler;
 
 public class SharedMapImpl
-	extends AbstractSharedObject<Operation<MapOperationHandler>>
+	extends AbstractSharedObject<Operation<MapHandler>>
 	implements SharedMap
 {
 	private final Map<String, Object> values;
 	
-	private final MapOperationHandler handler;
+	private final MapHandler handler;
 	private final EventHelper<Listener> changeListeners;
 
-	public SharedMapImpl(SharedObjectEditor<Operation<MapOperationHandler>> editor)
+	public SharedMapImpl(SharedObjectEditor<Operation<MapHandler>> editor)
 	{
 		super(editor);
 		
@@ -35,9 +35,9 @@ public class SharedMapImpl
 		editor.setOperationHandler(this::apply);
 	}
 	
-	private MapOperationHandler createHandler()
+	private MapHandler createHandler()
 	{
-		return new MapOperationHandler()
+		return new MapHandler()
 		{
 			@Override
 			public void remove(String key, Object oldValue)
@@ -62,7 +62,7 @@ public class SharedMapImpl
 		};
 	}
 	
-	private void apply(Operation<MapOperationHandler> op, boolean local)
+	private void apply(Operation<MapHandler> op, boolean local)
 	{
 		op.apply(handler);
 	}

@@ -13,20 +13,20 @@ import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.DefaultCompoundOperation;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationException;
-import se.l4.otter.operations.map.MapOperationHandler;
+import se.l4.otter.operations.map.MapHandler;
 
 public class MapOperationSerializer
-	implements Serializer<Operation<MapOperationHandler>>
+	implements Serializer<Operation<MapHandler>>
 {
 	public static final MapOperationSerializer INSTANCE = new MapOperationSerializer();
 	
 	@Override
-	public Operation<MapOperationHandler> read(StreamingInput in)
+	public Operation<MapHandler> read(StreamingInput in)
 		throws IOException
 	{
 		in.next(Token.LIST_START);
 		
-		List<Operation<MapOperationHandler>> ops = new ArrayList<>();
+		List<Operation<MapHandler>> ops = new ArrayList<>();
 		
 		while(in.peek() != Token.LIST_END)
 		{
@@ -99,11 +99,11 @@ public class MapOperationSerializer
 	}
 
 	@Override
-	public void write(Operation<MapOperationHandler> object, String name, StreamingOutput out)
+	public void write(Operation<MapHandler> object, String name, StreamingOutput out)
 		throws IOException
 	{
 		out.writeListStart(name);
-		for(Operation<MapOperationHandler> op : CompoundOperation.toList(object))
+		for(Operation<MapHandler> op : CompoundOperation.toList(object))
 		{
 			if(op instanceof MapSet)
 			{

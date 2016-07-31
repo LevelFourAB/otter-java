@@ -4,7 +4,7 @@ import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationPair;
 import se.l4.otter.operations.TransformException;
 import se.l4.otter.operations.string.StringDelta;
-import se.l4.otter.operations.string.StringOperationHandler;
+import se.l4.otter.operations.string.StringHandler;
 import se.l4.otter.operations.string.StringType;
 import se.l4.otter.operations.util.MutableOperationIterator;
 
@@ -16,13 +16,13 @@ import se.l4.otter.operations.util.MutableOperationIterator;
  */
 public class StringTypeTransformer
 {
-	private final MutableOperationIterator<StringOperationHandler> left;
-	private final MutableOperationIterator<StringOperationHandler> right;
+	private final MutableOperationIterator<StringHandler> left;
+	private final MutableOperationIterator<StringHandler> right;
 	
-	private final StringDelta<Operation<StringOperationHandler>> deltaLeft;
-	private final StringDelta<Operation<StringOperationHandler>> deltaRight;
+	private final StringDelta<Operation<StringHandler>> deltaLeft;
+	private final StringDelta<Operation<StringHandler>> deltaRight;
 
-	public StringTypeTransformer(Operation<StringOperationHandler> left, Operation<StringOperationHandler> right)
+	public StringTypeTransformer(Operation<StringHandler> left, Operation<StringHandler> right)
 	{
 		this.left = new MutableOperationIterator<>(left);
 		this.right = new MutableOperationIterator<>(right);
@@ -31,15 +31,15 @@ public class StringTypeTransformer
 		deltaRight = StringDelta.builder();
 	}
 	
-	public OperationPair<Operation<StringOperationHandler>> perform()
+	public OperationPair<Operation<StringHandler>> perform()
 	{
 		while(left.hasNext())
 		{
-			Operation<StringOperationHandler> op1 = left.next();
+			Operation<StringHandler> op1 = left.next();
 				
 			if(right.hasNext())
 			{
-				Operation<StringOperationHandler> op2 = right.next();
+				Operation<StringHandler> op2 = right.next();
 				
 				if(op1 instanceof StringRetain)
 				{
@@ -75,7 +75,7 @@ public class StringTypeTransformer
 		
 		while(right.hasNext())
 		{
-			Operation<StringOperationHandler> op2 = right.next();
+			Operation<StringHandler> op2 = right.next();
 			if(op2 instanceof StringInsert)
 			{
 				String value2 = ((StringInsert) op2).getValue();
@@ -91,7 +91,7 @@ public class StringTypeTransformer
 		return new OperationPair<>(deltaLeft.done(), deltaRight.done());
 	}
 
-	private void handleRetain(Operation<StringOperationHandler> op1, Operation<StringOperationHandler> op2)
+	private void handleRetain(Operation<StringHandler> op1, Operation<StringHandler> op2)
 	{
 		int length1 = ((StringRetain) op1).getLength();
 		if(op2 instanceof StringRetain)
@@ -174,7 +174,7 @@ public class StringTypeTransformer
 		}
 	}
 	
-	private void handleInsert(Operation<StringOperationHandler> op1, Operation<StringOperationHandler> op2)
+	private void handleInsert(Operation<StringHandler> op1, Operation<StringHandler> op2)
 	{
 		String value1 = ((StringInsert) op1).getValue();
 		int length1 = value1.length();
@@ -185,7 +185,7 @@ public class StringTypeTransformer
 		right.back();
 	}
 
-	private void handleDelete(Operation<StringOperationHandler> op1, Operation<StringOperationHandler> op2)
+	private void handleDelete(Operation<StringHandler> op1, Operation<StringHandler> op2)
 	{
 		String value1 = ((StringDelete) op1).getValue();
 		int length1 = value1.length();

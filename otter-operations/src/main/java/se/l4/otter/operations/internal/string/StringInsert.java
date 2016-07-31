@@ -1,7 +1,7 @@
 package se.l4.otter.operations.internal.string;
 
 import se.l4.otter.operations.Operation;
-import se.l4.otter.operations.string.StringOperationHandler;
+import se.l4.otter.operations.string.StringHandler;
 
 /**
  * Operation on a {@link String} where some characters are inserted into the
@@ -11,7 +11,7 @@ import se.l4.otter.operations.string.StringOperationHandler;
  *
  */
 public class StringInsert
-	implements Operation<StringOperationHandler>
+	implements Operation<StringHandler>
 {
 	private final String value;
 
@@ -26,13 +26,13 @@ public class StringInsert
 	}
 	
 	@Override
-	public void apply(StringOperationHandler target)
+	public void apply(StringHandler target)
 	{
 		target.insert(value);
 	}
 	
 	@Override
-	public Operation<StringOperationHandler> invert()
+	public Operation<StringHandler> invert()
 	{
 		return new StringDelete(value);
 	}

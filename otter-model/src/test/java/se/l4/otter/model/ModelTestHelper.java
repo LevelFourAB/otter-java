@@ -9,7 +9,7 @@ import se.l4.otter.engine.LocalOperationSync;
 import se.l4.otter.engine.OperationSync;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.combined.CombinedDelta;
-import se.l4.otter.operations.combined.CombinedTarget;
+import se.l4.otter.operations.combined.CombinedHandler;
 import se.l4.otter.operations.combined.CombinedType;
 import se.l4.otter.operations.combined.CombinedTypeBuilder;
 
@@ -20,15 +20,15 @@ public class ModelTestHelper
 	
 	private static final AtomicInteger EDITOR = new AtomicInteger();
 		
-	public static LocalOperationSync<Operation<CombinedTarget>> createSync()
+	public static LocalOperationSync<Operation<CombinedHandler>> createSync()
 	{
-		DefaultEditorControl<Operation<CombinedTarget>> control = new DefaultEditorControl<>(
+		DefaultEditorControl<Operation<CombinedHandler>> control = new DefaultEditorControl<>(
 			new InMemoryOperationHistory<>(TYPE, CombinedDelta.builder().done()
 		));
 		return new LocalOperationSync<>(control);
 	}
 	
-	public static Model createModel(OperationSync<Operation<CombinedTarget>> sync)
+	public static Model createModel(OperationSync<Operation<CombinedHandler>> sync)
 	{
 		return Model.builder(new DefaultEditor<>("e" + EDITOR.incrementAndGet(), sync)).build();
 	}

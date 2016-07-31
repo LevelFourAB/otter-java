@@ -14,17 +14,17 @@ public class StringComposeTest
 	@Test
 	public void testCompose1()
 	{
-		Operation<StringOperationHandler> op1 = StringDelta.builder()
+		Operation<StringHandler> op1 = StringDelta.builder()
 			.insert("Hello World")
 			.done();
 		
-		Operation<StringOperationHandler> op2 = StringDelta.builder()
+		Operation<StringHandler> op2 = StringDelta.builder()
 			.retain(6)
 			.delete("World")
 			.insert("Cookies")
 			.done();
 		
-		Operation<StringOperationHandler> r = compose(op1, op2);
+		Operation<StringHandler> r = compose(op1, op2);
 		
 		assertThat(r, is(StringDelta.builder()
 			.insert("Hello Cookies")
@@ -35,18 +35,18 @@ public class StringComposeTest
 	@Test
 	public void testCompose2()
 	{
-		Operation<StringOperationHandler> op1 = StringDelta.builder()
+		Operation<StringHandler> op1 = StringDelta.builder()
 			.retain(6)
 			.insert("World")
 			.done();
 		
-		Operation<StringOperationHandler> op2 = StringDelta.builder()
+		Operation<StringHandler> op2 = StringDelta.builder()
 			.retain(6)
 			.delete("World")
 			.insert("Cookies")
 			.done();
 		
-		Operation<StringOperationHandler> r = compose(op1, op2);
+		Operation<StringHandler> r = compose(op1, op2);
 		
 		assertThat(r, is(StringDelta.builder()
 			.retain(6)
@@ -58,12 +58,12 @@ public class StringComposeTest
 	@Test
 	public void testCompose3()
 	{
-		Operation<StringOperationHandler> op1 = StringDelta.builder()
+		Operation<StringHandler> op1 = StringDelta.builder()
 			.retain(6)
 			.insert("World")
 			.done();
 		
-		Operation<StringOperationHandler> op2 = StringDelta.builder()
+		Operation<StringHandler> op2 = StringDelta.builder()
 			.retain(6)
 			.retain(1)
 			.delete("orld")
@@ -71,7 +71,7 @@ public class StringComposeTest
 			.insert("Cookies")
 			.done();
 		
-		Operation<StringOperationHandler> r = compose(op1, op2);
+		Operation<StringHandler> r = compose(op1, op2);
 		
 		assertThat(r, is(StringDelta.builder()
 			.retain(6)
@@ -84,16 +84,16 @@ public class StringComposeTest
 	@Test
 	public void testCompose4()
 	{
-		Operation<StringOperationHandler> op1 = StringDelta.builder()
+		Operation<StringHandler> op1 = StringDelta.builder()
 			.insert("Hello ")
 			.retain(5)
 			.done();
 		
-		Operation<StringOperationHandler> op2 = StringDelta.builder()
+		Operation<StringHandler> op2 = StringDelta.builder()
 			.retain(11)
 			.done();
 		
-		Operation<StringOperationHandler> r = compose(op1, op2);
+		Operation<StringHandler> r = compose(op1, op2);
 		
 		assertThat(r, is(StringDelta.builder()
 			.insert("Hello ")
@@ -105,17 +105,17 @@ public class StringComposeTest
 	@Test
 	public void testCompose5()
 	{
-		Operation<StringOperationHandler> op1 = StringDelta.builder()
+		Operation<StringHandler> op1 = StringDelta.builder()
 			.delete("Hello ")
 			.retain(5)
 			.done();
 		
-		Operation<StringOperationHandler> op2 = StringDelta.builder()
+		Operation<StringHandler> op2 = StringDelta.builder()
 			.insert("Cookie ")
 			.retain(5)
 			.done();
 		
-		Operation<StringOperationHandler> r = compose(op1, op2);
+		Operation<StringHandler> r = compose(op1, op2);
 		
 		assertThat(r, is(StringDelta.builder()
 			.delete("Hello ")
@@ -128,19 +128,19 @@ public class StringComposeTest
 	@Test
 	public void testCompose6()
 	{
-		Operation<StringOperationHandler> op1 = StringDelta.builder()
+		Operation<StringHandler> op1 = StringDelta.builder()
 			.insert("Cookie ")
 			.retain(5)
 			.done();
 		
-		Operation<StringOperationHandler> op2 = StringDelta.builder()
+		Operation<StringHandler> op2 = StringDelta.builder()
 			.delete("Cookie")
 			.retain(5)
 			.done();
 		
 		try
 		{
-			Operation<StringOperationHandler> o = compose(op1, op2);
+			Operation<StringHandler> o = compose(op1, op2);
 			fail("Should not be composable, but got " + o);
 		}
 		catch(ComposeException e)
@@ -151,17 +151,17 @@ public class StringComposeTest
 	@Test
 	public void testCompose7()
 	{
-		Operation<StringOperationHandler> op1 = StringDelta.builder()
+		Operation<StringHandler> op1 = StringDelta.builder()
 			.insert("Hello Cookie")
 			.done();
 		
-		Operation<StringOperationHandler> op2 = StringDelta.builder()
+		Operation<StringHandler> op2 = StringDelta.builder()
 			.retain(6)
 			.insert("!")
 			.retain(6)
 			.done();
 		
-		Operation<StringOperationHandler> r = compose(op1, op2);
+		Operation<StringHandler> r = compose(op1, op2);
 		
 		assertThat(r, is(StringDelta.builder()
 			.insert("Hello !Cookie")
@@ -172,17 +172,17 @@ public class StringComposeTest
 	@Test
 	public void testCompose8()
 	{
-		Operation<StringOperationHandler> op1 = StringDelta.builder()
+		Operation<StringHandler> op1 = StringDelta.builder()
 			.retain(6)
 			.insert("!")
 			.done();
 		
-		Operation<StringOperationHandler> op2 = StringDelta.builder()
+		Operation<StringHandler> op2 = StringDelta.builder()
 			.insert("Cookie")
 			.retain(7)
 			.done();
 		
-		Operation<StringOperationHandler> r = compose(op1, op2);
+		Operation<StringHandler> r = compose(op1, op2);
 		
 		assertThat(r, is(StringDelta.builder()
 			.insert("Cookie")
@@ -195,18 +195,18 @@ public class StringComposeTest
 	@Test
 	public void testCompose9()
 	{
-		Operation<StringOperationHandler> op1 = StringDelta.builder()
+		Operation<StringHandler> op1 = StringDelta.builder()
 			.insert("Hello World!")
 			.done();
 		
-		Operation<StringOperationHandler> op2 = StringDelta.builder()
+		Operation<StringHandler> op2 = StringDelta.builder()
 			.retain(6)
 			.delete("World")
 			.insert("Cookies")
 			.retain(1)
 			.done();
 		
-		Operation<StringOperationHandler> r = compose(op1, op2);
+		Operation<StringHandler> r = compose(op1, op2);
 		
 		assertThat(r, is(StringDelta.builder()
 			.insert("Hello Cookies!")
@@ -214,8 +214,8 @@ public class StringComposeTest
 		));
 	}
 	
-	private Operation<StringOperationHandler> compose(Operation<StringOperationHandler> op1,
-			Operation<StringOperationHandler> op2)
+	private Operation<StringHandler> compose(Operation<StringHandler> op1,
+			Operation<StringHandler> op2)
 	{
 		StringType helper = new StringType();
 		return helper.compose(op1, op2);

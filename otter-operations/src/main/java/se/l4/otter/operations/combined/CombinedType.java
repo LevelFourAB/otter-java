@@ -27,7 +27,7 @@ import se.l4.otter.operations.util.MutableOperationIterator;
  *
  */
 public class CombinedType
-	implements OTType<Operation<CombinedTarget>>
+	implements OTType<Operation<CombinedHandler>>
 {
 	private final Map<String, OTType<Operation<?>>> types;
 	private final CombinedOperationSerializer serializer;
@@ -45,13 +45,13 @@ public class CombinedType
 	}
 	
 	@Override
-	public Operation<CombinedTarget> compose(Operation<CombinedTarget> left, Operation<CombinedTarget> right)
+	public Operation<CombinedHandler> compose(Operation<CombinedHandler> left, Operation<CombinedHandler> right)
 	{
 		IdComparator comparator = IdComparator.INSTANCE;
-		MutableOperationIterator<CombinedTarget> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left, comparator));
-		MutableOperationIterator<CombinedTarget> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right, comparator));
+		MutableOperationIterator<CombinedHandler> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left, comparator));
+		MutableOperationIterator<CombinedHandler> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right, comparator));
 		
-		List<Operation<CombinedTarget>> result = new ArrayList<>();
+		List<Operation<CombinedHandler>> result = new ArrayList<>();
 		while(it1.hasNext())
 		{
 			CombinedOperation op1 = (CombinedOperation) it1.next();
@@ -117,7 +117,7 @@ public class CombinedType
 		
 		while(it2.hasNext())
 		{
-			Operation<CombinedTarget> op = it2.next();
+			Operation<CombinedHandler> op = it2.next();
 			result.add(op);
 		}
 		
@@ -126,14 +126,14 @@ public class CombinedType
 	}
 	
 	@Override
-	public OperationPair<Operation<CombinedTarget>> transform(Operation<CombinedTarget> left, Operation<CombinedTarget> right)
+	public OperationPair<Operation<CombinedHandler>> transform(Operation<CombinedHandler> left, Operation<CombinedHandler> right)
 	{
 		IdComparator comparator = IdComparator.INSTANCE;
-		MutableOperationIterator<CombinedTarget> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left, comparator));
-		MutableOperationIterator<CombinedTarget> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right, comparator));
+		MutableOperationIterator<CombinedHandler> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left, comparator));
+		MutableOperationIterator<CombinedHandler> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right, comparator));
 		
-		List<Operation<CombinedTarget>> deltaLeft = new ArrayList<>();
-		List<Operation<CombinedTarget>> deltaRight = new ArrayList<>();
+		List<Operation<CombinedHandler>> deltaLeft = new ArrayList<>();
+		List<Operation<CombinedHandler>> deltaRight = new ArrayList<>();
 		
 		while(it1.hasNext())
 		{
@@ -201,7 +201,7 @@ public class CombinedType
 		
 		while(it2.hasNext())
 		{
-			Operation<CombinedTarget> op = it2.next();
+			Operation<CombinedHandler> op = it2.next();
 			deltaRight.add(op);
 		}
 		
@@ -212,7 +212,7 @@ public class CombinedType
 	}
 	
 	@Override
-	public Serializer<Operation<CombinedTarget>> getSerializer()
+	public Serializer<Operation<CombinedHandler>> getSerializer()
 	{
 		return serializer;
 	}

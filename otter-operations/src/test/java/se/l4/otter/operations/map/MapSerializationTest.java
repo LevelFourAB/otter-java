@@ -56,17 +56,17 @@ public class MapSerializationTest
 		);
 	}
 	
-	private void test(Operation<MapOperationHandler> op)
+	private void test(Operation<MapHandler> op)
 	{
 		MapType type = new MapType();
-		Serializer<Operation<MapOperationHandler>> serializer = type.getSerializer();
+		Serializer<Operation<MapHandler>> serializer = type.getSerializer();
 		SerializerTestHelper.testSymmetry(serializer, op);
 	}
 	
-	private void test(String json, Operation<MapOperationHandler> op)
+	private void test(String json, Operation<MapHandler> op)
 	{
 		MapType type = new MapType();
-		Serializer<Operation<MapOperationHandler>> serializer = type.getSerializer();
+		Serializer<Operation<MapHandler>> serializer = type.getSerializer();
 		SerializerTestHelper.testStatic(json, serializer, op);
 	}
 }

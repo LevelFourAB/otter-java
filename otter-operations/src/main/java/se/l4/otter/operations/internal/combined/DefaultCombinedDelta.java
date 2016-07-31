@@ -10,15 +10,15 @@ import se.l4.otter.operations.DefaultCompoundOperation;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationException;
 import se.l4.otter.operations.combined.CombinedDelta;
-import se.l4.otter.operations.combined.CombinedTarget;
+import se.l4.otter.operations.combined.CombinedHandler;
 
 public class DefaultCombinedDelta<ReturnPath>
 	implements CombinedDelta<ReturnPath>
 {
-	private final Function<Operation<CombinedTarget>, ReturnPath> resultHandler;
-	private final Map<String, Operation<CombinedTarget>> ops;
+	private final Function<Operation<CombinedHandler>, ReturnPath> resultHandler;
+	private final Map<String, Operation<CombinedHandler>> ops;
 	
-	public DefaultCombinedDelta(Function<Operation<CombinedTarget>, ReturnPath> resultHandler)
+	public DefaultCombinedDelta(Function<Operation<CombinedHandler>, ReturnPath> resultHandler)
 	{
 		this.resultHandler = resultHandler;
 		
