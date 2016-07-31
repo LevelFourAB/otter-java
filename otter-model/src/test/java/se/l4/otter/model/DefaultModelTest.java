@@ -97,7 +97,8 @@ public class DefaultModelTest
 		m1.set("key", "value");
 		sync.waitForEmpty();
 		
-		assertThat(b.get(), is("value"));
+		assertThat("set value", m2.get("key"), is("value"));
+		assertThat("event value", b.get(), is("value"));
 	}
 	
 	@Test

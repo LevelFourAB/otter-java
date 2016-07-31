@@ -17,20 +17,24 @@ public class SharedObjectEditorImpl<Op extends Operation<?>>
 	private final Supplier<Op> supplier;
 	private final Consumer<Op> applier;
 	private final DefaultModel model;
-	private se.l4.otter.model.spi.SharedObjectEditor.OperationHandler<Op> handler;
+	private final Consumer<Runnable> eventQueuer;
+	
+	private OperationHandler<Op> handler;
 
 	public SharedObjectEditorImpl(
 			DefaultModel model,
 			String id,
 			String type,
 			Supplier<Op> supplier,
-			Consumer<Op> applier)
+			Consumer<Op> applier,
+			Consumer<Runnable> eventQueuer)
 	{
 		this.model = model;
 		this.id = id;
 		this.type = type;
 		this.supplier = supplier;
 		this.applier = applier;
+		this.eventQueuer = eventQueuer;
 	}
 	
 	@Override
@@ -85,6 +89,6 @@ public class SharedObjectEditorImpl<Op extends Operation<?>>
 	@Override
 	public void queueEvent(Runnable runnable)
 	{
-		
+		eventQueuer.accept(runnable);
 	}
 }

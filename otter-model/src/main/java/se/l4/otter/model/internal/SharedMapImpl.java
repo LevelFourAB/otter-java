@@ -43,8 +43,9 @@ public class SharedMapImpl
 			public void remove(String key, Object oldValue)
 			{
 				Object old = values.remove(key);
-				
-				editor.queueEvent(() -> changeListeners.trigger(l -> l.valueRemoved(key, old)));
+				editor.queueEvent(() -> changeListeners.trigger(l -> 
+					l.valueRemoved(key, old)
+				));
 			}
 			
 			@Override
@@ -52,7 +53,11 @@ public class SharedMapImpl
 			{
 				Object value = DataValues.fromData(editor, newValue);
 				Object old = values.put(key, value);
-				editor.queueEvent(() -> changeListeners.trigger(l -> l.valueChanged(key, old, value)));
+				editor.queueEvent(() ->
+					changeListeners.trigger(l -> 
+						l.valueChanged(key, old, value)
+					)
+				);
 			}
 		};
 	}

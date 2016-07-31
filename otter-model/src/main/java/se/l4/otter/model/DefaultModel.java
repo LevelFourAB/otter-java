@@ -1,6 +1,8 @@
 package se.l4.otter.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import se.l4.otter.engine.Editor;
@@ -39,6 +41,8 @@ public class DefaultModel
 	private int latestId;
 	private final SharedMap root;
 	
+	private final List<Runnable> queuedEvents;
+	
 	/**
 	 * Create a new model over the given editor.
 	 * 
@@ -49,23 +53,36 @@ public class DefaultModel
 		this.editor = editor;
 		this.otType = (CombinedType) editor.getType();
 		
+		queuedEvents = new ArrayList<>();
+		
 		editors = new HashMap<>();
 		objects = new HashMap<>();
 		values = new HashMap<>();
 		
 		CombinedTarget handler = createHandler();
-		editor.getCurrent().apply(handler);
-		editor.addListener(new EditorListener<Operation<CombinedTarget>>()
+		
+		try(CloseableLock lock = editor.lock())
 		{
-			@Override
-			public void editorChanged(ChangeEvent<Operation<CombinedTarget>> event)
+			editor.getCurrent().apply(handler);
+			editor.addListener(new EditorListener<Operation<CombinedTarget>>()
 			{
-				if(event.isRemote())
+				@Override
+				public void editorChanged(ChangeEvent<Operation<CombinedTarget>> event)
 				{
-					event.getOperation().apply(handler);
+					if(event.isRemote())
+					{
+						try(CloseableLock lock = lock())
+						{
+							/*
+							 * Perform operation in a lock to ensure that events
+							 * are triggered after the apply has finished.
+							 */
+							event.getOperation().apply(handler);
+						}
+					}
 				}
-			}
-		});
+			});
+		}
 		
 		root = (SharedMap) getObject("root", "map");
 	}
@@ -138,7 +155,32 @@ public class DefaultModel
 	@Override
 	public CloseableLock lock()
 	{
-		return editor.lock();
+		CloseableLock lock = editor.lock();
+		return new CloseableLock()
+		{
+			@Override
+			public void close()
+			{
+				try
+				{
+					try
+					{
+						for(Runnable r : queuedEvents)
+						{
+							r.run();
+						}
+					}
+					finally
+					{
+						queuedEvents.clear();
+					}
+				}
+				finally
+				{
+					lock.close();
+				}
+			}
+		};
 	}
 	
 	/**
@@ -157,7 +199,8 @@ public class DefaultModel
 			id,
 			type,
 			() -> (Op) values.get(id),
-			op -> apply(id, type, op)
+			op -> apply(id, type, op),
+			queuedEvents::add
 		);
 		
 		editors.put(id, editor);
