@@ -1,6 +1,8 @@
 package se.l4.otter.model;
 
+import se.l4.otter.engine.Editor;
 import se.l4.otter.lock.CloseableLock;
+import se.l4.otter.model.internal.DefaultModelBuilder;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.combined.CombinedDelta;
 import se.l4.otter.operations.combined.CombinedTarget;
@@ -30,6 +32,15 @@ public interface Model
 	<T> SharedList<T> newList();
 	
 	/**
+	 * Create a new object of the given type.
+	 * 
+	 * @param type
+	 * @param type
+	 * @return
+	 */
+	<T extends SharedObject> T newObject(String type, Class<T> objectType);
+	
+	/**
 	 * Get the intitial operation that a new model represents.
 	 * 
 	 * @return
@@ -56,4 +67,16 @@ public interface Model
 	 * @return
 	 */
 	CloseableLock lock();
+	
+	/**
+	 * Start building a new model using the given editor.
+	 * 
+	 * @param editor
+	 *   the editor to use for receiving and performing changes
+	 * @return
+	 */
+	static ModelBuilder builder(Editor<Operation<CombinedTarget>> editor)
+	{
+		return new DefaultModelBuilder(editor);
+	}
 }

@@ -52,7 +52,7 @@ public class DefaultModelTest
 	
 	private Model model(String id)
 	{
-		return new DefaultModel(editor(id));
+		return Model.builder(editor(id)).build();
 	}
 	
 	@Test

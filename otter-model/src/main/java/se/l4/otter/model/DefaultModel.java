@@ -9,11 +9,9 @@ import se.l4.otter.engine.Editor;
 import se.l4.otter.engine.EditorListener;
 import se.l4.otter.engine.events.ChangeEvent;
 import se.l4.otter.lock.CloseableLock;
-import se.l4.otter.model.internal.SharedListImpl;
-import se.l4.otter.model.internal.SharedMapImpl;
 import se.l4.otter.model.internal.SharedObjectEditorImpl;
-import se.l4.otter.model.internal.SharedStringImpl;
 import se.l4.otter.model.spi.SharedObjectEditor;
+import se.l4.otter.model.spi.SharedObjectFactory;
 import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationException;
@@ -33,6 +31,7 @@ public class DefaultModel
 {
 	private final Editor<Operation<CombinedTarget>> editor;
 	private final CombinedType otType;
+	private final Map<String, SharedObjectFactory<?, ?>> types;
 	
 	private final Map<String, SharedObjectEditorImpl> editors;
 	private final Map<String, SharedObject> objects;
@@ -47,10 +46,12 @@ public class DefaultModel
 	 * Create a new model over the given editor.
 	 * 
 	 * @param editor
+	 * @param types 
 	 */
-	public DefaultModel(Editor<Operation<CombinedTarget>> editor)
+	public DefaultModel(Editor<Operation<CombinedTarget>> editor, Map<String, SharedObjectFactory<?, ?>> types)
 	{
 		this.editor = editor;
+		this.types = types;
 		this.otType = (CombinedType) editor.getType();
 		
 		queuedEvents = new ArrayList<>();
@@ -222,17 +223,13 @@ public class DefaultModel
 	
 	private SharedObject createObject(String id, String type)
 	{
-		switch(type)
+		SharedObjectFactory<?, ?> factory = types.get(type);
+		if(factory == null)
 		{
-			case "string":
-				return new SharedStringImpl(create(id, type));
-			case "map":
-				return new SharedMapImpl(create(id, type));
-			case "list":
-				return new SharedListImpl<>(create(id, type));
-			default:
-				throw new OperationException("Unknown type: " + type);
+			throw new OperationException("Unknown type: " + type);
 		}
+		
+		return factory.create(create(id, type));
 	}
 	
 	private <T extends SharedObject> T initObject(String type)
@@ -266,6 +263,12 @@ public class DefaultModel
 	public <T> SharedList<T> newList()
 	{
 		return initObject("list");
+	}
+	
+	@Override
+	public <T extends SharedObject> T newObject(String type, Class<T> objectType)
+	{
+		return initObject(type);
 	}
 	
 	@Override

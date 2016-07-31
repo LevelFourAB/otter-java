@@ -30,6 +30,6 @@ public class ModelTestHelper
 	
 	public static Model createModel(OperationSync<Operation<CombinedTarget>> sync)
 	{
-		return new DefaultModel(new DefaultEditor<>("e" + EDITOR.incrementAndGet(), sync));
+		return Model.builder(new DefaultEditor<>("e" + EDITOR.incrementAndGet(), sync)).build();
 	}
 }
