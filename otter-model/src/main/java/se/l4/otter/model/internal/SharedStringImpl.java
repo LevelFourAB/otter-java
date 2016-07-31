@@ -5,8 +5,9 @@ import java.util.LinkedList;
 import com.sksamuel.diffpatch.DiffMatchPatch;
 import com.sksamuel.diffpatch.DiffMatchPatch.Diff;
 
+import se.l4.otter.lock.CloseableLock;
 import se.l4.otter.model.SharedString;
-import se.l4.otter.model.spi.HasApply;
+import se.l4.otter.model.spi.AbstractSharedObject;
 import se.l4.otter.model.spi.SharedObjectEditor;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationException;
@@ -14,16 +15,16 @@ import se.l4.otter.operations.string.StringDelta;
 import se.l4.otter.operations.string.StringOperationHandler;
 
 public class SharedStringImpl
-	implements SharedString, HasApply<Operation<StringOperationHandler>>
+	extends AbstractSharedObject<Operation<StringOperationHandler>>
+	implements SharedString
 {
 	private static final DiffMatchPatch DIFF = new DiffMatchPatch();
 	
-	private final SharedObjectEditor<Operation<StringOperationHandler>> editor;
 	private StringBuilder value;
 
 	public SharedStringImpl(SharedObjectEditor<Operation<StringOperationHandler>> editor)
 	{
-		this.editor = editor;
+		super(editor);
 		
 		value = new StringBuilder();
 		editor.getCurrent().apply(new StringOperationHandler()
@@ -46,10 +47,11 @@ public class SharedStringImpl
 				throw new OperationException("Latest value invalid, must only contain inserts.");
 			}
 		});
+		
+		editor.setOperationHandler(this::apply);
 	}
 	
-	@Override
-	public void apply(Operation<StringOperationHandler> op)
+	private void apply(Operation<StringOperationHandler> op, boolean local)
 	{
 		op.apply(new StringOperationHandler()
 		{
@@ -77,18 +79,6 @@ public class SharedStringImpl
 	}
 	
 	@Override
-	public String getObjectId()
-	{
-		return editor.getId();
-	}
-	
-	@Override
-	public String getObjectType()
-	{
-		return editor.getType();
-	}
-	
-	@Override
 	public String get()
 	{
 		return value.toString();
@@ -97,74 +87,82 @@ public class SharedStringImpl
 	@Override
 	public void set(String newValue)
 	{
-		LinkedList<Diff> diffs = DIFF.diff_main(value.toString(), newValue);
-		if(diffs.size() > 2)
+		try(CloseableLock lock = editor.lock())
 		{
-			DIFF.diff_cleanupSemantic(diffs);
-			DIFF.diff_cleanupEfficiency(diffs);
-		}
-		
-		StringDelta<Operation<StringOperationHandler>> builder = StringDelta.builder();
-		for(Diff d : diffs)
-		{
-			switch(d.operation)
+			LinkedList<Diff> diffs = DIFF.diff_main(value.toString(), newValue);
+			if(diffs.size() > 2)
 			{
-				case EQUAL:
-					builder.retain(d.text.length());
-					break;
-				case DELETE:
-					builder.delete(d.text);
-					break;
-				case INSERT:
-					builder.insert(d.text);
-					break;
+				DIFF.diff_cleanupSemantic(diffs);
+				DIFF.diff_cleanupEfficiency(diffs);
 			}
+			
+			StringDelta<Operation<StringOperationHandler>> builder = StringDelta.builder();
+			for(Diff d : diffs)
+			{
+				switch(d.operation)
+				{
+					case EQUAL:
+						builder.retain(d.text.length());
+						break;
+					case DELETE:
+						builder.delete(d.text);
+						break;
+					case INSERT:
+						builder.insert(d.text);
+						break;
+				}
+			}
+			
+			editor.apply(builder.done());
 		}
-		
-		this.value.setLength(0);
-		this.value.append(newValue);
-		editor.send(builder.done());
 	}
 	
 	@Override
 	public void append(String value)
 	{
-		int length = this.value.length();
-		this.value.append(value);
-		
-		editor.send(StringDelta.builder()
-			.retain(length)
-			.insert(value)
-			.done()
-		);
+		try(CloseableLock lock = editor.lock())
+		{
+			int length = this.value.length();
+			
+			editor.apply(StringDelta.builder()
+				.retain(length)
+				.insert(value)
+				.done()
+			);
+		}
 	}
 	
 	@Override
 	public void insert(int idx, String value)
 	{
-		int length = this.value.length();
-		this.value.insert(idx, value);
-		
-		editor.send(StringDelta.builder()
-			.retain(idx)
-			.insert(value)
-			.retain(length - idx)
-			.done()
-		);
+		try(CloseableLock lock = editor.lock())
+		{
+			int length = this.value.length();
+			this.value.insert(idx, value);
+			
+			editor.apply(StringDelta.builder()
+				.retain(idx)
+				.insert(value)
+				.retain(length - idx)
+				.done()
+			);
+		}
 	}
 	
 	@Override
 	public void remove(int fromIndex, int toIndex)
 	{
-		int length = this.value.length();
-		String deleted = this.value.substring(fromIndex, toIndex);
-		this.value.delete(fromIndex, toIndex);
-		
-		editor.send(StringDelta.builder()
-			.retain(fromIndex)
-			.delete(deleted)
-			.retain(length - toIndex)
-			.done()
-		);
+		try(CloseableLock lock = editor.lock())
+		{
+			int length = this.value.length();
+			String deleted = this.value.substring(fromIndex, toIndex);
+			
+			editor.apply(StringDelta.builder()
+				.retain(fromIndex)
+				.delete(deleted)
+				.retain(length - toIndex)
+				.done()
+			);
+		}
 	}
 }

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.l4.otter.lock.CloseableLock;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.string.StringDelta;
 import se.l4.otter.operations.string.StringOperationHandler;
@@ -317,6 +318,38 @@ public class DefaultEditorTest
 		
 		assertThat(e2.getCurrent(), is(StringDelta.builder()
 			.insert("abdcHello World")
+			.done()
+		));
+	}
+	
+	@Test
+	public void testLock1()
+	{
+		Editor<Operation<StringOperationHandler>> e1 = editor("1");
+		Editor<Operation<StringOperationHandler>> e2 = editor("2");
+		
+		try(CloseableLock lock = e1.lock())
+		{
+			e1.apply(StringDelta.builder()
+				.retain(6)
+				.delete("World")
+				.insert("Cookies")
+				.done()
+			);
+			
+			// This should lock everything if e1 would actually send the event
+			sync.waitForEmpty();
+			
+			assertThat(e2.getCurrent(), is(StringDelta.builder()
+				.insert("Hello World")
+				.done()
+			));
+		}
+		
+		sync.waitForEmpty();
+		
+		assertThat(e2.getCurrent(), is(StringDelta.builder()
+			.insert("Hello Cookies")
 			.done()
 		));
 	}

@@ -3,6 +3,7 @@ package se.l4.otter.model.internal;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import se.l4.otter.lock.CloseableLock;
 import se.l4.otter.model.DefaultModel;
 import se.l4.otter.model.SharedObject;
 import se.l4.otter.model.spi.SharedObjectEditor;
@@ -16,6 +17,7 @@ public class SharedObjectEditorImpl<Op extends Operation<?>>
 	private final Supplier<Op> supplier;
 	private final Consumer<Op> applier;
 	private final DefaultModel model;
+	private se.l4.otter.model.spi.SharedObjectEditor.OperationHandler<Op> handler;
 
 	public SharedObjectEditorImpl(
 			DefaultModel model,
@@ -50,14 +52,39 @@ public class SharedObjectEditorImpl<Op extends Operation<?>>
 	}
 	
 	@Override
-	public void send(Op op)
+	public CloseableLock lock()
+	{
+		return model.lock();
+	}
+	
+	@Override
+	public void apply(Op op)
 	{
 		applier.accept(op);
+	}
+	
+	public void operationApplied(Op op, boolean local)
+	{
+		if(handler == null) return;
+		
+		handler.newOperation(op, local);
 	}
 	
 	@Override
 	public SharedObject getObject(String id, String type)
 	{
 		return model.getObject(id, type);
+	}
+	
+	@Override
+	public void setOperationHandler(OperationHandler<Op> handler)
+	{
+		this.handler = handler;
+	}
+	
+	@Override
+	public void queueEvent(Runnable runnable)
+	{
+		
 	}
 }

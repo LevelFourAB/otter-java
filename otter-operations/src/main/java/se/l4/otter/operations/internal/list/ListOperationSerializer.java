@@ -8,11 +8,11 @@ import se.l4.commons.serialization.Serializer;
 import se.l4.commons.serialization.format.StreamingInput;
 import se.l4.commons.serialization.format.StreamingOutput;
 import se.l4.commons.serialization.format.Token;
+import se.l4.otter.data.DataSerializer;
 import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.DefaultCompoundOperation;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationException;
-import se.l4.otter.operations.data.DataSerializer;
 import se.l4.otter.operations.list.ListHandler;
 
 public class ListOperationSerializer

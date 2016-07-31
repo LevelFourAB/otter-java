@@ -21,6 +21,7 @@
 	</properties>
 
 	<modules>
+		<module>otter-common</module>
 		<module>otter-operations</module>
 
 		<module>otter-engine</module>

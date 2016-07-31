@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import se.l4.otter.engine.Editor;
+import se.l4.otter.engine.EditorListener;
+import se.l4.otter.engine.events.ChangeEvent;
+import se.l4.otter.lock.CloseableLock;
 import se.l4.otter.model.internal.SharedListImpl;
 import se.l4.otter.model.internal.SharedMapImpl;
 import se.l4.otter.model.internal.SharedObjectEditorImpl;
 import se.l4.otter.model.internal.SharedStringImpl;
-import se.l4.otter.model.spi.HasApply;
 import se.l4.otter.model.spi.SharedObjectEditor;
 import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.Operation;
@@ -30,12 +32,13 @@ public class DefaultModel
 	private final Editor<Operation<CombinedTarget>> editor;
 	private final CombinedType otType;
 	
+	private final Map<String, SharedObjectEditorImpl> editors;
 	private final Map<String, SharedObject> objects;
 	private final Map<String, Operation<?>> values;
 	
 	private int latestId;
 	private final SharedMap root;
-
+	
 	/**
 	 * Create a new model over the given editor.
 	 * 
@@ -46,12 +49,23 @@ public class DefaultModel
 		this.editor = editor;
 		this.otType = (CombinedType) editor.getType();
 		
+		editors = new HashMap<>();
 		objects = new HashMap<>();
 		values = new HashMap<>();
 		
 		CombinedTarget handler = createHandler();
 		editor.getCurrent().apply(handler);
-		editor.addChangeListener(op -> op.apply(handler));
+		editor.addListener(new EditorListener<Operation<CombinedTarget>>()
+		{
+			@Override
+			public void editorChanged(ChangeEvent<Operation<CombinedTarget>> event)
+			{
+				if(event.isRemote())
+				{
+					event.getOperation().apply(handler);
+				}
+			}
+		});
 		
 		root = (SharedMap) getObject("root", "map");
 	}
@@ -81,8 +95,8 @@ public class DefaultModel
 					Operation<?> composed = otType.compose(type, current, change);
 					values.put(id, composed);
 					
-					SharedObject object = objects.get(id);
-					((HasApply) object).apply(change);
+					SharedObjectEditorImpl editor = editors.get(id);
+					editor.operationApplied(change, false);
 				}
 				else
 				{
@@ -97,8 +111,7 @@ public class DefaultModel
 	
 	private void apply(String id, String type, Operation<?> op)
 	{
-		// TODO: Support for combining related operations when requested
-		
+		SharedObjectEditorImpl objectEditor = editors.get(id);
 		if(values.containsKey(id))
 		{
 			Operation<?> current = values.get(id);
@@ -115,6 +128,17 @@ public class DefaultModel
 				.update(id, type, op)
 				.done()
 		);
+		
+		if(objectEditor != null)
+		{
+			objectEditor.operationApplied(op, false);
+		}
+	}
+	
+	@Override
+	public CloseableLock lock()
+	{
+		return editor.lock();
 	}
 	
 	/**
@@ -128,13 +152,16 @@ public class DefaultModel
 	@SuppressWarnings("unchecked")
 	private <Op extends Operation<?>> SharedObjectEditor<Op> create(String id, String type)
 	{
-		return new SharedObjectEditorImpl<>(
+		SharedObjectEditorImpl<Op> editor = new SharedObjectEditorImpl<>(
 			this,
 			id,
 			type,
 			() -> (Op) values.get(id),
 			op -> apply(id, type, op)
 		);
+		
+		editors.put(id, editor);
+		return editor;
 	}
 	
 	public SharedObject getObject(String id, String type)

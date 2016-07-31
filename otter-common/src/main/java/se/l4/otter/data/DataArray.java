@@ -1,4 +1,4 @@
-package se.l4.otter.operations.data;
+package se.l4.otter.data;
 
 import java.util.ArrayList;
 

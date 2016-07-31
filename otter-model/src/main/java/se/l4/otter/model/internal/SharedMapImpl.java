@@ -3,21 +3,20 @@ package se.l4.otter.model.internal;
 import java.util.HashMap;
 import java.util.Map;
 
+import se.l4.otter.EventHelper;
+import se.l4.otter.lock.CloseableLock;
 import se.l4.otter.model.SharedMap;
-import se.l4.otter.model.SharedObject;
-import se.l4.otter.model.spi.EventHelper;
-import se.l4.otter.model.spi.HasApply;
+import se.l4.otter.model.spi.AbstractSharedObject;
+import se.l4.otter.model.spi.DataValues;
 import se.l4.otter.model.spi.SharedObjectEditor;
 import se.l4.otter.operations.Operation;
-import se.l4.otter.operations.OperationException;
-import se.l4.otter.operations.data.DataArray;
 import se.l4.otter.operations.map.MapDelta;
 import se.l4.otter.operations.map.MapOperationHandler;
 
 public class SharedMapImpl
-	implements SharedMap, HasApply<Operation<MapOperationHandler>>
+	extends AbstractSharedObject<Operation<MapOperationHandler>>
+	implements SharedMap
 {
-	private final SharedObjectEditor<Operation<MapOperationHandler>> editor;
 	private final Map<String, Object> values;
 	
 	private final MapOperationHandler handler;
@@ -25,7 +24,7 @@ public class SharedMapImpl
 
 	public SharedMapImpl(SharedObjectEditor<Operation<MapOperationHandler>> editor)
 	{
-		this.editor = editor;
+		super(editor);
 		
 		values = new HashMap<>();
 		
@@ -33,6 +32,7 @@ public class SharedMapImpl
 		handler = createHandler();
 		
 		editor.getCurrent().apply(handler);
+		editor.setOperationHandler(this::apply);
 	}
 	
 	private MapOperationHandler createHandler()
@@ -43,39 +43,21 @@ public class SharedMapImpl
 			public void remove(String key, Object oldValue)
 			{
 				Object old = values.remove(key);
-				changeListeners.trigger(l -> l.valueRemoved(key, old));
+				
+				editor.queueEvent(() -> changeListeners.trigger(l -> l.valueRemoved(key, old)));
 			}
 			
 			@Override
 			public void put(String key, Object oldValue, Object newValue)
 			{
-				DataArray array = (DataArray) newValue;
-				String type = (String) array.get(0);
-				
-				Object value;
-				switch(type)
-				{
-					case "ref":
-						value = editor.getObject(
-							(String) array.get(1),
-							(String) array.get(2)
-						);
-						break;
-					case "value":
-						value = array.get(1);
-						break;
-					default:
-						throw new OperationException("Value of shared map " + editor.getId() + " has unknown type of value");
-				}
-				
+				Object value = DataValues.fromData(editor, newValue);
 				Object old = values.put(key, value);
-				changeListeners.trigger(l -> l.valueChanged(key, old, value));
+				editor.queueEvent(() -> changeListeners.trigger(l -> l.valueChanged(key, old, value)));
 			}
 		};
 	}
 	
-	@Override
-	public void apply(Operation<MapOperationHandler> op)
+	private void apply(Operation<MapOperationHandler> op, boolean local)
 	{
 		op.apply(handler);
 	}
@@ -105,34 +87,14 @@ public class SharedMapImpl
 		return (T) values.get(key);
 	}
 	
-	private Object toValue(Object value)
-	{
-		DataArray result = new DataArray();
-		if(value instanceof SharedObject)
-		{
-			result.add("ref");
-			result.add(((SharedObject) value).getObjectId());
-			result.add(((SharedObject) value).getObjectType());
-		}
-		else
-		{
-			// TODO: Better value validation
-			
-			result.add("value");
-			result.add(value);
-		}
-		
-		return result;
-	}
-	
 	@Override
 	public void remove(String key)
 	{
-		Object value = values.remove(key);
-		if(value != null)
+		try(CloseableLock lock = editor.lock())
 		{
-			editor.send(MapDelta.builder()
-				.set(key, toValue(value), null)
+			Object value = values.get(key);
+			editor.apply(MapDelta.builder()
+				.set(key, DataValues.toData(value), null)
 				.done()
 			);
 		}
@@ -146,11 +108,14 @@ public class SharedMapImpl
 			throw new IllegalArgumentException("null values are currently not supported");
 		}
 		
-		Object old = values.put(key, value);
-		editor.send(MapDelta.builder()
-			.set(key, toValue(old), toValue(value))
-			.done()
-		);
+		try(CloseableLock lock = editor.lock())
+		{
+			Object old = values.get(key);
+			editor.apply(MapDelta.builder()
+				.set(key, DataValues.toData(old), DataValues.toData(value))
+				.done()
+			);
+		}
 	}
 	
 	@Override

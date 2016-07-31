@@ -11,16 +11,16 @@
 		<relativePath>..</relativePath>
 	</parent>
 	
-	<artifactId>otter-operations</artifactId>
+	<artifactId>otter-common</artifactId>
 	<name>${project.artifactId}</name>
 	
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>otter-common</artifactId>
-			<version>${project.version}</version>
+			<groupId>se.l4.commons</groupId>
+			<artifactId>commons-main</artifactId>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>

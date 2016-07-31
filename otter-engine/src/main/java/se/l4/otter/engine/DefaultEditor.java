@@ -1,14 +1,26 @@
 package se.l4.otter.engine;
 
-import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
+import se.l4.otter.EventHelper;
+import se.l4.otter.engine.events.ChangeEvent;
+import se.l4.otter.lock.CloseableLock;
 import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationPair;
 
+/**
+ * Default implementation of {@link Editor}. This editor uses an instance
+ * of {@link OperationSync} to synchronize with a central server. It also
+ * requires a unique session id that is used to identify when its changes
+ * have been accepted by the server.
+ * 
+ * @author Andreas Holstenson
+ *
+ * @param <Op>
+ */
 public class DefaultEditor<Op extends Operation<?>>
 	implements Editor<Op>
 {
@@ -27,7 +39,8 @@ public class DefaultEditor<Op extends Operation<?>>
 	private final OperationSync<Op> sync;
 	private final Lock lock;
 	
-	private Consumer<Op>[] listeners;
+	private final EventHelper<EditorListener<Op>> listeners;
+	
 	private State state;
 	
 	private long parentHistoryId;
@@ -38,17 +51,38 @@ public class DefaultEditor<Op extends Operation<?>>
 
 	private Op current;
 	
+	private Op composing;
+	private boolean locked;
+
+	private CloseableLock closeableLock;
+	
 	@SuppressWarnings("unchecked")
-	public DefaultEditor(String id, OperationSync<Op> sync)
+	public DefaultEditor(String uniqueSessionId, OperationSync<Op> sync)
 	{
-		this.id = id;
+		this.id = uniqueSessionId;
 		this.sync = sync;
 		this.type = sync.getType();
 		lock = new ReentrantLock();
 		
 		state = State.SYNCHRONIZED;
 		
-		listeners = EMPTY;
+		listeners = new EventHelper<>();
+		
+		closeableLock = new CloseableLock()
+		{
+			@Override
+			public void close()
+			{
+				locked = false;
+				if(composing != null)
+				{
+					apply(composing);
+					composing = null;
+				}
+				
+				lock.unlock();
+			}
+		};
 		
 		lock.lock();
 		try
@@ -82,18 +116,15 @@ public class DefaultEditor<Op extends Operation<?>>
 	}
 	
 	@Override
-	public void addChangeListener(Consumer<Op> listener)
+	public void addListener(EditorListener<Op> listener)
 	{
-		lock.lock();
-		try
-		{
-			listeners = Arrays.copyOf(listeners, listeners.length + 1);
-			listeners[listeners.length - 1] = listener;
-		}
-		finally
-		{
-			lock.unlock();
-		}
+		listeners.add(listener);
+	}
+	
+	@Override
+	public void removeListener(EditorListener<Op> listener)
+	{
+		listeners.remove(listener);
 	}
 	
 	private void receive(TaggedOperation<Op> op)
@@ -108,7 +139,7 @@ public class DefaultEditor<Op extends Operation<?>>
 					 * No local changes, simply send operation to listeners.
 					 */
 					parentHistoryId = op.getHistoryId();
-					triggerListeners(op.getOperation());
+					composeAndTriggerListeners(op.getOperation());
 					break;
 				case AWAITING_CONFIRM:
 					if(lastSent.getToken().equals(op.getToken()))
@@ -146,7 +177,7 @@ public class DefaultEditor<Op extends Operation<?>>
 						);
 						
 						parentHistoryId = op.getHistoryId();
-						triggerListeners(transformed.getLeft());
+						composeAndTriggerListeners(transformed.getLeft());
 					}
 					break;
 				case AWAITING_CONFIRM_WITH_BUFFER:
@@ -206,7 +237,7 @@ public class DefaultEditor<Op extends Operation<?>>
 						);
 						
 						parentHistoryId = op.getHistoryId();
-						triggerListeners(transformed.getRight());
+						composeAndTriggerListeners(transformed.getRight());
 					}
 					break;
 				default:
@@ -225,6 +256,13 @@ public class DefaultEditor<Op extends Operation<?>>
 		lock.lock();
 		try
 		{
+			if(locked)
+			{
+				// If we are currently locked, compose together with previous op
+				composing = composing == null ? op : type.compose(composing, op);
+				return;
+			}
+			
 			// Compose together with the current operation
 			current = type.compose(current, op);
 			
@@ -275,10 +313,14 @@ public class DefaultEditor<Op extends Operation<?>>
 						buffer.getToken(),
 						type.compose(buffer.getOperation(), op)
 					);
+					break;
 				}
 				default:
 					throw new AssertionError("Unknown state: " + state);
 			}
+			
+			ChangeEvent<Op> event = new ChangeEvent<>(op, true);
+			listeners.trigger(l -> l.editorChanged(event));
 		}
 		finally
 		{
@@ -286,14 +328,19 @@ public class DefaultEditor<Op extends Operation<?>>
 		}
 	}
 	
-	private void triggerListeners(Op op)
+	private void composeAndTriggerListeners(Op op)
 	{
 		current = type.compose(current, op);
-		Consumer<Op>[] listeners = this.listeners;
-		for(Consumer<Op> listener : listeners)
-		{
-			listener.accept(op);
-		}
+		
+		ChangeEvent<Op> event = new ChangeEvent<>(op, false);
+		listeners.trigger(l -> l.editorChanged(event));
 	}
 
+	@Override
+	public CloseableLock lock()
+	{
+		lock.lock();
+		locked = true;
+		return closeableLock;
+	}
 }

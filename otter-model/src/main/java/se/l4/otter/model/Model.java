@@ -1,5 +1,6 @@
 package se.l4.otter.model;
 
+import se.l4.otter.lock.CloseableLock;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.combined.CombinedDelta;
 import se.l4.otter.operations.combined.CombinedTarget;
@@ -38,4 +39,21 @@ public interface Model
 		return CombinedDelta.builder()
 			.done();
 	}
+	
+	/**
+	 * Acquire a lock for this model. When the lock is held no remote edits
+	 * will be applied to the model and any local changes will be buffered.
+	 * 
+	 * <p>
+	 * The lock is tied to the current thread and must be used with a
+	 * try-statement.
+	 * 
+	 * <pre>
+	 * try(CloseableLock lock = model.lock()) {
+	 *   // Your code here
+	 * }
+	 * </pre>
+	 * @return
+	 */
+	CloseableLock lock();
 }

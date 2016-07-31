@@ -3,9 +3,9 @@ package se.l4.otter.operations.list;
 import org.junit.Test;
 
 import se.l4.commons.serialization.Serializer;
+import se.l4.otter.data.DataArray;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.SerializerTestHelper;
-import se.l4.otter.operations.data.DataArray;
 
 public class ListSerializationTest
 {

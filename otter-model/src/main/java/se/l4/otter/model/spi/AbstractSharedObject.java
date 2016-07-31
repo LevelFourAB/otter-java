@@ -1,9 +1,16 @@
-package se.l4.otter.model;
+package se.l4.otter.model.spi;
 
-import se.l4.otter.model.spi.SharedObjectEditor;
+import se.l4.otter.model.SharedObject;
 import se.l4.otter.operations.Operation;
 
-public class AbstractSharedObject<Op extends Operation<?>>
+/**
+ * Abstract implementation of {@link SharedObject}.
+ * 
+ * @author Andreas Holstenson
+ *
+ * @param <Op>
+ */
+public abstract class AbstractSharedObject<Op extends Operation<?>>
 	implements SharedObject
 {
 	protected final SharedObjectEditor<Op> editor;
@@ -24,5 +31,4 @@ public class AbstractSharedObject<Op extends Operation<?>>
 	{
 		return editor.getType();
 	}
-
 }
