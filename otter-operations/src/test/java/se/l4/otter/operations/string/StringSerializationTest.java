@@ -22,8 +22,28 @@ public class StringSerializationTest
 	@Test
 	public void test2()
 	{
-		test("\"__2;++'Hello World';--'Cookie';\"", StringDelta.builder()
+		test(StringDelta.builder()
 			.retain(2)
+			.updateAnnotations()
+				.set("key", null, true)
+				.done()
+			.insert("Hello World")
+			.delete("Cookie")
+			.updateAnnotations()
+				.remove("key", true)
+				.done()
+			.done()
+		);
+	}
+	
+	@Test
+	public void test3()
+	{
+		test("[[\"retain\",2],[\"annotations\",{\"key\":{\"oldValue\":null,\"newValue\":true}}],[\"insert\",\"Hello World\"],[\"delete\",\"Cookie\"]]", StringDelta.builder()
+			.retain(2)
+			.updateAnnotations()
+				.set("key", null, true)
+				.done()
 			.insert("Hello World")
 			.delete("Cookie")
 			.done()

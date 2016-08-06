@@ -40,7 +40,7 @@ public class StringDelete
 	@Override
 	public String toString()
 	{
-		return getClass().getSimpleName() + "[value=" + value + "]";
+		return "-" + value;
 	}
 
 	@Override

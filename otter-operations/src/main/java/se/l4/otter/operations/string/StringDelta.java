@@ -34,11 +34,27 @@ public interface StringDelta<ReturnPath>
 	StringDelta<ReturnPath> retain(int count);
 	
 	/**
-	 * Get this delta as a {@link StringHandler}.
+	 * Update the current annotations.
 	 * 
 	 * @return
 	 */
-	StringHandler asHandler();
+	AnnotationChangeBuilder<StringDelta<ReturnPath>> updateAnnotations();
+	
+	/**
+	 * Update the current annotations.
+	 * 
+	 * @param change
+	 * @return
+	 */
+	StringDelta<ReturnPath> updateAnnotations(AnnotationChange change);
+	
+	/**
+	 * Advanced usage: Adopt a raw operation.
+	 * 
+	 * @param op
+	 * @return
+	 */
+	StringDelta<ReturnPath> adopt(Operation<StringHandler> op);
 	
 	/**
 	 * Indicate that we are done building this delta.

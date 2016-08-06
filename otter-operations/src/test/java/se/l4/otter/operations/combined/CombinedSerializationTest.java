@@ -51,7 +51,7 @@ public class CombinedSerializationTest
 	@Test
 	public void test4()
 	{
-		test("[[\"update\",\"one\",\"string\",\"++'Hello World';\"]]", CombinedDelta.builder()
+		test("[[\"update\",\"one\",\"string\",[[\"insert\",\"Hello World\"]]]]", CombinedDelta.builder()
 			.update("one", "string", StringDelta.builder()
 				.insert("Hello World")
 				.done())

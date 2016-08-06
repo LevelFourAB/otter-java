@@ -214,6 +214,403 @@ public class StringComposeTest
 		));
 	}
 	
+	@Test
+	public void testCompose10()
+	{
+		Operation<StringHandler> op1 = StringDelta.builder()
+			.insert("Hello ")
+			.updateAnnotations()
+				.set("key", null, true)
+				.done()
+			.insert("World")
+			.updateAnnotations()
+				.remove("key", true)
+				.done()
+			.done();
+		
+		Operation<StringHandler> op2 = StringDelta.builder()
+			.retain(11)
+			.done();
+		
+		Operation<StringHandler> r = compose(op1, op2);
+		
+		assertThat(r, is(StringDelta.builder()
+			.insert("Hello ")
+			.updateAnnotations()
+				.set("key", null, true)
+				.done()
+			.insert("World")
+			.updateAnnotations()
+				.remove("key", true)
+				.done()
+			.done()
+		));
+	}
+	
+	@Test
+	public void testCompose11()
+	{
+		Operation<StringHandler> op1 = StringDelta.builder()
+			.insert("Hello ")
+			.updateAnnotations()
+				.set("key", null, true)
+				.done()
+			.insert("World")
+			.updateAnnotations()
+				.remove("key", true)
+				.done()
+			.done();
+		
+		Operation<StringHandler> op2 = StringDelta.builder()
+			.retain(6)
+			.updateAnnotations()
+				.remove("key", true)
+				.done()
+			.retain(5)
+			.done();
+		
+		Operation<StringHandler> r = compose(op1, op2);
+		
+		assertThat(r, is(StringDelta.builder()
+			.insert("Hello World")
+			.updateAnnotations()
+				.remove("key", true)
+				.done()
+			.done()
+		));
+	}
+	
+	@Test
+	public void testCompose12()
+	{
+		Operation<StringHandler> op1 = StringDelta.builder()
+			.insert("Hello World")
+			.done();
+		
+		Operation<StringHandler> op2 = StringDelta.builder()
+			.retain(6)
+			.updateAnnotations()
+				.set("key", null, true)
+				.done()
+			.retain(5)
+			.done();
+		
+		Operation<StringHandler> r = compose(op1, op2);
+		
+		assertThat(r, is(StringDelta.builder()
+			.insert("Hello ")
+			.updateAnnotations()
+				.set("key", null, true)
+				.done()
+			.insert("World")
+			.done()
+		));
+	}
+	
+	@Test
+	public void testCompose14()
+	{
+		Operation<StringHandler> op1 = StringDelta.builder()
+			.insert("Hello ")
+			.updateAnnotations()
+				.set("key", null, true)
+				.done()
+			.insert("World")
+			.done();
+		
+		Operation<StringHandler> op2 = StringDelta.builder()
+			.insert("Hey. ")
+			.retain(11)
+			.done();
+		
+		Operation<StringHandler> r = compose(op1, op2);
+		
+		assertThat(r, is(StringDelta.builder()
+			.insert("Hey. Hello ")
+			.updateAnnotations()
+				.set("key", null, true)
+				.done()
+			.insert("World")
+			.done()
+		));
+	}
+	
+	@Test
+	public void testCompose15()
+	{
+		Operation<StringHandler> op1 = StringDelta.builder()
+			.retain(4)
+			.updateAnnotations()
+				.set("key", null, true)
+				.done()
+			.retain(2)
+			.updateAnnotations()
+				.remove("key", true)
+				.done()
+			.retain(14)
+			.done();
+		
+		Operation<StringHandler> op2 = StringDelta.builder()
+			.retain(4)
+			.updateAnnotations()
+				.set("key", null, true)
+				.done()
+			.retain(2)
+			.delete("abc")
+			.updateAnnotations()
+				.remove("key", true)
+				.done()
+			.retain(11)
+			.done();
+		
+		Operation<StringHandler> r = compose(op1, op2);
+		
+		assertThat(r, is(StringDelta.builder()
+			.retain(4)
+			.updateAnnotations()
+				.set("key", null, true)
+				.done()
+			.retain(2)
+			.delete("abc")
+			.updateAnnotations()
+				.remove("key", true)
+				.done()
+			.retain(11)
+			.done()
+		));
+	}
+	
+	@Test
+	public void testCompose16()
+	{
+		Operation<StringHandler> op1 = StringDelta.builder()
+			.retain(4)
+			.updateAnnotations()
+				.set("key", null, true)
+				.done()
+			.retain(2)
+			.updateAnnotations()
+				.remove("key", true)
+				.done()
+			.retain(14)
+			.done();
+		
+		Operation<StringHandler> op2 = StringDelta.builder()
+			.retain(6)
+			.updateAnnotations()
+				.set("key", null, true)
+				.done()
+			.delete("abc")
+			.updateAnnotations()
+				.remove("key", true)
+				.done()
+			.retain(11)
+			.done();
+		
+		Operation<StringHandler> r = compose(op1, op2);
+		
+		assertThat(r, is(StringDelta.builder()
+			.retain(4)
+			.updateAnnotations()
+				.set("key", null, true)
+				.done()
+			.retain(2)
+			.delete("abc")
+			.updateAnnotations()
+				.remove("key", true)
+				.done()
+			.retain(11)
+			.done()
+		));
+	}
+	
+	@Test
+	public void testCompose17()
+	{
+		Operation<StringHandler> op1 = StringDelta.builder()
+			.retain(1)
+			.updateAnnotations()
+				.set("key", null, "abc")
+				.done()
+			.retain(2)
+			.updateAnnotations()
+				.remove("key", "abc")
+				.done()
+			.retain(5)
+			.done();
+		
+		Operation<StringHandler> op2 = StringDelta.builder()
+			.retain(3)
+			.updateAnnotations()
+				.set("key", null, "def")
+				.done()
+			.retain(2)
+			.updateAnnotations()
+				.remove("key", "def")
+				.done()
+			.retain(3)
+			.done();
+		
+		Operation<StringHandler> r = compose(op1, op2);
+		
+		assertThat(r, is(StringDelta.builder()
+			.retain(1)
+			.updateAnnotations()
+				.set("key", null, "abc")
+				.done()
+			.retain(2)
+			.updateAnnotations()
+				.set("key", "abc", "def")
+				.done()
+			.retain(2)
+			.updateAnnotations()
+				.remove("key", "def")
+				.done()
+			.retain(3)
+			.done()
+		));
+	}
+	
+	@Test
+	public void testCompose18()
+	{
+		Operation<StringHandler> op1 = StringDelta.builder()
+			.retain(3)
+			.updateAnnotations()
+				.set("key", null, "def")
+				.done()
+			.retain(2)
+			.updateAnnotations()
+				.remove("key", "def")
+				.done()
+			.retain(3)
+			.done();
+		
+		Operation<StringHandler> op2 = StringDelta.builder()
+			.retain(1)
+			.updateAnnotations()
+				.set("key", null, "abc")
+				.done()
+			.retain(2)
+			.updateAnnotations()
+				.remove("key", "abc")
+				.done()
+			.retain(5)
+			.done();
+		
+		Operation<StringHandler> r = compose(op1, op2);
+		
+		assertThat(r, is(StringDelta.builder()
+			.retain(1)
+			.updateAnnotations()
+				.set("key", null, "abc")
+				.done()
+			.retain(2)
+			.updateAnnotations()
+				.set("key", "abc", "def")
+				.done()
+			.retain(2)
+			.updateAnnotations()
+				.remove("key", "def")
+				.done()
+			.retain(3)
+			.done()
+		));
+	}
+	
+	@Test
+	public void testCompose19()
+	{
+		Operation<StringHandler> op1 = StringDelta.builder()
+			.retain(2)
+			.updateAnnotations()
+				.set("key", null, "abc")
+				.done()
+			.retain(4)
+			.updateAnnotations()
+				.remove("key", "abc")
+				.done()
+			.retain(14)
+			.done();
+		
+		Operation<StringHandler> op2 = StringDelta.builder()
+			.retain(5)
+			.updateAnnotations()
+				.set("key", null, "def")
+				.done()
+			.retain(4)
+			.updateAnnotations()
+				.remove("key", "def")
+				.done()
+			.retain(11)
+			.done();
+		
+		Operation<StringHandler> expected = StringDelta.builder()
+			.retain(2)
+			.updateAnnotations()
+				.set("key", null, "abc")
+				.done()
+			.retain(3)
+			.updateAnnotations()
+				.set("key", "abc", "def")
+				.done()
+			.retain(4)
+			.updateAnnotations()
+				.remove("key", "def")
+				.done()
+			.retain(11)
+			.done();
+		
+		assertThat(compose(op1, op2), is(expected));
+	}
+	
+
+	@Test
+	public void testCompose20()
+	{
+		Operation<StringHandler> op1 = StringDelta.builder()
+			.retain(5)
+			.updateAnnotations()
+				.set("key", null, "def")
+				.done()
+			.retain(4)
+			.updateAnnotations()
+				.remove("key", "def")
+				.done()
+			.retain(11)
+			.done();
+		
+		Operation<StringHandler> op2 = StringDelta.builder()
+			.retain(2)
+			.updateAnnotations()
+				.set("key", null, "abc")
+				.done()
+			.retain(4)
+			.updateAnnotations()
+				.remove("key", "abc")
+				.done()
+			.retain(14)
+			.done();
+		
+		Operation<StringHandler> expected = StringDelta.builder()
+			.retain(2)
+			.updateAnnotations()
+				.set("key", null, "abc")
+				.done()
+			.retain(3)
+			.updateAnnotations()
+				.set("key", "abc", "def")
+				.done()
+			.retain(4)
+			.updateAnnotations()
+				.remove("key", "def")
+				.done()
+			.retain(11)
+			.done();
+		
+		assertThat(compose(op1, op2), is(expected));
+	}
+	
 	private Operation<StringHandler> compose(Operation<StringHandler> op1,
 			Operation<StringHandler> op2)
 	{

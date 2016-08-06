@@ -11,6 +11,7 @@ import se.l4.otter.model.spi.AbstractSharedObject;
 import se.l4.otter.model.spi.SharedObjectEditor;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationException;
+import se.l4.otter.operations.string.AnnotationChange;
 import se.l4.otter.operations.string.StringDelta;
 import se.l4.otter.operations.string.StringHandler;
 
@@ -46,6 +47,12 @@ public class SharedStringImpl
 			{
 				throw new OperationException("Latest value invalid, must only contain inserts.");
 			}
+			
+			@Override
+			public void annotationUpdate(AnnotationChange change)
+			{
+				// Annotations are not currently handled
+			}
 		});
 		
 		editor.setOperationHandler(this::apply);
@@ -74,6 +81,12 @@ public class SharedStringImpl
 			public void delete(String s)
 			{
 				value.delete(index, index + s.length());
+			}
+			
+			@Override
+			public void annotationUpdate(AnnotationChange change)
+			{
+				// Annotations are not currently handled
 			}
 		});
 	}

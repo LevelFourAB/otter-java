@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import se.l4.otter.operations.ComposeException;
 import se.l4.otter.operations.Operation;
+import se.l4.otter.operations.string.AnnotationChange;
 import se.l4.otter.operations.string.StringDelta;
 import se.l4.otter.operations.string.StringHandler;
 import se.l4.otter.operations.string.StringType;
@@ -24,13 +25,19 @@ public class StringTypeComposer
 	private final MutableOperationIterator<StringHandler> left;
 	private final MutableOperationIterator<StringHandler> right;
 
-	private final StringDelta<Operation<StringHandler>> delta;
+	private final AnnotationNormalizingDelta<Operation<StringHandler>> delta;
 	
-	public StringTypeComposer(List<Operation<StringHandler>> first, List<Operation<StringHandler> >second)
+	private AnnotationChange annotationChanges;
+	
+	public StringTypeComposer(List<Operation<StringHandler>> first, List<Operation<StringHandler>> second)
 	{
 		log.debug("Composing {} with {}", first, second);
 		
-		delta = StringDelta.builder();
+		delta = new AnnotationNormalizingDelta<>(StringDelta.builder(), () -> {
+			AnnotationChange change = annotationChanges;
+			annotationChanges = null;
+			return change;
+		});
 		
 		left = new MutableOperationIterator<>(first);
 		right = new MutableOperationIterator<>(second);
@@ -57,23 +64,39 @@ public class StringTypeComposer
 			{
 				handleDelete(op1, op2);
 			}
+			else if(op1 instanceof StringAnnotationChange)
+			{
+				handleAnnotationChange(op1, op2);
+			}
 		}
 		
-		if(left.hasNext())
+		while(left.hasNext())
 		{
-			throw new ComposeException("Operation size mismatch");
+			Operation<StringHandler> op1 = left.next();
+			if(op1 instanceof StringAnnotationChange)
+			{
+				/*
+				 * Annotation changes are zero-sized so they can always be
+				 * composed.
+				 */
+				delta.adopt(op1);
+			}
+			else
+			{
+				throw new ComposeException("Operation size mismatch");
+			}
 		}
 		
 		// Apply all of the remaining operations
 		while(right.hasNext())
 		{
 			Operation<StringHandler> op = right.next();
-			op.apply(delta.asHandler());
+			delta.adopt(op);
 		}
 		
 		return delta.done();
 	}
-
+	
 	private void handleRetain(Operation<StringHandler> op1,
 			Operation<StringHandler> op2)
 	{
@@ -117,15 +140,29 @@ public class StringTypeComposer
 		else if(op2 instanceof StringDelete)
 		{
 			// Second operation is a delete, add it to the delta and replace ourselves
-			String value = ((StringDelete) op2).getValue();
-			delta.delete(value);
+			String value2 = ((StringDelete) op2).getValue();
+			int length2 = value2.length();
 			
-			int length2 = value.length();
-			if(length2 < length1)
+			if(length1 < length2)
+			{
+				delta.delete(value2.substring(0, length1));
+				right.replace(new StringDelete(value2.substring(length1)));
+			}
+			else if(length2 < length1)
 			{
 				// Only replace if we deleted less than we retain
+				delta.delete(value2);
 				left.replace(new StringRetain(length1 - length2));
 			}
+			else
+			{
+				delta.delete(value2);
+			}
+		}
+		else if(op2 instanceof StringAnnotationChange)
+		{
+			annotationChanges = DefaultAnnotationChange.merge(annotationChanges, ((StringAnnotationChange) op2).getChange());
+			left.back();
 		}
 	}
 
@@ -198,6 +235,11 @@ public class StringTypeComposer
 				// Exact same length, do nothing as they cancel each other
 			}
 		}
+		else if(op2 instanceof StringAnnotationChange)
+		{
+			annotationChanges = DefaultAnnotationChange.merge(annotationChanges, ((StringAnnotationChange) op2).getChange());
+			left.back();
+		}
 	}
 	
 	private void handleDelete(Operation<StringHandler> op1, Operation<StringHandler> op2)
@@ -229,6 +271,35 @@ public class StringTypeComposer
 			 * up so right is handled again.
 			 */
 			delta.delete(value1);
+			right.back();
+		}
+		else if(op2 instanceof StringAnnotationChange)
+		{
+			annotationChanges = DefaultAnnotationChange.merge(annotationChanges, ((StringAnnotationChange) op2).getChange());
+			left.back();
+		}
+	}
+	
+	private void handleAnnotationChange(Operation<StringHandler> op1, Operation<StringHandler> op2)
+	{
+		AnnotationChange change1 = ((StringAnnotationChange) op1).getChange();
+		
+		if(op2 instanceof StringAnnotationChange)
+		{
+			/*
+			 * Right operation is also an annotation change. Merge the two
+			 * annotations.
+			 */
+			AnnotationChange merged = DefaultAnnotationChange.merge(change1, ((StringAnnotationChange) op2).getChange());
+			annotationChanges = DefaultAnnotationChange.merge(annotationChanges, merged);
+		}
+		else
+		{
+			/*
+			 * Right operation is something else, queue the annotation changes
+			 * and handle right again.
+			 */
+			annotationChanges = DefaultAnnotationChange.merge(annotationChanges, change1);
 			right.back();
 		}
 	}

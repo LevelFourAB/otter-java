@@ -28,4 +28,11 @@ public interface StringHandler
 	 * @param count
 	 */
 	void retain(int count);
+	
+	/**
+	 * Annotations are being changed at the current index.
+	 * 
+	 * @param change
+	 */
+	void annotationUpdate(AnnotationChange change);
 }

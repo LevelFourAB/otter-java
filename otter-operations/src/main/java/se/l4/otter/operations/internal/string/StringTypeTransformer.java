@@ -3,6 +3,7 @@ package se.l4.otter.operations.internal.string;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationPair;
 import se.l4.otter.operations.TransformException;
+import se.l4.otter.operations.string.AnnotationChange;
 import se.l4.otter.operations.string.StringDelta;
 import se.l4.otter.operations.string.StringHandler;
 import se.l4.otter.operations.string.StringType;
@@ -21,14 +22,25 @@ public class StringTypeTransformer
 	
 	private final StringDelta<Operation<StringHandler>> deltaLeft;
 	private final StringDelta<Operation<StringHandler>> deltaRight;
+	
+	private AnnotationChange leftAnnotations;
+	private AnnotationChange rightAnnotations;
 
 	public StringTypeTransformer(Operation<StringHandler> left, Operation<StringHandler> right)
 	{
 		this.left = new MutableOperationIterator<>(left);
 		this.right = new MutableOperationIterator<>(right);
 		
-		deltaLeft = StringDelta.builder();
-		deltaRight = StringDelta.builder();
+		deltaLeft = new AnnotationNormalizingDelta<>(StringDelta.builder(), () -> {
+			AnnotationChange result = leftAnnotations;
+			leftAnnotations = null;
+			return result;
+		});
+		deltaRight = new AnnotationNormalizingDelta<>(StringDelta.builder(), () -> {
+			AnnotationChange result = rightAnnotations;
+			rightAnnotations = null;
+			return result;
+		});
 	}
 	
 	public OperationPair<Operation<StringHandler>> perform()
@@ -52,6 +64,10 @@ public class StringTypeTransformer
 				else if(op1 instanceof StringDelete)
 				{
 					handleDelete(op1, op2);
+				}
+				else if(op1 instanceof StringAnnotationChange)
+				{
+					handleAnnotationChange(op1, op2);
 				}
 			}
 			else
@@ -172,6 +188,11 @@ public class StringTypeTransformer
 				deltaRight.delete(value2);
 			}
 		}
+		else if(op2 instanceof StringAnnotationChange)
+		{
+			rightAnnotations = DefaultAnnotationChange.merge(rightAnnotations, ((StringAnnotationChange) op2).getChange());
+			left.back();
+		}
 	}
 	
 	private void handleInsert(Operation<StringHandler> op1, Operation<StringHandler> op2)
@@ -179,10 +200,18 @@ public class StringTypeTransformer
 		String value1 = ((StringInsert) op1).getValue();
 		int length1 = value1.length();
 		
-		deltaLeft.insert(value1);
-		deltaRight.retain(length1);
-		
-		right.back();
+		if(op2 instanceof StringAnnotationChange)
+		{
+			rightAnnotations = DefaultAnnotationChange.merge(rightAnnotations, ((StringAnnotationChange) op2).getChange());
+			left.back();
+		}
+		else
+		{
+			deltaLeft.insert(value1);
+			deltaRight.retain(length1);
+			
+			right.back();
+		}
 	}
 
 	private void handleDelete(Operation<StringHandler> op1, Operation<StringHandler> op2)
@@ -258,6 +287,28 @@ public class StringTypeTransformer
 			{
 				// Do nothing
 			}
+		}
+		else if(op2 instanceof StringAnnotationChange)
+		{
+			rightAnnotations = DefaultAnnotationChange.merge(rightAnnotations, ((StringAnnotationChange) op2).getChange());
+			left.back();
+		}
+	}
+	
+	private void handleAnnotationChange(Operation<StringHandler> op1, Operation<StringHandler> op2)
+	{
+		AnnotationChange change1 = ((StringAnnotationChange) op1).getChange();
+		
+		if(op2 instanceof StringAnnotationChange)
+		{
+			AnnotationChange change2 = ((StringAnnotationChange) op2).getChange();
+			leftAnnotations = DefaultAnnotationChange.merge(leftAnnotations, change1);
+			rightAnnotations = DefaultAnnotationChange.merge(rightAnnotations, change2);
+		}
+		else
+		{
+			leftAnnotations = DefaultAnnotationChange.merge(leftAnnotations, change1);
+			right.back();
 		}
 	}
 }

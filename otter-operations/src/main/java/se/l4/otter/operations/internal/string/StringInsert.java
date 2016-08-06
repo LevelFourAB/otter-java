@@ -40,7 +40,7 @@ public class StringInsert
 	@Override
 	public String toString()
 	{
-		return getClass().getSimpleName() + "[value=" + value + "]";
+		return "+" + value;
 	}
 
 	@Override

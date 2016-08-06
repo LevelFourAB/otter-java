@@ -1,45 +1,46 @@
 package se.l4.otter.operations.internal.string;
 
 import se.l4.otter.operations.Operation;
+import se.l4.otter.operations.string.AnnotationChange;
 import se.l4.otter.operations.string.StringHandler;
 
 /**
- * Operation on a {@link String} where a number of characters are retained.
+ * Change for the current annotations.
  * 
  * @author Andreas Holstenson
  *
  */
-public class StringRetain
+public class StringAnnotationChange
 	implements Operation<StringHandler>
 {
-	private final int length;
+	private final AnnotationChange change;
 
-	public StringRetain(int count)
+	public StringAnnotationChange(AnnotationChange change)
 	{
-		this.length = count;
+		this.change = change;
 	}
-	
-	public int getLength()
+
+	public AnnotationChange getChange()
 	{
-		return length;
+		return change;
 	}
 	
 	@Override
 	public void apply(StringHandler target)
 	{
-		target.retain(length);
+		target.annotationUpdate(change);
 	}
 	
 	@Override
 	public Operation<StringHandler> invert()
 	{
-		return this;
+		return new StringAnnotationChange(change.invert());
 	}
-	
+
 	@Override
 	public String toString()
 	{
-		return "_" + length; 
+		return "@" + change;
 	}
 
 	@Override
@@ -47,7 +48,7 @@ public class StringRetain
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + length;
+		result = prime * result + ((change == null) ? 0 : change.hashCode());
 		return result;
 	}
 
@@ -60,8 +61,13 @@ public class StringRetain
 			return false;
 		if(getClass() != obj.getClass())
 			return false;
-		StringRetain other = (StringRetain) obj;
-		if(length != other.length)
+		StringAnnotationChange other = (StringAnnotationChange) obj;
+		if(change == null)
+		{
+			if(other.change != null)
+				return false;
+		}
+		else if(!change.equals(other.change))
 			return false;
 		return true;
 	}
