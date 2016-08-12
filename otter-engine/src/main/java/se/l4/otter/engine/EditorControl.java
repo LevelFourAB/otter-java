@@ -1,5 +1,6 @@
 package se.l4.otter.engine;
 
+import se.l4.otter.lock.CloseableLock;
 import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
 
@@ -17,6 +18,22 @@ public interface EditorControl<Op extends Operation<?>>
 	 * @return
 	 */
 	OTType<Op> getType();
+	
+	/**
+	 * Lock this instance, this ensures that no other operation occur
+	 * on the editor control while the lock is being held. This is useful
+	 * to guarantee sending of changes in order similar to this:
+	 * 
+	 * <pre>
+	 * try(CloseableLock lock = control.lock()) {
+	 *   TaggedOperation change = control.store(taggedOp);
+	 *   remoteClients.send(change);
+	 * }
+	 * </pre>
+	 * 
+	 * @return
+	 */
+	CloseableLock lock();
 	
 	/**
 	 * Get the operation that describes the document that a new client should

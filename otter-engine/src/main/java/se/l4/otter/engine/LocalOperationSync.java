@@ -1,6 +1,5 @@
 package se.l4.otter.engine;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -80,11 +79,11 @@ public class LocalOperationSync<Op extends Operation<?>>
 		System.out.println("zZzZZz");
 		while(! Thread.interrupted())
 		{
-			if(queue.isEmpty() && ! working) return;
-			
 			try
 			{
 				Thread.sleep(100);
+				
+				if(queue.isEmpty() && ! working) return;
 			}
 			catch(InterruptedException e)
 			{
@@ -148,7 +147,6 @@ public class LocalOperationSync<Op extends Operation<?>>
 	
 	@Override
 	public void close()
-		throws IOException
 	{
 		triggerThread.interrupt();
 	}

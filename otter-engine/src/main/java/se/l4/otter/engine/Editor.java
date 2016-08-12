@@ -1,6 +1,7 @@
 package se.l4.otter.engine;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 
 import se.l4.otter.lock.CloseableLock;
 import se.l4.otter.operations.OTType;
@@ -22,6 +23,7 @@ import se.l4.otter.operations.Operation;
  * @param <Op>
  */
 public interface Editor<Op extends Operation<?>>
+	extends AutoCloseable
 {
 	/**
 	 * Get the unique identifier of this editor instance.
@@ -66,7 +68,7 @@ public interface Editor<Op extends Operation<?>>
 	 * 
 	 * @param op
 	 */
-	void apply(Op op);
+	CompletableFuture<Void> apply(Op op);
 
 	/**
 	 * Acquire a lock for this editor. When the lock is held the editor will
@@ -115,4 +117,11 @@ public interface Editor<Op extends Operation<?>>
 			return action.call();
 		}
 	}
+	
+	/**
+	 * Close this editor.
+	 * 
+	 */
+	@Override
+	void close();
 }

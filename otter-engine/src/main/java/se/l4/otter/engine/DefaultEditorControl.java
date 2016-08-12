@@ -3,6 +3,9 @@ package se.l4.otter.engine;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import se.l4.commons.id.LongIdGenerator;
+import se.l4.commons.id.SimpleLongIdGenerator;
+import se.l4.otter.lock.CloseableLock;
 import se.l4.otter.operations.Composer;
 import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
@@ -25,6 +28,9 @@ public class DefaultEditorControl<Op extends Operation<?>>
 {
 	private final OperationHistory<Op> history;
 	private final Lock lock;
+	private final LongIdGenerator idGenerator;
+	
+	private final CloseableLock closeableLock;
 
 	public DefaultEditorControl(OperationHistory<Op> history)
 	{
@@ -33,14 +39,36 @@ public class DefaultEditorControl<Op extends Operation<?>>
 	
 	public DefaultEditorControl(OperationHistory<Op> history, Lock lock)
 	{
+		this(history, lock, new SimpleLongIdGenerator());
+	}
+	
+	public DefaultEditorControl(OperationHistory<Op> history, Lock lock, LongIdGenerator idGenerator)
+	{
 		this.lock = lock;
 		this.history = history;
+		this.idGenerator = idGenerator;
+		
+		closeableLock = new CloseableLock()
+		{
+			@Override
+			public void close()
+			{
+				lock.unlock();
+			}
+		};
 	}
 	
 	@Override
 	public OTType<Op> getType()
 	{
 		return history.getType();
+	}
+	
+	@Override
+	public CloseableLock lock()
+	{
+		lock.lock();
+		return closeableLock;
 	}
 	
 	@Override
@@ -58,7 +86,10 @@ public class DefaultEditorControl<Op extends Operation<?>>
 			}
 			
 			Op composed = composer.done();
-			return new TaggedOperation<>(id, null, composed);
+			
+			long sessionId = idGenerator.next();
+			
+			return new TaggedOperation<>(id, toString(sessionId), composed);
 		}
 	}
 	
@@ -109,5 +140,38 @@ public class DefaultEditorControl<Op extends Operation<?>>
 		{
 			lock.unlock();
 		}
+	}
+	
+	private final static char[] DIGITS = {
+		'0', '1', '2', '3', '4', '5',
+		'6', '7', '8', '9', 'a', 'b',
+		'c', 'd', 'e', 'f', 'g', 'h',
+		'i', 'j', 'k', 'l', 'm', 'n',
+		'o', 'p', 'q', 'r', 's', 't',
+		'u', 'v', 'w', 'x', 'y', 'z',
+		'A', 'B', 'C', 'D', 'E', 'F',
+		'G', 'H', 'I', 'J', 'K', 'L',
+		'M', 'N', 'O', 'P', 'Q', 'R',
+		'S', 'T', 'U', 'V', 'W', 'X',
+		'Y', 'Z'
+    };
+	
+	private final static int MAX = DIGITS.length;
+	
+	public static String toString(long i)
+	{
+		char[] buf = new char[11];
+		int charPos = 10;
+
+		int radix = MAX;
+		i = -i;
+		while(i <= -radix)
+		{
+			buf[charPos--] = DIGITS[(int) (-(i % radix))];
+			i = i / radix;
+		}
+		buf[charPos] = DIGITS[(int) (-i)];
+
+		return new String(buf, charPos, (11 - charPos));
 	}
 }

@@ -1,7 +1,5 @@
 package se.l4.otter.model;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import se.l4.otter.engine.DefaultEditor;
 import se.l4.otter.engine.DefaultEditorControl;
 import se.l4.otter.engine.InMemoryOperationHistory;
@@ -18,8 +16,6 @@ public class ModelTestHelper
 	private static final CombinedType TYPE = new CombinedTypeBuilder()
 		.build();
 	
-	private static final AtomicInteger EDITOR = new AtomicInteger();
-		
 	public static LocalOperationSync<Operation<CombinedHandler>> createSync()
 	{
 		DefaultEditorControl<Operation<CombinedHandler>> control = new DefaultEditorControl<>(
@@ -30,6 +26,6 @@ public class ModelTestHelper
 	
 	public static Model createModel(OperationSync<Operation<CombinedHandler>> sync)
 	{
-		return Model.builder(new DefaultEditor<>("e" + EDITOR.incrementAndGet(), sync)).build();
+		return Model.builder(new DefaultEditor<>(sync)).build();
 	}
 }

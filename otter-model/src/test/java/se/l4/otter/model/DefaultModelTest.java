@@ -45,20 +45,20 @@ public class DefaultModelTest
 		sync.close();
 	}
 	
-	private Editor<Operation<CombinedHandler>> editor(String id)
+	private Editor<Operation<CombinedHandler>> editor()
 	{
-		return new DefaultEditor<>(id, sync);
+		return new DefaultEditor<>(sync);
 	}
 	
-	private Model model(String id)
+	private Model model()
 	{
-		return Model.builder(editor(id)).build();
+		return Model.builder(editor()).build();
 	}
 	
 	@Test
 	public void testRootMap()
 	{
-		Model m1 = model("1");
+		Model m1 = model();
 		
 		sync.suspend();
 		m1.set("key", "value");
@@ -70,15 +70,15 @@ public class DefaultModelTest
 		
 		assertThat("m1 after sync", m1.get("key"), is("value"));
 		
-		Model m2 = model("2");
+		Model m2 = model();
 		assertThat("m2", m2.get("key"), is("value"));
 	}
 	
 	@Test
 	public void testRootMapEvents()
 	{
-		Model m1 = model("1");
-		Model m2 = model("2");
+		Model m1 = model();
+		Model m2 = model();
 		
 		AtomicReference<Object> b = new AtomicReference<>();
 		m2.addChangeListener(new SharedMap.Listener() {
@@ -104,7 +104,7 @@ public class DefaultModelTest
 	@Test
 	public void testNewString()
 	{
-		Model m1 = model("1");
+		Model m1 = model();
 		
 		SharedString s1 = m1.newString();
 		s1.set("Hello World");
@@ -112,7 +112,7 @@ public class DefaultModelTest
 		
 		sync.waitForEmpty();
 		
-		Model m2 = model("2");
+		Model m2 = model();
 		SharedString s2 = m2.get("string");
 		assertThat(s2.get(), is("Hello World"));
 		

@@ -1,5 +1,8 @@
 package se.l4.otter.engine;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -40,6 +43,7 @@ public class DefaultEditor<Op extends Operation<?>>
 	private final Lock lock;
 	
 	private final EventHelper<EditorListener<Op>> listeners;
+	private final Map<String, CompletableFuture<Void>> futures;
 	
 	private State state;
 	
@@ -56,10 +60,8 @@ public class DefaultEditor<Op extends Operation<?>>
 
 	private CloseableLock closeableLock;
 	
-	@SuppressWarnings("unchecked")
-	public DefaultEditor(String uniqueSessionId, OperationSync<Op> sync)
+	public DefaultEditor(OperationSync<Op> sync)
 	{
-		this.id = uniqueSessionId;
 		this.sync = sync;
 		this.type = sync.getType();
 		lock = new ReentrantLock();
@@ -67,6 +69,7 @@ public class DefaultEditor<Op extends Operation<?>>
 		state = State.SYNCHRONIZED;
 		
 		listeners = new EventHelper<>();
+		futures = new HashMap<>();
 		
 		closeableLock = new CloseableLock()
 		{
@@ -90,6 +93,21 @@ public class DefaultEditor<Op extends Operation<?>>
 			TaggedOperation<Op> initial = sync.connect(this::receive);
 			parentHistoryId = initial.getHistoryId();
 			current = initial.getOperation();
+			id = initial.getToken();
+		}
+		finally
+		{
+			lock.unlock();
+		}
+	}
+	
+	@Override
+	public void close()
+	{
+		lock.lock();
+		try
+		{
+			sync.close();
 		}
 		finally
 		{
@@ -152,6 +170,13 @@ public class DefaultEditor<Op extends Operation<?>>
 						parentHistoryId = op.getHistoryId();
 						this.state = State.SYNCHRONIZED;
 						
+						// Trigger the future for the operation
+						CompletableFuture<Void> future = futures.get(op.getToken());
+						if(future != null)
+						{
+							futures.remove(op.getToken());
+							future.complete(null);
+						}
 					}
 					else
 					{
@@ -250,8 +275,19 @@ public class DefaultEditor<Op extends Operation<?>>
 		}
 	}
 	
+	private CompletableFuture<Void> future(String token)
+	{
+		CompletableFuture<Void> future = futures.get(token);
+		if(future == null)
+		{
+			future = new CompletableFuture<>();
+			futures.put(token, future);
+		}
+		return future;
+	}
+	
 	@Override
-	public void apply(Op op)
+	public CompletableFuture<Void> apply(Op op)
 	{
 		lock.lock();
 		try
@@ -260,12 +296,15 @@ public class DefaultEditor<Op extends Operation<?>>
 			{
 				// If we are currently locked, compose together with previous op
 				composing = composing == null ? op : type.compose(composing, op);
-				return;
+				
+				String nextToken = id + "-" + (lastId + 1);
+				return future(nextToken);
 			}
 			
 			// Compose together with the current operation
 			current = type.compose(current, op);
 			
+			CompletableFuture<Void> future;
 			switch(state)
 			{
 				case SYNCHRONIZED:
@@ -274,12 +313,14 @@ public class DefaultEditor<Op extends Operation<?>>
 					 * Create a tagged version with a unique token and
 					 * start tracking when it is applied.
 					 */
+					String token = id + "-" + (lastId++);
 					TaggedOperation<Op> tagged = new TaggedOperation<>(
 						parentHistoryId,
-						id + "-" + (lastId++),
+						token,
 						op
 					);
 					
+					future = future(token);
 					state = State.AWAITING_CONFIRM;
 					lastSent = tagged;
 					sync.send(tagged);
@@ -292,12 +333,14 @@ public class DefaultEditor<Op extends Operation<?>>
 					 * We are already waiting for another operation to be applied,
 					 * buffer this one.
 					 */
+					String token = id + "-" + (lastId++);
 					TaggedOperation<Op> tagged = new TaggedOperation<>(
 						parentHistoryId,
-						id + "-" + (lastId++),
+						token,
 						op
 					);
 					
+					future = future(token);
 					buffer = tagged;
 					state = State.AWAITING_CONFIRM_WITH_BUFFER;
 					break;
@@ -313,6 +356,8 @@ public class DefaultEditor<Op extends Operation<?>>
 						buffer.getToken(),
 						type.compose(buffer.getOperation(), op)
 					);
+					
+					future = future(buffer.getToken());
 					break;
 				}
 				default:
@@ -321,6 +366,8 @@ public class DefaultEditor<Op extends Operation<?>>
 			
 			ChangeEvent<Op> event = new ChangeEvent<>(op, true);
 			listeners.trigger(l -> l.editorChanged(event));
+			
+			return future;
 		}
 		finally
 		{

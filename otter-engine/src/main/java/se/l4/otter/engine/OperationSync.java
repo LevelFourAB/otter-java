@@ -1,6 +1,5 @@
 package se.l4.otter.engine;
 
-import java.io.Closeable;
 import java.util.function.Consumer;
 
 import se.l4.otter.operations.OTType;
@@ -14,7 +13,7 @@ import se.l4.otter.operations.Operation;
  * @param <Op>
  */
 public interface OperationSync<Op extends Operation<?>>
-	extends Closeable
+	extends AutoCloseable
 {
 	/**
 	 * Get the type this sync handles.
@@ -39,4 +38,10 @@ public interface OperationSync<Op extends Operation<?>>
 	 * @param op
 	 */
 	void send(TaggedOperation<Op> op);
+	
+	/**
+	 * Close this sync. The sync will no longer be able to receive operations.
+	 */
+	@Override
+	void close();
 }

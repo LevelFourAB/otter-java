@@ -31,15 +31,15 @@ public class DefaultEditorTest
 		sync = new LocalOperationSync<>(control);
 	}
 	
-	private Editor<Operation<StringHandler>> editor(String id)
+	private Editor<Operation<StringHandler>> editor()
 	{
-		return new DefaultEditor<>(id, sync);
+		return new DefaultEditor<>(sync);
 	}
 	
 	@Test
 	public void test1()
 	{
-		Editor<Operation<StringHandler>> editor = editor("1");
+		Editor<Operation<StringHandler>> editor = editor();
 		
 		editor.apply(StringDelta.builder()
 			.retain(6)
@@ -59,8 +59,8 @@ public class DefaultEditorTest
 	@Test
 	public void testMultiple1()
 	{
-		Editor<Operation<StringHandler>> e1 = editor("1");
-		Editor<Operation<StringHandler>> e2 = editor("2");
+		Editor<Operation<StringHandler>> e1 = editor();
+		Editor<Operation<StringHandler>> e2 = editor();
 		
 		e1.apply(StringDelta.builder()
 			.retain(6)
@@ -80,8 +80,8 @@ public class DefaultEditorTest
 	@Test
 	public void testMultiple2()
 	{
-		Editor<Operation<StringHandler>> e1 = editor("1");
-		Editor<Operation<StringHandler>> e2 = editor("2");
+		Editor<Operation<StringHandler>> e1 = editor();
+		Editor<Operation<StringHandler>> e2 = editor();
 		
 		sync.suspend();
 		e1.apply(StringDelta.builder()
@@ -115,8 +115,8 @@ public class DefaultEditorTest
 	@Test
 	public void testMultiple3()
 	{
-		Editor<Operation<StringHandler>> e1 = editor("1");
-		Editor<Operation<StringHandler>> e2 = editor("2");
+		Editor<Operation<StringHandler>> e1 = editor();
+		Editor<Operation<StringHandler>> e2 = editor();
 		
 		sync.suspend();
 		e1.apply(StringDelta.builder()
@@ -155,8 +155,8 @@ public class DefaultEditorTest
 	@Test
 	public void testMultiple4()
 	{
-		Editor<Operation<StringHandler>> e1 = editor("1");
-		Editor<Operation<StringHandler>> e2 = editor("2");
+		Editor<Operation<StringHandler>> e1 = editor();
+		Editor<Operation<StringHandler>> e2 = editor();
 		
 		sync.suspend();
 		e1.apply(StringDelta.builder()
@@ -202,8 +202,8 @@ public class DefaultEditorTest
 	@Test
 	public void testMultiple5()
 	{
-		Editor<Operation<StringHandler>> e1 = editor("1");
-		Editor<Operation<StringHandler>> e2 = editor("2");
+		Editor<Operation<StringHandler>> e1 = editor();
+		Editor<Operation<StringHandler>> e2 = editor();
 		
 		sync.suspend();
 		e1.apply(StringDelta.builder()
@@ -236,8 +236,8 @@ public class DefaultEditorTest
 	@Test
 	public void testMultiple6()
 	{
-		Editor<Operation<StringHandler>> e1 = editor("1");
-		Editor<Operation<StringHandler>> e2 = editor("2");
+		Editor<Operation<StringHandler>> e1 = editor();
+		Editor<Operation<StringHandler>> e2 = editor();
 		
 		sync.suspend();
 		e1.apply(StringDelta.builder()
@@ -277,8 +277,8 @@ public class DefaultEditorTest
 	@Test
 	public void testMultiple7()
 	{
-		Editor<Operation<StringHandler>> e1 = editor("1");
-		Editor<Operation<StringHandler>> e2 = editor("2");
+		Editor<Operation<StringHandler>> e1 = editor();
+		Editor<Operation<StringHandler>> e2 = editor();
 		
 		sync.suspend();
 		e1.apply(StringDelta.builder()
@@ -325,8 +325,8 @@ public class DefaultEditorTest
 	@Test
 	public void testLock1()
 	{
-		Editor<Operation<StringHandler>> e1 = editor("1");
-		Editor<Operation<StringHandler>> e2 = editor("2");
+		Editor<Operation<StringHandler>> e1 = editor();
+		Editor<Operation<StringHandler>> e2 = editor();
 		
 		try(CloseableLock lock = e1.lock())
 		{
