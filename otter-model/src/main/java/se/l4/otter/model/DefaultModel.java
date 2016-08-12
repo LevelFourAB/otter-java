@@ -129,27 +129,30 @@ public class DefaultModel
 	
 	private void apply(String id, String type, Operation<?> op)
 	{
-		SharedObjectEditorImpl objectEditor = editors.get(id);
-		if(values.containsKey(id))
+		try(CloseableLock lock = lock())
 		{
-			Operation<?> current = values.get(id);
-			Operation<?> composed = otType.compose(type, current, op);
-			values.put(id, composed);
-		}
-		else
-		{
-			values.put(id, op);
-		}
-		
-		editor.apply(
-			CombinedDelta.builder()
-				.update(id, type, op)
-				.done()
-		);
-		
-		if(objectEditor != null)
-		{
-			objectEditor.operationApplied(op, false);
+			SharedObjectEditorImpl objectEditor = editors.get(id);
+			if(values.containsKey(id))
+			{
+				Operation<?> current = values.get(id);
+				Operation<?> composed = otType.compose(type, current, op);
+				values.put(id, composed);
+			}
+			else
+			{
+				values.put(id, op);
+			}
+			
+			editor.apply(
+				CombinedDelta.builder()
+					.update(id, type, op)
+					.done()
+			);
+			
+			if(objectEditor != null)
+			{
+				objectEditor.operationApplied(op, false);
+			}
 		}
 	}
 	
