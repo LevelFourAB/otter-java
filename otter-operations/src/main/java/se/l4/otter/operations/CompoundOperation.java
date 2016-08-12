@@ -35,6 +35,10 @@ public interface CompoundOperation<Handler>
 		{
 			return ((CompoundOperation) op).getOperations();
 		}
+		else if(op == null)
+		{
+			return Collections.emptyList();
+		}
 		
 		return Collections.singletonList(op);
 	}
