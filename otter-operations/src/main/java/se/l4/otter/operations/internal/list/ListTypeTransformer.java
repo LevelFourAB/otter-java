@@ -29,7 +29,6 @@ public class ListTypeTransformer
 		this.left = new MutableOperationIterator<>(left);
 		this.right = new MutableOperationIterator<>(right);
 		
-		System.out.println(" " + left + " vs " + right);
 		deltaLeft = ListDelta.builder();
 		deltaRight = ListDelta.builder();
 	}
