@@ -187,6 +187,12 @@ public class DefaultModel
 		};
 	}
 	
+	@Override
+	public void close()
+	{
+		editor.close();
+	}
+	
 	/**
 	 * Create an instance of {@link SharedObjectEditor} for the given id
 	 * and type.

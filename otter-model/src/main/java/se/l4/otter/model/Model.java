@@ -8,7 +8,7 @@ import se.l4.otter.operations.combined.CombinedDelta;
 import se.l4.otter.operations.combined.CombinedHandler;
 
 public interface Model
-	extends SharedMap
+	extends SharedMap, AutoCloseable
 {
 	/**
 	 * Create a new map instance.
@@ -67,6 +67,12 @@ public interface Model
 	 * @return
 	 */
 	CloseableLock lock();
+	
+	/**
+	 * Close this model and its underlying editor.
+	 */
+	@Override
+	void close();
 	
 	/**
 	 * Start building a new model using the given editor.
