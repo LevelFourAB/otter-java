@@ -64,7 +64,12 @@ public class DefaultModel
 		
 		try(CloseableLock lock = editor.lock())
 		{
-			editor.getCurrent().apply(handler);
+			Operation<CombinedHandler> current = editor.getCurrent();
+			if(current != null)
+			{
+				current.apply(handler);
+			}
+			
 			editor.addListener(new EditorListener<Operation<CombinedHandler>>()
 			{
 				@Override
