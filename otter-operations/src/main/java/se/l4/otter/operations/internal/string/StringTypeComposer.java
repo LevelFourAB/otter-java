@@ -73,7 +73,7 @@ public class StringTypeComposer
 		while(left.hasNext())
 		{
 			Operation<StringHandler> op1 = left.next();
-			if(op1 instanceof StringAnnotationChange)
+			if(op1 instanceof StringAnnotationChange || op1 instanceof StringDelete)
 			{
 				/*
 				 * Annotation changes are zero-sized so they can always be

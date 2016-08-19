@@ -611,6 +611,53 @@ public class StringComposeTest
 		assertThat(compose(op1, op2), is(expected));
 	}
 	
+	@Test
+	public void testCompose21()
+	{
+		Operation<StringHandler> op1 = StringDelta.builder()
+			.retain(1)
+			.delete("a")
+			.done();
+		
+		Operation<StringHandler> op2 = StringDelta.builder()
+			.insert("a")
+			.retain(1)
+			.done();
+		
+		Operation<StringHandler> expected = StringDelta.builder()
+			.insert("a")
+			.retain(1)
+			.delete("a")
+			.done();
+		
+		assertThat(compose(op1, op2), is(expected));
+	}
+	
+	@Test
+	public void testCompose22()
+	{
+		Operation<StringHandler> op1 = StringDelta.builder()
+			.retain(1)
+			.delete("a")
+			.retain(1)
+			.done();
+		
+		Operation<StringHandler> op2 = StringDelta.builder()
+			.insert("a")
+			.retain(2)
+			.done();
+		
+		Operation<StringHandler> r = compose(op1, op2);
+		
+		assertThat(r, is(StringDelta.builder()
+			.insert("a")
+			.retain(1)
+			.delete("a")
+			.retain(1)
+			.done())
+		);
+	}
+	
 	private Operation<StringHandler> compose(Operation<StringHandler> op1,
 			Operation<StringHandler> op2)
 	{

@@ -64,9 +64,17 @@ public class ListTypeComposer
 			}
 		}
 		
-		if(left.hasNext())
+		while(left.hasNext())
 		{
-			throw new ComposeException("Operation size mismatch");
+			Operation<ListHandler> op1 = left.next();
+			if(op1 instanceof ListDelete)
+			{
+				delta.adopt(op1);
+			}
+			else
+			{
+				throw new ComposeException("Operation size mismatch");
+			}
 		}
 		
 		// Apply all of the remaining operations
@@ -121,13 +129,23 @@ public class ListTypeComposer
 		else if(op2 instanceof ListDelete)
 		{
 			// Second operation is a delete, add it to the delta and replace ourselves
-			delta.adopt(op2);
-			
-			int length2 = ((ListDelete) op2).getItems().length;
-			if(length2 < length1)
+			Object[] items2 = ((ListDelete) op2).getItems();
+			int length2 = items2.length;
+				
+			if(length1 < length2)
+			{
+				delta.deleteMultiple(Arrays.copyOfRange(items2, 0, length1));
+				right.replace(new ListDelete(Arrays.copyOfRange(items2, length1, items2.length)));
+			}
+			else if(length1 > length2)
 			{
 				// Only replace if we deleted less than we retain
+				delta.deleteMultiple(items2);
 				left.replace(new ListRetain(length1 - length2));
+			}
+			else
+			{
+				delta.deleteMultiple(items2);
 			}
 		}
 	}

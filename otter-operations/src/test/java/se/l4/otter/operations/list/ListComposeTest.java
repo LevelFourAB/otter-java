@@ -93,6 +93,80 @@ public class ListComposeTest
 		);
 	}
 	
+
+	@Test
+	public void testCompose6()
+	{
+		Operation<ListHandler> op1 = ListDelta.builder()
+			.retain(1)
+			.delete("one")
+			.done();
+		
+		Operation<ListHandler> op2 = ListDelta.builder()
+			.insert("one")
+			.retain(1)
+			.done();
+		
+		Operation<ListHandler> r = compose(op1, op2);
+		
+		assertThat(r, is(ListDelta.builder()
+			.insert("one")
+			.retain(1)
+			.delete("one")
+			.done())
+		);
+	}
+	
+	@Test
+	public void testCompose7()
+	{
+		Operation<ListHandler> op1 = ListDelta.builder()
+			.retain(4)
+			.insert("one")
+			.done();
+		
+		Operation<ListHandler> op2 = ListDelta.builder()
+			.retain(2)
+			.delete("one")
+			.retain(2)
+			.done();
+		
+		Operation<ListHandler> r = compose(op1, op2);
+		
+		assertThat(r, is(ListDelta.builder()
+			.retain(2)
+			.delete("one")
+			.retain(1)
+			.insert("one")
+			.done())
+		);
+	}
+	
+	@Test
+	public void testCompose8()
+	{
+		Operation<ListHandler> op1 = ListDelta.builder()
+			.retain(1)
+			.delete("a")
+			.retain(1)
+			.done();
+		
+		Operation<ListHandler> op2 = ListDelta.builder()
+			.insert("a")
+			.retain(2)
+			.done();
+		
+		Operation<ListHandler> r = compose(op1, op2);
+		
+		assertThat(r, is(ListDelta.builder()
+			.insert("a")
+			.retain(1)
+			.delete("a")
+			.retain(1)
+			.done())
+		);
+	}
+	
 	private Operation<ListHandler> compose(Operation<ListHandler> op1,
 			Operation<ListHandler> op2)
 	{
