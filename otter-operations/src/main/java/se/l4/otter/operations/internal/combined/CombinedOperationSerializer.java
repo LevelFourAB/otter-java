@@ -25,15 +25,15 @@ public class CombinedOperationSerializer
 	{
 		this.types = types;
 	}
-	
+
 	@Override
 	public Operation<CombinedHandler> read(StreamingInput in)
 		throws IOException
 	{
 		in.next(Token.LIST_START);
-		
+
 		List<Operation<CombinedHandler>> ops = new ArrayList<>();
-		
+
 		while(in.peek() != Token.LIST_END)
 		{
 			in.next(Token.LIST_START);
@@ -65,23 +65,24 @@ public class CombinedOperationSerializer
 			}
 			in.next(Token.LIST_END);
 		}
-		
+
 		in.next(Token.LIST_END);
+		ops.sort(IdComparator.INSTANCE);
 		return new DefaultCompoundOperation<>(ops);
 	}
-	
+
 	private Operation<CombinedHandler> readUpdate(StreamingInput in)
 		throws IOException
 	{
 		in.next(Token.VALUE);
 		String id = in.getString();
-		
+
 		in.next(Token.VALUE);
 		String type = in.getString();
-		
+
 		Operation<?> op = serializer(type)
 			.read(in);
-		
+
 		return new Update(id, type, op);
 	}
 
@@ -95,17 +96,17 @@ public class CombinedOperationSerializer
 			if(op instanceof Update)
 			{
 				Update update = ((Update) op);
-				
+
 				out.writeListStart("entry");
-				
+
 				out.write("type", "update");
-				
+
 				out.write("id", update.getId());
 				out.write("type", update.getType());
-				
+
 				serializer(update.getType())
 					.write(update.getOperation(), "op", out);
-				
+
 				out.writeListEnd("entry");
 			}
 			else
@@ -120,5 +121,5 @@ public class CombinedOperationSerializer
 	{
 		return types.get(type).getSerializer();
 	}
-	
+
 }

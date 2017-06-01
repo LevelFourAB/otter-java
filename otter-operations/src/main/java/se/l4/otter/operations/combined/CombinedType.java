@@ -22,7 +22,7 @@ import se.l4.otter.operations.util.MutableOperationIterator;
  * Type for combining different types of operational transformations. This is
  * based on creating instances of other types dynamically and creating a
  * way to reference these using a simple identifier.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -35,34 +35,34 @@ public class CombinedType
 	public CombinedType(Map<String, OTType<Operation<?>>> types)
 	{
 		this.types = types;
-		
+
 		serializer = new CombinedOperationSerializer(types);
 	}
-	
+
 	public OTType<Operation<?>> getSubType(String type)
 	{
 		return types.get(type);
 	}
-	
+
 	@Override
 	public Operation<CombinedHandler> compose(Operation<CombinedHandler> left, Operation<CombinedHandler> right)
 	{
 		IdComparator comparator = IdComparator.INSTANCE;
-		MutableOperationIterator<CombinedHandler> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left, comparator));
-		MutableOperationIterator<CombinedHandler> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right, comparator));
-		
+		MutableOperationIterator<CombinedHandler> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left));
+		MutableOperationIterator<CombinedHandler> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right));
+
 		List<Operation<CombinedHandler>> result = new ArrayList<>();
 		while(it1.hasNext())
 		{
 			CombinedOperation op1 = (CombinedOperation) it1.next();
-			
+
 			boolean handled = false;
 			while(it2.hasNext())
 			{
 				CombinedOperation op2 = (CombinedOperation) it2.next();
-			
+
 				int compared = comparator.compare(op1, op2);
-				
+
 				if(compared > 0)
 				{
 					/*
@@ -86,71 +86,70 @@ public class CombinedType
 					{
 						Update o1 = (Update) op1;
 						Update o2 = (Update) op2;
-						
+
 						String t1 = o1.getType();
 						if(! t1.equals(o2.getType()))
 						{
 							throw new ComposeException("Can not compose operations with id " + o1.getId() + ", they have different types: " + t1 + " vs " + o2.getType());
 						}
-						
+
 						OTType type = types.get(t1);
 						if(type == null)
 						{
 							throw new ComposeException("Unknown type: " + t1);
 						}
-						
+
 						Operation composed = type.compose(o1.getOperation(), o2.getOperation());
 						it1.replace(new Update(o1.getId(), t1, composed));
 					}
-					
+
 					handled = true;
 				}
-				
+
 				break;
 			}
-			
+
 			if(! handled)
 			{
 				result.add(op1);
 			}
 		}
-		
+
 		while(it2.hasNext())
 		{
 			Operation<CombinedHandler> op = it2.next();
 			result.add(op);
 		}
-		
-		result.sort(comparator);
+
 		return new DefaultCompoundOperation<>(result);
 	}
-	
+
 	@Override
 	public OperationPair<Operation<CombinedHandler>> transform(Operation<CombinedHandler> left, Operation<CombinedHandler> right)
 	{
 		IdComparator comparator = IdComparator.INSTANCE;
-		MutableOperationIterator<CombinedHandler> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left, comparator));
-		MutableOperationIterator<CombinedHandler> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right, comparator));
-		
+		MutableOperationIterator<CombinedHandler> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left));
+		MutableOperationIterator<CombinedHandler> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right));
+
 		List<Operation<CombinedHandler>> deltaLeft = new ArrayList<>();
 		List<Operation<CombinedHandler>> deltaRight = new ArrayList<>();
-		
+
 		while(it1.hasNext())
 		{
 			CombinedOperation op1 = (CombinedOperation) it1.next();
-			
+
 			boolean handled = false;
 			while(it2.hasNext())
 			{
 				CombinedOperation op2 = (CombinedOperation) it2.next();
-			
+
 				int compared = comparator.compare(op1, op2);
-				
+
 				if(compared > 0)
 				{
 					/**
 					 * Left key is more than right, no transformation against
-					 * left key to be done. Push right onto delta right. 
+					 * left key to be done. Push right onto delta right.
 					 */
 					deltaRight.add(op2);
 					continue;
@@ -159,7 +158,7 @@ public class CombinedType
 				{
 					/*
 					 * Left key is less than right, back up right by one and
-					 * let left key be added to delta left. 
+					 * let left key be added to delta left.
 					 */
 					it2.back();
 				}
@@ -169,57 +168,57 @@ public class CombinedType
 					{
 						Update o1 = (Update) op1;
 						Update o2 = (Update) op2;
-						
+
 						String t1 = o1.getType();
 						if(! t1.equals(o2.getType()))
 						{
 							throw new TransformException("Can not transform operations with id " + o1.getId() + ", they have different types: " + t1 + " vs " + o2.getType());
 						}
-						
+
 						OTType type = types.get(t1);
 						if(type == null)
 						{
 							throw new TransformException("Unknown type: " + t1);
 						}
-						
+
 						OperationPair transformed = type.transform(o1.getOperation(), o2.getOperation());
 						deltaLeft.add(new Update(o1.getId(), t1, transformed.getLeft()));
 						deltaRight.add(new Update(o1.getId(), t1, transformed.getRight()));
 					}
-					
+
 					handled = true;
 				}
-				
+
 				break;
 			}
-			
+
 			if(! handled)
 			{
 				deltaLeft.add(op1);
 			}
 		}
-		
+
 		while(it2.hasNext())
 		{
 			Operation<CombinedHandler> op = it2.next();
 			deltaRight.add(op);
 		}
-		
+
 		return new OperationPair<>(
 			new DefaultCompoundOperation<>(deltaLeft),
 			new DefaultCompoundOperation<>(deltaRight)
 		);
 	}
-	
+
 	@Override
 	public Serializer<Operation<CombinedHandler>> getSerializer()
 	{
 		return serializer;
 	}
-	
+
 	/**
 	 * Compose two operations of the given type.
-	 * 
+	 *
 	 * @param type
 	 * @param left
 	 * @param right
@@ -232,7 +231,7 @@ public class CombinedType
 		{
 			throw new ComposeException("Unknown sub type: " + type);
 		}
-		
+
 		return subType.compose(left, right);
 	}
 }

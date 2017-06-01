@@ -14,20 +14,21 @@ import se.l4.otter.operations.DefaultCompoundOperation;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationException;
 import se.l4.otter.operations.map.MapHandler;
+import se.l4.otter.operations.map.MapKeyComparator;
 
 public class MapOperationSerializer
 	implements Serializer<Operation<MapHandler>>
 {
 	public static final MapOperationSerializer INSTANCE = new MapOperationSerializer();
-	
+
 	@Override
 	public Operation<MapHandler> read(StreamingInput in)
 		throws IOException
 	{
 		in.next(Token.LIST_START);
-		
+
 		List<Operation<MapHandler>> ops = new ArrayList<>();
-		
+
 		while(in.peek() != Token.LIST_END)
 		{
 			in.next(Token.LIST_START);
@@ -60,11 +61,12 @@ public class MapOperationSerializer
 			}
 			in.next(Token.LIST_END);
 		}
-		
+
 		in.next(Token.LIST_END);
+		ops.sort(MapKeyComparator.INSTANCE);
 		return new DefaultCompoundOperation<>(ops);
 	}
-	
+
 	private MapSet readSet(StreamingInput in)
 		throws IOException
 	{
@@ -76,7 +78,7 @@ public class MapOperationSerializer
 		{
 			in.next(Token.KEY);
 			String key = in.getString();
-			
+
 			switch(key)
 			{
 				case "key":
@@ -94,7 +96,7 @@ public class MapOperationSerializer
 			}
 		}
 		in.next(Token.OBJECT_END);
-		
+
 		return new MapSet(setKey, oldValue, newValue);
 	}
 
@@ -108,19 +110,19 @@ public class MapOperationSerializer
 			if(op instanceof MapSet)
 			{
 				MapSet set = ((MapSet) op);
-				
+
 				out.writeListStart("entry");
-				
+
 				out.write("type", "set");
-				
+
 				out.writeObjectStart("op");
-				
+
 				out.write("key", set.getKey());
 				DataSerializer.INSTANCE.write(set.getOldValue(), "oldValue", out);
 				DataSerializer.INSTANCE.write(set.getNewValue(), "newValue", out);
-				
+
 				out.writeObjectEnd("op");
-				
+
 				out.writeListEnd("entry");
 			}
 			else
@@ -130,5 +132,5 @@ public class MapOperationSerializer
 		}
 		out.writeListEnd(name);
 	}
-	
+
 }

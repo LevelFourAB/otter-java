@@ -1,6 +1,8 @@
 package se.l4.otter.operations.internal.combined;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -17,11 +19,11 @@ public class DefaultCombinedDelta<ReturnPath>
 {
 	private final Function<Operation<CombinedHandler>, ReturnPath> resultHandler;
 	private final Map<String, Operation<CombinedHandler>> ops;
-	
+
 	public DefaultCombinedDelta(Function<Operation<CombinedHandler>, ReturnPath> resultHandler)
 	{
 		this.resultHandler = resultHandler;
-		
+
 		ops = new HashMap<>();
 	}
 
@@ -32,15 +34,17 @@ public class DefaultCombinedDelta<ReturnPath>
 		{
 			throw new OperationException("Can not update id `" +  id + "` several times");
 		}
-		
+
 		ops.put(id, new Update(id, type, op));
-		
+
 		return this;
 	}
-	
+
 	@Override
 	public ReturnPath done()
 	{
-		return resultHandler.apply(new DefaultCompoundOperation<>(ImmutableList.copyOf(ops.values())));
+		List<Operation<CombinedHandler>> list = new ArrayList<>(ops.values());
+		list.sort(IdComparator.INSTANCE);
+		return resultHandler.apply(new DefaultCompoundOperation<>(ImmutableList.copyOf(list)));
 	}
 }

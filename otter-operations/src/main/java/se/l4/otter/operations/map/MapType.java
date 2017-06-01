@@ -17,12 +17,12 @@ import se.l4.otter.operations.util.MutableOperationIterator;
 /**
  * {@link OTType Operational Transformation type} for basic
  * operations against a map structure.
- * 
+ *
  * <p>
  * All operations in this type extend {@link MapOperation} which gives them a
  * key. The key is used to sort operations during composition and transformation
  * to make these operations possible for several operations.
- *  
+ *
  * @author Andreas Holstenson
  *
  */
@@ -33,21 +33,21 @@ public class MapType
 	public Operation<MapHandler> compose(Operation<MapHandler> left, Operation<MapHandler> right)
 	{
 		MapKeyComparator comparator = MapKeyComparator.INSTANCE;
-		MutableOperationIterator<MapHandler> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left, comparator));
-		MutableOperationIterator<MapHandler> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right, comparator));
-		
+		MutableOperationIterator<MapHandler> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left));
+		MutableOperationIterator<MapHandler> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right));
+
 		List<Operation<MapHandler>> result = new ArrayList<>();
 		while(it1.hasNext())
 		{
 			MapOperation op1 = (MapOperation) it1.next();
-			
+
 			boolean handled = false;
 			while(it2.hasNext())
 			{
 				MapOperation op2 = (MapOperation) it2.next();
-			
+
 				int compared = comparator.compare(op1, op2);
-				
+
 				if(compared > 0)
 				{
 					/*
@@ -71,30 +71,29 @@ public class MapType
 					{
 						MapSet s1 = (MapSet) op1;
 						MapSet s2 = (MapSet) op2;
-					
+
 						// Take old value from left and new value from right
 						it1.replace(new MapSet(s1.getKey(), s1.getOldValue(), s2.getNewValue()));
 					}
-					
+
 					handled = true;
 				}
-				
+
 				break;
 			}
-			
+
 			if(! handled)
 			{
 				result.add(op1);
 			}
 		}
-		
+
 		while(it2.hasNext())
 		{
 			Operation<MapHandler> op = it2.next();
 			result.add(op);
 		}
-		
-		result.sort(comparator);
+
 		return new DefaultCompoundOperation<>(result);
 	}
 
@@ -102,27 +101,27 @@ public class MapType
 	public OperationPair<Operation<MapHandler>> transform(Operation<MapHandler> left, Operation<MapHandler> right)
 	{
 		MapKeyComparator comparator = MapKeyComparator.INSTANCE;
-		MutableOperationIterator<MapHandler> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left, comparator));
-		MutableOperationIterator<MapHandler> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right, comparator));
+		MutableOperationIterator<MapHandler> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left));
+		MutableOperationIterator<MapHandler> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right));
 
 		List<Operation<MapHandler>> deltaLeft = new ArrayList<>();
 		List<Operation<MapHandler>> deltaRight = new ArrayList<>();
-		
+
 		while(it1.hasNext())
 		{
 			MapOperation op1 = (MapOperation) it1.next();
-			
+
 			boolean handled = false;
 			while(it2.hasNext())
 			{
 				MapOperation op2 = (MapOperation) it2.next();
-			
+
 				int compared = comparator.compare(op1, op2);
 				if(compared > 0)
 				{
 					/**
 					 * Left key is more than right, no transformation against
-					 * left key to be done. Push right onto delta right. 
+					 * left key to be done. Push right onto delta right.
 					 */
 					deltaRight.add(op2);
 					continue;
@@ -131,7 +130,7 @@ public class MapType
 				{
 					/*
 					 * Left key is less than right, back up right by one and
-					 * let left key be added to delta left. 
+					 * let left key be added to delta left.
 					 */
 					it2.back();
 				}
@@ -142,29 +141,29 @@ public class MapType
 						// Transform the two set operations against each other
 						MapSet s1 = (MapSet) op1;
 						MapSet s2 = (MapSet) op2;
-						
+
 						deltaRight.add(new MapSet(s2.getKey(), s1.getNewValue(), s2.getNewValue()));
 					}
-					
+
 					handled = true;
 				}
-				
+
 				break;
 			}
-			
+
 			if(! handled)
 			{
 				deltaLeft.add(op1);
 			}
 		}
-		
+
 		while(it2.hasNext())
 		{
 			Operation<MapHandler> op = it2.next();
 			deltaRight.add(op);
 		}
-		
-		return new OperationPair<Operation<MapHandler>>(
+
+		return new OperationPair<>(
 			new DefaultCompoundOperation<>(deltaLeft),
 			new DefaultCompoundOperation<>(deltaRight)
 		);
