@@ -18,7 +18,7 @@
 		<dependency>
 			<groupId>se.l4.commons</groupId>
 			<artifactId>commons-serialization</artifactId>
-			<version>1.0.0</version>
+			<version>1.1.0</version>
 		</dependency>
 
 		<dependency>

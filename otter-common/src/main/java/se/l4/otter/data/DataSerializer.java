@@ -46,7 +46,7 @@ public class DataSerializer
 				return in.getValue();
 			case NULL:
 				in.next();
-				return in.getValue();
+				return null;
 			case LIST_START:
 				return readList(in);
 			case OBJECT_START:
