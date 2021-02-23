@@ -2,7 +2,7 @@ package se.l4.otter.operations;
 
 /**
  * A pair of {@link Operation}s.
- * 
+ *
  * @author Andreas Holstenson
  *
  * @param <Op>
@@ -11,18 +11,18 @@ public class OperationPair<Op extends Operation<?>>
 {
 	private final Op first;
 	private final Op second;
-	
+
 	public OperationPair(Op first, Op second)
 	{
 		this.first = first;
 		this.second = second;
 	}
-	
+
 	public Op getLeft()
 	{
 		return first;
 	}
-	
+
 	public Op getRight()
 	{
 		return second;

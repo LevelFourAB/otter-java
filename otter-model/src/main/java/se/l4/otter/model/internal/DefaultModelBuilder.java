@@ -22,21 +22,21 @@ public class DefaultModelBuilder
 	public DefaultModelBuilder(Editor<Operation<CombinedHandler>> editor)
 	{
 		this.editor = editor;
-		
+
 		types = new HashMap<>();
-		
+
 		addType("map", SharedMapImpl::new);
 		addType("string", SharedStringImpl::new);
 		addType("list", e -> new SharedListImpl<Object>((SharedObjectEditor) e));
 	}
-	
+
 	@Override
 	public <T extends SharedObject, Op extends Operation<?>> ModelBuilder addType(String id, SharedObjectFactory<T, Op> factory)
 	{
 		types.put(id, factory);
 		return this;
 	}
-	
+
 	@Override
 	public Model build()
 	{

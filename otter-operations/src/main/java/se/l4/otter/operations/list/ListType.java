@@ -13,11 +13,11 @@ import se.l4.otter.operations.string.StringType;
 /**
  * Operation Transformation type for lists. Use {@link ListDelta} to construct
  * operations.
- * 
+ *
  * <p>
  * The support for list is very similar to {@link StringType strings}. It
  * uses three operations, retain, insert and delete.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -32,7 +32,7 @@ public class ListType
 			CompoundOperation.toList(right)
 		).perform();
 	}
-	
+
 	@Override
 	public OperationPair<Operation<ListHandler>> transform(Operation<ListHandler> left, Operation<ListHandler> right)
 	{
@@ -41,11 +41,11 @@ public class ListType
 			right
 		).perform();
 	}
-	
+
 	@Override
 	public Serializer<Operation<ListHandler>> getSerializer()
 	{
 		return ListOperationSerializer.INSTANCE;
 	}
-	
+
 }

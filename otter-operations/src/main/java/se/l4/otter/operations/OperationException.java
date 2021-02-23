@@ -2,7 +2,7 @@ package se.l4.otter.operations;
 
 /**
  * Base exception for problems that occur during work with {@link Operation}s.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -34,5 +34,5 @@ public class OperationException
 	{
 		super(cause);
 	}
-	
+
 }

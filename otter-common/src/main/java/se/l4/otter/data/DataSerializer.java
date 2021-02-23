@@ -11,9 +11,9 @@ import se.l4.commons.serialization.format.Token;
 
 /**
  * Serializer that can be used for writing and reading basic data values,
- * such as {@link String}, long, int, short, double, float, boolean, 
+ * such as {@link String}, long, int, short, double, float, boolean,
  * {@link DataArray} and {@link DataObject}.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -28,10 +28,10 @@ public class DataSerializer
 	{
 		return readDynamic(in);
 	}
-	
+
 	/**
 	 * Depending on the next token read either a value, a list or a map.
-	 * 
+	 *
 	 * @param input
 	 * @return
 	 * @throws IOException
@@ -52,36 +52,36 @@ public class DataSerializer
 			case OBJECT_START:
 				return readObject(in);
 		}
-		
+
 		throw new SerializationException("Unable to read, unknown start of value: " + in.peek());
 	}
-	
+
 	private static DataObject readObject(StreamingInput in)
 		throws IOException
 	{
 		DataObject result = new DataObject();
-		
+
 		in.next();
 		while(in.peek() != Token.OBJECT_END)
 		{
 			in.next(Token.KEY);
 			String key = in.getString();
-			
+
 			Object value = readDynamic(in);
-			
+
 			result.put(key, value);
 		}
-		
+
 		in.next(Token.OBJECT_END);
-		
+
 		return result;
 	}
-	
+
 	private static DataArray readList(StreamingInput in)
 		throws IOException
 	{
 		DataArray result = new DataArray();
-		
+
 		in.next(Token.LIST_START);
 		while(in.peek() != Token.LIST_END)
 		{
@@ -89,12 +89,12 @@ public class DataSerializer
 			Object value = readDynamic(in);
 			result.add(value);
 		}
-		
+
 		in.next(Token.LIST_END);
-		
+
 		return result;
 	}
-	
+
 	@Override
 	public void write(Object object, String name, StreamingOutput out)
 		throws IOException

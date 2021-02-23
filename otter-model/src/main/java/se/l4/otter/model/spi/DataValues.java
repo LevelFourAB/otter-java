@@ -7,7 +7,7 @@ import se.l4.otter.operations.OperationException;
 /**
  * Utility for converting between values suitable for use with operations
  * and values in the model.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -25,19 +25,19 @@ public class DataValues
 		else
 		{
 			// TODO: Better value validation
-			
+
 			result.add("value");
 			result.add(value);
 		}
-		
+
 		return result;
 	}
-	
+
 	public static Object fromData(SharedObjectEditor<?> editor, Object value)
 	{
 		DataArray array = (DataArray) value;
 		String type = (String) array.get(0);
-		
+
 		switch(type)
 		{
 			case "ref":

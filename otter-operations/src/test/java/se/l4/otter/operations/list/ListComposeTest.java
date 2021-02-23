@@ -16,22 +16,22 @@ public class ListComposeTest
 			.insert("one")
 			.insert("two")
 			.done();
-		
+
 		Operation<ListHandler> op2 = ListDelta.builder()
 			.retain(1)
 			.delete("two")
 			.insert("three")
 			.done();
-		
+
 		Operation<ListHandler> r = compose(op1, op2);
-		
+
 		assertThat(r, is(ListDelta.builder()
 			.insert("one")
 			.insert("three")
 			.done())
 		);
 	}
-	
+
 	@Test
 	public void testCompose2()
 	{
@@ -39,60 +39,60 @@ public class ListComposeTest
 			.retain(1)
 			.insert("one")
 			.done();
-		
+
 		Operation<ListHandler> op2 = ListDelta.builder()
 			.retain(1)
 			.delete("one")
 			.insert("three")
 			.done();
-		
+
 		Operation<ListHandler> r = compose(op1, op2);
-		
+
 		assertThat(r, is(ListDelta.builder()
 			.retain(1)
 			.insert("three")
 			.done())
 		);
 	}
-	
+
 	@Test
 	public void testCompose3()
 	{
 		Operation<ListHandler> op1 = ListDelta.builder()
 			.insert("one")
 			.done();
-		
+
 		Operation<ListHandler> op2 = ListDelta.builder()
 			.delete("one")
 			.done();
-		
+
 		Operation<ListHandler> r = compose(op1, op2);
-		
+
 		assertThat(r, is(ListDelta.builder()
 			.done())
 		);
 	}
-	
+
 	@Test
 	public void testCompose4()
 	{
 		Operation<ListHandler> op1 = ListDelta.builder()
 			.delete("one")
 			.done();
-		
+
 		Operation<ListHandler> op2 = ListDelta.builder()
 			.insert("one")
 			.done();
-		
+
 		Operation<ListHandler> r = compose(op1, op2);
-		
+
 		assertThat(r, is(ListDelta.builder()
 			.delete("one")
 			.insert("one")
 			.done())
 		);
 	}
-	
+
 
 	@Test
 	public void testCompose6()
@@ -101,14 +101,14 @@ public class ListComposeTest
 			.retain(1)
 			.delete("one")
 			.done();
-		
+
 		Operation<ListHandler> op2 = ListDelta.builder()
 			.insert("one")
 			.retain(1)
 			.done();
-		
+
 		Operation<ListHandler> r = compose(op1, op2);
-		
+
 		assertThat(r, is(ListDelta.builder()
 			.insert("one")
 			.retain(1)
@@ -116,7 +116,7 @@ public class ListComposeTest
 			.done())
 		);
 	}
-	
+
 	@Test
 	public void testCompose7()
 	{
@@ -124,15 +124,15 @@ public class ListComposeTest
 			.retain(4)
 			.insert("one")
 			.done();
-		
+
 		Operation<ListHandler> op2 = ListDelta.builder()
 			.retain(2)
 			.delete("one")
 			.retain(2)
 			.done();
-		
+
 		Operation<ListHandler> r = compose(op1, op2);
-		
+
 		assertThat(r, is(ListDelta.builder()
 			.retain(2)
 			.delete("one")
@@ -141,7 +141,7 @@ public class ListComposeTest
 			.done())
 		);
 	}
-	
+
 	@Test
 	public void testCompose8()
 	{
@@ -150,14 +150,14 @@ public class ListComposeTest
 			.delete("a")
 			.retain(1)
 			.done();
-		
+
 		Operation<ListHandler> op2 = ListDelta.builder()
 			.insert("a")
 			.retain(2)
 			.done();
-		
+
 		Operation<ListHandler> r = compose(op1, op2);
-		
+
 		assertThat(r, is(ListDelta.builder()
 			.insert("a")
 			.retain(1)
@@ -166,7 +166,7 @@ public class ListComposeTest
 			.done())
 		);
 	}
-	
+
 	private Operation<ListHandler> compose(Operation<ListHandler> op1,
 			Operation<ListHandler> op2)
 	{

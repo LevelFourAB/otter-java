@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * Default implementation of {@link CompoundOperation}.
- * 
+ *
  * @author Andreas Holstenson
  *
  * @param <Handler>
@@ -20,7 +20,7 @@ public class DefaultCompoundOperation<Handler>
 	{
 		this.operations = Collections.unmodifiableList(new ArrayList<>(operations));
 	}
-	
+
 	@Override
 	public void apply(Handler target)
 	{
@@ -29,13 +29,13 @@ public class DefaultCompoundOperation<Handler>
 			op.apply(target);
 		}
 	}
-	
+
 	@Override
 	public List<Operation<Handler>> getOperations()
 	{
 		return operations;
 	}
-	
+
 	@Override
 	public Operation<Handler> invert()
 	{

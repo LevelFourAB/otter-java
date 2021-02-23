@@ -15,7 +15,7 @@ import se.l4.otter.operations.string.StringHandler;
 /**
  * Extension to {@link StringDelta} that will attempt to normalize annotations
  * when composing and transforming.
- * 
+ *
  * @author Andreas Holstenson
  *
  * @param <ReturnPath>
@@ -76,7 +76,7 @@ public class AnnotationNormalizingDelta<ReturnPath>
 		{
 			flush();
 		}
-		
+
 		delta.adopt(op);
 		return this;
 	}
@@ -97,7 +97,7 @@ public class AnnotationNormalizingDelta<ReturnPath>
 			for(String key : change.keys())
 			{
 				ValueChange previous = tracker.get(key);
-				
+
 				ValueChange value = change.getChange(key);
 				if(value.getNewValue() == null)
 				{
@@ -126,7 +126,7 @@ public class AnnotationNormalizingDelta<ReturnPath>
 					{
 						annotations.set(key, previous.getNewValue(), value.getNewValue());
 					}
-					
+
 					tracker.put(key, value);
 				}
 			}

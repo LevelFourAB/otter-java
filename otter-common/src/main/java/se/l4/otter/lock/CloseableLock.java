@@ -2,7 +2,7 @@ package se.l4.otter.lock;
 
 /**
  * Lock adapter that is designed to be used with try-statements.
- * 
+ *
  * @author Andreas Holstenson
  *
  */

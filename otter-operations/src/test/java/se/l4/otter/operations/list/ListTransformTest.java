@@ -20,7 +20,7 @@ public class ListTransformTest
 			insert(21, 3, "1")
 		);
 	}
-	
+
 	@Test
 	public void testInsertionAtSameLocation()
 	{
@@ -31,7 +31,7 @@ public class ListTransformTest
 			insert(23, 5, "1", "2", "3")
 		);
 	}
-	
+
 	@Test
 	public void testDelete()
 	{
@@ -42,7 +42,7 @@ public class ListTransformTest
 	        delete(23, 5, "d", "e")
 		);
 	}
-	
+
 	@Test
 	public void testOther1()
 	{
@@ -53,7 +53,7 @@ public class ListTransformTest
 		    delete(15, 2, "f", "g")
 		);
 	}
-	
+
 	@Test
 	public void testOther2()
 	{
@@ -64,7 +64,7 @@ public class ListTransformTest
 			delete(15, 1, "f", "g")
 		);
 	}
-	
+
 	@Test
 	public void testOther3()
 	{
@@ -76,7 +76,7 @@ public class ListTransformTest
 			delete(15, 1, "f", "g", "h", "i")
 		);
 	}
-	
+
 	@Test
 	public void testOther4()
 	{
@@ -88,7 +88,7 @@ public class ListTransformTest
 			retain(13)
 		);
 	}
-	
+
 	@Test
 	public void testOther5()
 	{
@@ -100,7 +100,7 @@ public class ListTransformTest
 			retain(13)
 		);
 	}
-	
+
 	private static Operation<ListHandler> retain(int i)
 	{
 		return ListDelta.builder()
@@ -116,7 +116,7 @@ public class ListTransformTest
 			.retain(size-location)
 			.done();
 	}
-	
+
 	public static Operation<ListHandler> delete(int size, int location, Object... values)
 	{
 		return ListDelta.builder()
@@ -125,7 +125,7 @@ public class ListTransformTest
 			.retain(size-location-values.length)
 			.done();
 	}
-	
+
 	private void test(Operation<?> client, Operation<?> server,
 			Operation<?> expectedClient, Operation<?> expectedServer)
 	{
@@ -134,12 +134,12 @@ public class ListTransformTest
 		assertThat("left", op.getLeft(), is(expectedClient));
 		assertThat("right", op.getRight(), is(expectedServer));
 	}
-	
+
 	private void reversibleTest(Operation<?> client, Operation<?> server,
 			Operation<?> expectedClient, Operation<?> expectedServer)
 	{
 		test(client, server, expectedClient, expectedServer);
 		test(server, client, expectedServer, expectedClient);
 	}
-	
+
 }

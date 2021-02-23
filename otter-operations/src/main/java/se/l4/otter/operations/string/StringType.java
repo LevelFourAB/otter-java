@@ -15,7 +15,7 @@ public class StringType
 	implements OTType<Operation<StringHandler>>
 {
 	private final Serializer<Operation<StringHandler>> serializer;
-	
+
 	public StringType()
 	{
 		serializer = new StringOperationSerializer();
@@ -29,7 +29,7 @@ public class StringType
 			CompoundOperation.toList(op2)
 		);
 	}
-	
+
 	private Operation<StringHandler> compose(List<Operation<StringHandler>> ops1, List<Operation<StringHandler>> ops2)
 	{
 		return new StringTypeComposer(ops1, ops2).perform();
@@ -40,7 +40,7 @@ public class StringType
 	{
 		return new StringTypeTransformer(left, right).perform();
 	}
-	
+
 	@Override
 	public Serializer<Operation<StringHandler>> getSerializer()
 	{

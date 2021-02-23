@@ -25,7 +25,7 @@ public class DefaultEditorControlTest
 			)
 		);
 	}
-	
+
 	@Test
 	public void testGetLatest()
 	{
@@ -35,7 +35,7 @@ public class DefaultEditorControlTest
 			.done()
 		));
 	}
-	
+
 	@Test
 	public void testEdit()
 	{
@@ -46,14 +46,14 @@ public class DefaultEditorControlTest
 			.insert("Cookie")
 			.done()
 		);
-		
+
 		TaggedOperation<Operation<StringHandler>> latest = control.getLatest();
 		assertThat(latest.getOperation(), is(StringDelta.builder()
 			.insert("Hello Cookie")
 			.done()
 		));
 	}
-	
+
 	@Test
 	public void testEditsFromSameHistoryId()
 	{
@@ -64,13 +64,13 @@ public class DefaultEditorControlTest
 			.insert("Cookie")
 			.done()
 		);
-		
+
 		control.store(historyId, "1", StringDelta.builder()
 			.retain(11)
 			.insert("!")
 			.done()
 		);
-		
+
 		TaggedOperation<Operation<StringHandler>> latest = control.getLatest();
 		assertThat(latest.getOperation(), is(StringDelta.builder()
 			.insert("Hello Cookie!")

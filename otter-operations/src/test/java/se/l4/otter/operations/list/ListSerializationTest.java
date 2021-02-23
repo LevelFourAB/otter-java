@@ -19,7 +19,7 @@ public class ListSerializationTest
 			.done()
 		);
 	}
-	
+
 	@Test
 	public void test2()
 	{
@@ -30,7 +30,7 @@ public class ListSerializationTest
 			.done()
 		);
 	}
-	
+
 	@Test
 	public void test3()
 	{
@@ -41,14 +41,14 @@ public class ListSerializationTest
 			.done()
 		);
 	}
-	
+
 	private void test(Operation<ListHandler> op)
 	{
 		ListType type = new ListType();
 		Serializer<Operation<ListHandler>> serializer = type.getSerializer();
 		SerializerTestHelper.testSymmetry(serializer, op);
 	}
-	
+
 	private void test(String json, Operation<ListHandler> op)
 	{
 		ListType type = new ListType();

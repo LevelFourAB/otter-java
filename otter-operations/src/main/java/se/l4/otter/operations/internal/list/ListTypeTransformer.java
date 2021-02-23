@@ -12,7 +12,7 @@ import se.l4.otter.operations.util.MutableOperationIterator;
 
 /**
  * Transformer used by {@link ListType}.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -20,7 +20,7 @@ public class ListTypeTransformer
 {
 	private final MutableOperationIterator<ListHandler> left;
 	private final MutableOperationIterator<ListHandler> right;
-	
+
 	private final ListDelta<Operation<ListHandler>> deltaLeft;
 	private final ListDelta<Operation<ListHandler>> deltaRight;
 
@@ -28,21 +28,21 @@ public class ListTypeTransformer
 	{
 		this.left = new MutableOperationIterator<>(left);
 		this.right = new MutableOperationIterator<>(right);
-		
+
 		deltaLeft = ListDelta.builder();
 		deltaRight = ListDelta.builder();
 	}
-	
+
 	public OperationPair<Operation<ListHandler>> perform()
 	{
 		while(left.hasNext())
 		{
 			Operation<ListHandler> op1 = left.next();
-				
+
 			if(right.hasNext())
 			{
 				Operation<ListHandler> op2 = right.next();
-				
+
 				if(op1 instanceof ListRetain)
 				{
 					handleRetain(op1, op2);
@@ -74,7 +74,7 @@ public class ListTypeTransformer
 				}
 			}
 		}
-		
+
 		while(right.hasNext())
 		{
 			Operation<ListHandler> op2 = right.next();
@@ -89,7 +89,7 @@ public class ListTypeTransformer
 				throw new TransformException("Could not transform, mismatch in operation. Current right operation is: " + op2);
 			}
 		}
-		
+
 		return new OperationPair<>(deltaLeft.done(), deltaRight.done());
 	}
 
@@ -99,7 +99,7 @@ public class ListTypeTransformer
 		if(op2 instanceof ListRetain)
 		{
 			int length2 = ((ListRetain) op2).getLength();
-			
+
 			if(length1 > length2)
 			{
 				/*
@@ -108,7 +108,7 @@ public class ListTypeTransformer
 				 */
 				deltaLeft.retain(length2);
 				deltaRight.retain(length2);
-				
+
 				left.replace(new ListRetain(length1 - length2));
 			}
 			else if(length1 < length2)
@@ -119,7 +119,7 @@ public class ListTypeTransformer
 				 */
 				deltaLeft.retain(length1);
 				deltaRight.retain(length1);
-				
+
 				right.replace(new ListRetain(length2 - length1));
 			}
 			else
@@ -137,17 +137,17 @@ public class ListTypeTransformer
 			 */
 			Object[] items2 = ((ListInsert) op2).getItems();
 			int length2 = items2.length;
-			
+
 			deltaLeft.retain(length2);
 			deltaRight.adopt(op2);
-			
+
 			left.back();
 		}
 		else if(op2 instanceof ListDelete)
 		{
 			Object[] items2 = ((ListDelete) op2).getItems();
 			int length2 = items2.length;
-			
+
 			if(length1 > length2)
 			{
 				/*
@@ -155,7 +155,7 @@ public class ListTypeTransformer
 				 * left with retain of remaining.
 				 */
 				deltaRight.adopt(op2);
-				
+
 				left.replace(new ListRetain(length1 - length2));
 			}
 			else if(length1 < length2)
@@ -165,7 +165,7 @@ public class ListTypeTransformer
 				 * right with remaining.
 				 */
 				deltaRight.deleteMultiple(Arrays.copyOf(items2, length1));
-				
+
 				right.replace(new ListDelete(Arrays.copyOfRange(items2, length1, items2.length)));
 			}
 			else
@@ -175,15 +175,15 @@ public class ListTypeTransformer
 			}
 		}
 	}
-	
+
 	private void handleInsert(Operation<ListHandler> op1, Operation<ListHandler> op2)
 	{
 		Object[] items1 = ((ListInsert) op1).getItems();
 		int length1 = items1.length;
-		
+
 		deltaLeft.adopt(op1);
 		deltaRight.retain(length1);
-		
+
 		right.back();
 	}
 
@@ -191,7 +191,7 @@ public class ListTypeTransformer
 	{
 		Object[] items1 = ((ListDelete) op1).getItems();
 		int length1 = items1.length;
-		
+
 		if(op2 instanceof ListRetain)
 		{
 			int length2 = ((ListRetain) op2).getLength();
@@ -202,7 +202,7 @@ public class ListTypeTransformer
 				 * and replace left with delete for remaining.
 				 */
 				deltaLeft.deleteMultiple(Arrays.copyOf(items1, length2));
-				
+
 				left.replace(new ListDelete(Arrays.copyOfRange(items1, length2, items1.length)));
 			}
 			else if(length1 < length2)
@@ -212,7 +212,7 @@ public class ListTypeTransformer
 				 * with retain of remaining.
 				 */
 				deltaLeft.adopt(op1);
-				
+
 				right.replace(new ListRetain(length2 - length1));
 			}
 			else
@@ -229,17 +229,17 @@ public class ListTypeTransformer
 			 */
 			Object[] items2 = ((ListInsert) op2).getItems();
 			int length2 = items2.length;
-			
+
 			deltaLeft.retain(length2);
 			deltaRight.adopt(op2);
-			
+
 			left.back();
 		}
 		else if(op2 instanceof ListDelete)
 		{
 			Object[] items2 = ((ListDelete) op2).getItems();
 			int length2 = items2.length;
-			
+
 			if(length1 > length2)
 			{
 				/*

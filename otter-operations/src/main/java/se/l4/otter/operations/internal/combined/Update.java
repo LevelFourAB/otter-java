@@ -16,18 +16,18 @@ public class Update
 		this.type = type;
 		this.operation = operation;
 	}
-	
+
 	@Override
 	public String getId()
 	{
 		return id;
 	}
-	
+
 	public String getType()
 	{
 		return type;
 	}
-	
+
 	public Operation<?> getOperation()
 	{
 		return operation;

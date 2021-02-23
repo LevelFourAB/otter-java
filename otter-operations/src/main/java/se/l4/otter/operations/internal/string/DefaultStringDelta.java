@@ -22,26 +22,26 @@ public class DefaultStringDelta<ReturnPath>
 		DELETE,
 		ANNOTATIONS
 	}
-	
+
 	private final Function<Operation<StringHandler>, ReturnPath> resultHandler;
 	private final List<Operation<StringHandler>> operations;
-	
+
 	private State state;
-	
+
 	private StringBuilder characters;
 	private int retainCount;
-	
+
 	private AnnotationChange annotationChange;
-	
+
 	public DefaultStringDelta(Function<Operation<StringHandler>, ReturnPath> resultHandler)
 	{
 		this.resultHandler = resultHandler;
 		operations = new ArrayList<>();
-		
+
 		characters = new StringBuilder();
 		state = State.EMPTY;
 	}
-	
+
 	public void flush()
 	{
 		switch(state)
@@ -56,7 +56,7 @@ public class DefaultStringDelta<ReturnPath>
 				if(characters.length() > 0)
 				{
 					StringInsert op = new StringInsert(characters.toString());
-					
+
 					/*
 					 * Check if the last operation was a delete, in which case we
 					 * normalize a bit and enforce that the insert always comes
@@ -88,33 +88,33 @@ public class DefaultStringDelta<ReturnPath>
 				}
 				break;
 		}
-		
+
 		characters.setLength(0);
 		retainCount = 0;
 		annotationChange = null;
 	}
-	
+
 	private void switchState(State state)
 	{
 		if(this.state != state)
 		{
 			flush();
 		}
-		
+
 		this.state = state;
 	}
-	
+
 	@Override
 	public StringDelta<ReturnPath> retain(int count)
 	{
 		if(count <= 0) return this;
-		
+
 		switchState(State.RETAIN);
-		
+
 		retainCount += count;
 		return this;
 	}
-	
+
 	@Override
 	public StringDelta<ReturnPath> insert(String s)
 	{
@@ -122,7 +122,7 @@ public class DefaultStringDelta<ReturnPath>
 		characters.append(s);
 		return this;
 	}
-	
+
 	@Override
 	public StringDelta<ReturnPath> delete(String s)
 	{
@@ -130,23 +130,23 @@ public class DefaultStringDelta<ReturnPath>
 		characters.append(s);
 		return this;
 	}
-	
+
 	@Override
 	public AnnotationChangeBuilder<StringDelta<ReturnPath>> updateAnnotations()
 	{
 		return new DefaultAnnotationChangeBuilder<>(this::updateAnnotations);
 	}
-	
+
 	@Override
 	public StringDelta<ReturnPath> updateAnnotations(AnnotationChange change)
 	{
 		if(change.isEmpty()) return this;
-		
+
 		switchState(State.ANNOTATIONS);
 		annotationChange = DefaultAnnotationChange.merge(annotationChange, change);
 		return this;
 	}
-	
+
 	@Override
 	public StringDelta<ReturnPath> adopt(Operation<StringHandler> op)
 	{
@@ -170,10 +170,10 @@ public class DefaultStringDelta<ReturnPath>
 		{
 			throw new IllegalArgumentException("Unknown operation: " + op);
 		}
-		
+
 		return this;
 	}
-	
+
 	@Override
 	public ReturnPath done()
 	{

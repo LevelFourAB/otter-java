@@ -18,7 +18,7 @@ public class StringSerializationTest
 			.done()
 		);
 	}
-	
+
 	@Test
 	public void test2()
 	{
@@ -35,7 +35,7 @@ public class StringSerializationTest
 			.done()
 		);
 	}
-	
+
 	@Test
 	public void test3()
 	{
@@ -49,14 +49,14 @@ public class StringSerializationTest
 			.done()
 		);
 	}
-	
+
 	private void test(Operation<StringHandler> op)
 	{
 		StringType type = new StringType();
 		Serializer<Operation<StringHandler>> serializer = type.getSerializer();
 		SerializerTestHelper.testSymmetry(serializer, op);
 	}
-	
+
 	private void test(String json, Operation<StringHandler> op)
 	{
 		StringType type = new StringType();

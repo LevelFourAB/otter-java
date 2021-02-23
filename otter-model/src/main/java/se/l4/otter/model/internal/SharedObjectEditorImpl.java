@@ -18,7 +18,7 @@ public class SharedObjectEditorImpl<Op extends Operation<?>>
 	private final Consumer<Op> applier;
 	private final DefaultModel model;
 	private final Consumer<Runnable> eventQueuer;
-	
+
 	private OperationHandler<Op> handler;
 
 	public SharedObjectEditorImpl(
@@ -36,56 +36,56 @@ public class SharedObjectEditorImpl<Op extends Operation<?>>
 		this.applier = applier;
 		this.eventQueuer = eventQueuer;
 	}
-	
+
 	@Override
 	public String getId()
 	{
 		return id;
 	}
-	
+
 	@Override
 	public String getType()
 	{
 		return type;
 	}
-	
+
 	@Override
 	public Op getCurrent()
 	{
 		return supplier.get();
 	}
-	
+
 	@Override
 	public CloseableLock lock()
 	{
 		return model.lock();
 	}
-	
+
 	@Override
 	public void apply(Op op)
 	{
 		applier.accept(op);
 	}
-	
+
 	public void operationApplied(Op op, boolean local)
 	{
 		if(handler == null) return;
-		
+
 		handler.newOperation(op, local);
 	}
-	
+
 	@Override
 	public SharedObject getObject(String id, String type)
 	{
 		return model.getObject(id, type);
 	}
-	
+
 	@Override
 	public void setOperationHandler(OperationHandler<Op> handler)
 	{
 		this.handler = handler;
 	}
-	
+
 	@Override
 	public void queueEvent(Runnable runnable)
 	{

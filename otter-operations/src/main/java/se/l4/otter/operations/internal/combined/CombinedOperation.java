@@ -8,7 +8,7 @@ public interface CombinedOperation
 {
 	/**
 	 * Get the identifier that the operation targets.
-	 * 
+	 *
 	 * @return
 	 */
 	String getId();

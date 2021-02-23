@@ -25,7 +25,7 @@ public class MapTransformTest
 			of(set("two", null, "def"))
 		);
 	}
-	
+
 	@Test
 	public void testSameKey()
 	{
@@ -36,7 +36,7 @@ public class MapTransformTest
 			of(set("one", "abc", "def"))
 		);
 	}
-	
+
 	@Test
 	public void testSeveralSameKey1()
 	{
@@ -47,7 +47,7 @@ public class MapTransformTest
 			of(set("one", "abc", "def"))
 		);
 	}
-	
+
 	@Test
 	public void testSeveralSameKey2()
 	{
@@ -58,18 +58,18 @@ public class MapTransformTest
 			of(set("two", "abc", "def"))
 		);
 	}
-	
-	
+
+
 	private static Operation<MapHandler> set(String key, Object oldValue, Object newValue)
 	{
 		return new MapSet(key, oldValue, newValue);
 	}
-	
+
 	private static CompoundOperation<MapHandler> of(Operation<MapHandler>... ops)
 	{
 		return new DefaultCompoundOperation<>(Arrays.asList(ops));
 	}
-	
+
 	private void test(Operation<?> client, Operation<?> server,
 			Operation<?> expectedClient, Operation<?> expectedServer)
 	{
@@ -78,12 +78,12 @@ public class MapTransformTest
 		assertThat("left", op.getLeft(), is(expectedClient));
 		assertThat("right", op.getRight(), is(expectedServer));
 	}
-	
+
 	private void reversibleTest(Operation<?> client, Operation<?> server,
 			Operation<?> expectedClient, Operation<?> expectedServer)
 	{
 		test(client, server, expectedClient, expectedServer);
 		test(server, client, expectedServer, expectedClient);
 	}
-	
+
 }

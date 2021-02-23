@@ -5,7 +5,7 @@ import se.l4.otter.operations.Operation;
 
 /**
  * Abstract implementation of {@link SharedObject}.
- * 
+ *
  * @author Andreas Holstenson
  *
  * @param <Op>

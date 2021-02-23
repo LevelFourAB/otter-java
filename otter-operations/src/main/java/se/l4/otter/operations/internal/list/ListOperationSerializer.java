@@ -19,15 +19,15 @@ public class ListOperationSerializer
 	implements Serializer<Operation<ListHandler>>
 {
 	public static final ListOperationSerializer INSTANCE = new ListOperationSerializer();
-	
+
 	@Override
 	public Operation<ListHandler> read(StreamingInput in)
 		throws IOException
 	{
 		in.next(Token.LIST_START);
-		
+
 		List<Operation<ListHandler>> ops = new ArrayList<>();
-		
+
 		while(in.peek() != Token.LIST_END)
 		{
 			in.next(Token.LIST_START);
@@ -67,11 +67,11 @@ public class ListOperationSerializer
 			}
 			in.next(Token.LIST_END);
 		}
-		
+
 		in.next(Token.LIST_END);
 		return new DefaultCompoundOperation<>(ops);
 	}
-	
+
 	private Object[] readObjects(StreamingInput in)
 		throws IOException
 	{
@@ -82,7 +82,7 @@ public class ListOperationSerializer
 			result.add(DataSerializer.INSTANCE.read(in));
 		}
 		in.next(Token.LIST_END);
-		
+
 		return result.toArray();
 	}
 
@@ -103,24 +103,24 @@ public class ListOperationSerializer
 			{
 				out.write("type", "insert");
 				out.writeListStart("items");
-				
+
 				for(Object o : ((ListInsert) op).getItems())
 				{
 					DataSerializer.INSTANCE.write(o, "entry", out);
 				}
-				
+
 				out.writeListEnd("items");
 			}
 			else if(op instanceof ListDelete)
 			{
 				out.write("type", "delete");
 				out.writeListStart("items");
-				
+
 				for(Object o : ((ListDelete) op).getItems())
 				{
 					DataSerializer.INSTANCE.write(o, "entry", out);
 				}
-				
+
 				out.writeListEnd("items");
 			}
 			else
@@ -131,5 +131,5 @@ public class ListOperationSerializer
 		}
 		out.writeListEnd(name);
 	}
-	
+
 }

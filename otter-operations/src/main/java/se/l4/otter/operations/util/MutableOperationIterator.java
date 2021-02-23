@@ -11,7 +11,7 @@ import se.l4.otter.operations.Operation;
 /**
  * {@link Iterator} for a list of {@link Operation}s which supports basic
  * mutation of its iteration order.
- * 
+ *
  * @author Andreas Holstenson
  *
  * @param <T>
@@ -20,7 +20,7 @@ public class MutableOperationIterator<T>
 	implements Iterator<Operation<T>>
 {
 	private final ListIterator<Operation<T>> it;
-	
+
 	public MutableOperationIterator(Operation<T> op)
 	{
 		this(CompoundOperation.toList(op));
@@ -42,10 +42,10 @@ public class MutableOperationIterator<T>
 	{
 		return it.next();
 	}
-	
+
 	/**
 	 * Go back one step so the current operation is handled again.
-	 * 
+	 *
 	 */
 	public void back()
 	{
@@ -54,7 +54,7 @@ public class MutableOperationIterator<T>
 
 	/**
 	 * Replace the current operation.
-	 * 
+	 *
 	 * @param op
 	 */
 	public void replace(Operation<T> op)

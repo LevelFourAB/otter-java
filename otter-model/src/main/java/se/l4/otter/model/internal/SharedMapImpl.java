@@ -18,23 +18,23 @@ public class SharedMapImpl
 	implements SharedMap
 {
 	private final Map<String, Object> values;
-	
+
 	private final MapHandler handler;
 	private final EventHelper<Listener> changeListeners;
 
 	public SharedMapImpl(SharedObjectEditor<Operation<MapHandler>> editor)
 	{
 		super(editor);
-		
+
 		values = new HashMap<>();
-		
+
 		changeListeners = new EventHelper<>();
 		handler = createHandler();
-		
+
 		editor.getCurrent().apply(handler);
 		editor.setOperationHandler(this::apply);
 	}
-	
+
 	private MapHandler createHandler()
 	{
 		return new MapHandler()
@@ -43,55 +43,55 @@ public class SharedMapImpl
 			public void remove(String key, Object oldValue)
 			{
 				Object old = values.remove(key);
-				editor.queueEvent(() -> changeListeners.trigger(l -> 
+				editor.queueEvent(() -> changeListeners.trigger(l ->
 					l.valueRemoved(key, old)
 				));
 			}
-			
+
 			@Override
 			public void put(String key, Object oldValue, Object newValue)
 			{
 				Object value = DataValues.fromData(editor, newValue);
 				Object old = values.put(key, value);
 				editor.queueEvent(() ->
-					changeListeners.trigger(l -> 
+					changeListeners.trigger(l ->
 						l.valueChanged(key, old, value)
 					)
 				);
 			}
 		};
 	}
-	
+
 	private void apply(Operation<MapHandler> op, boolean local)
 	{
 		op.apply(handler);
 	}
-	
+
 	@Override
 	public String getObjectId()
 	{
 		return editor.getId();
 	}
-	
+
 	@Override
 	public String getObjectType()
 	{
 		return editor.getType();
 	}
-	
+
 	@Override
 	public boolean containsKey(String key)
 	{
 		return values.containsKey(key);
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T get(String key)
 	{
 		return (T) values.get(key);
 	}
-	
+
 	@Override
 	public void remove(String key)
 	{
@@ -104,7 +104,7 @@ public class SharedMapImpl
 			);
 		}
 	}
-	
+
 	@Override
 	public void set(String key, Object value)
 	{
@@ -112,7 +112,7 @@ public class SharedMapImpl
 		{
 			throw new IllegalArgumentException("null values are currently not supported");
 		}
-		
+
 		try(CloseableLock lock = editor.lock())
 		{
 			Object old = values.get(key);
@@ -122,13 +122,13 @@ public class SharedMapImpl
 			);
 		}
 	}
-	
+
 	@Override
 	public void addChangeListener(Listener listener)
 	{
 		changeListeners.add(listener);
 	}
-	
+
 	@Override
 	public void removeChangeListener(Listener listener)
 	{

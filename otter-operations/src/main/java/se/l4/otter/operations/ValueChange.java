@@ -2,7 +2,7 @@ package se.l4.otter.operations;
 
 /**
  * Change to a key, keeping track of the old and new value.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -16,17 +16,17 @@ public class ValueChange
 		this.oldValue = oldValue;
 		this.newValue = newValue;
 	}
-	
+
 	public Object getOldValue()
 	{
 		return oldValue;
 	}
-	
+
 	public Object getNewValue()
 	{
 		return newValue;
 	}
-	
+
 	@Override
 	public String toString()
 	{
@@ -69,6 +69,6 @@ public class ValueChange
 			return false;
 		return true;
 	}
-	
-	
+
+
 }

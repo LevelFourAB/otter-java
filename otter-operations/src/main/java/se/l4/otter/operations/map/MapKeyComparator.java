@@ -9,11 +9,11 @@ public class MapKeyComparator
 	implements Comparator<Operation<MapHandler>>
 {
 	public static MapKeyComparator INSTANCE = new MapKeyComparator();
-	
+
 	private MapKeyComparator()
 	{
 	}
-	
+
 	@Override
 	public int compare(Operation<MapHandler> o1, Operation<MapHandler> o2)
 	{

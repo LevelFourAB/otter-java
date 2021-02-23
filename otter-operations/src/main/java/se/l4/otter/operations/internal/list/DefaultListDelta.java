@@ -12,7 +12,7 @@ import se.l4.otter.operations.list.ListHandler;
 
 /**
  * Default implementation of {@link ListDelta}.
- * 
+ *
  * @author Andreas Holstenson
  *
  * @param <ReturnPath>
@@ -26,36 +26,36 @@ public class DefaultListDelta<ReturnPath>
 		INSERT,
 		DELETE
 	}
-	
+
 	private final Function<Operation<ListHandler>, ReturnPath> resultHandler;
 	private final List<Operation<ListHandler>> ops;
-	
+
 	private State state;
 	private int retainCount;
 	private final List<Object> buffer;
-	
+
 	public DefaultListDelta(Function<Operation<ListHandler>, ReturnPath> resultHandler)
 	{
 		this.resultHandler = resultHandler;
-		
+
 		ops = new ArrayList<>();
 		buffer = new ArrayList<>();
 	}
-	
+
 	private void switchState(State state)
 	{
 		if(this.state != state)
 		{
 			flush();
 		}
-		
+
 		this.state = state;
 	}
 
 	private void flush()
 	{
 		if(this.state == null) return;
-		
+
 		switch(this.state)
 		{
 			case RETAIN:
@@ -75,7 +75,7 @@ public class DefaultListDelta<ReturnPath>
 				break;
 		}
 	}
-	
+
 	@Override
 	public ListDelta<ReturnPath> retain(int count)
 	{
@@ -83,7 +83,7 @@ public class DefaultListDelta<ReturnPath>
 		retainCount += count;
 		return this;
 	}
-	
+
 	@Override
 	public ListDelta<ReturnPath> insert(Object item)
 	{
@@ -91,7 +91,7 @@ public class DefaultListDelta<ReturnPath>
 		buffer.add(item);
 		return this;
 	}
-	
+
 	@Override
 	public ListDelta<ReturnPath> insertMultiple(Collection<? extends Object> items)
 	{
@@ -99,7 +99,7 @@ public class DefaultListDelta<ReturnPath>
 		buffer.addAll(items);
 		return this;
 	}
-	
+
 	@Override
 	public ListDelta<ReturnPath> insertMultiple(Object... items)
 	{
@@ -110,7 +110,7 @@ public class DefaultListDelta<ReturnPath>
 		}
 		return this;
 	}
-	
+
 	@Override
 	public ListDelta<ReturnPath> delete(Object current)
 	{
@@ -118,7 +118,7 @@ public class DefaultListDelta<ReturnPath>
 		buffer.add(current);
 		return this;
 	}
-	
+
 	@Override
 	public ListDelta<ReturnPath> deleteMultiple(Collection<? extends Object> current)
 	{
@@ -126,7 +126,7 @@ public class DefaultListDelta<ReturnPath>
 		buffer.addAll(current);
 		return this;
 	}
-	
+
 	@Override
 	public ListDelta<ReturnPath> deleteMultiple(Object... current)
 	{
@@ -137,7 +137,7 @@ public class DefaultListDelta<ReturnPath>
 		}
 		return this;
 	}
-	
+
 	@Override
 	public ListDelta<ReturnPath> adopt(Operation<ListHandler> op)
 	{
@@ -157,10 +157,10 @@ public class DefaultListDelta<ReturnPath>
 		{
 			throw new IllegalArgumentException("Unsupported operation: " + op);
 		}
-		
+
 		return this;
 	}
-	
+
 	@Override
 	public ReturnPath done()
 	{

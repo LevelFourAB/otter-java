@@ -18,38 +18,38 @@ import se.l4.otter.operations.util.MutableOperationIterator;
 /**
  * Composer for {@link ListType}. This is very similar to how strings are
  * handled by {@link StringType} and {@link StringTypeComposer}.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
 public class ListTypeComposer
 {
 	private static final Logger log = LoggerFactory.getLogger(ListTypeComposer.class);
-	
+
 	private final MutableOperationIterator<ListHandler> left;
 	private final MutableOperationIterator<ListHandler> right;
 
 	private final ListDelta<Operation<ListHandler>> delta;
-	
+
 	public ListTypeComposer(List<Operation<ListHandler>> first, List<Operation<ListHandler> >second)
 	{
 		log.debug("Composing {} with {}", first, second);
-		
+
 		delta = ListDelta.builder();
-		
+
 		left = new MutableOperationIterator<>(first);
 		right = new MutableOperationIterator<>(second);
 	}
-	
+
 	public Operation<ListHandler> perform()
 	{
 		while(left.hasNext() && right.hasNext())
 		{
 			Operation<ListHandler> op1 = left.next();
 			Operation<ListHandler> op2 = right.next();
-			
+
 			log.trace("  Compose {} with {}", op1, op2);
-			
+
 			if(op1 instanceof ListRetain)
 			{
 				handleRetain(op1, op2);
@@ -63,7 +63,7 @@ public class ListTypeComposer
 				handleDelete(op1, op2);
 			}
 		}
-		
+
 		while(left.hasNext())
 		{
 			Operation<ListHandler> op1 = left.next();
@@ -76,14 +76,14 @@ public class ListTypeComposer
 				throw new ComposeException("Operation size mismatch");
 			}
 		}
-		
+
 		// Apply all of the remaining operations
 		while(right.hasNext())
 		{
 			Operation<ListHandler> op = right.next();
 			delta.adopt(op);
 		}
-		
+
 		return delta.done();
 	}
 
@@ -91,24 +91,24 @@ public class ListTypeComposer
 			Operation<ListHandler> op2)
 	{
 		int length1 = ((ListRetain) op1).getLength();
-		
+
 		if(op2 instanceof ListRetain)
 		{
 			// Both operations are retains
 			int length2 = ((ListRetain) op2).getLength();
-			
+
 			if(length1 < length2)
 			{
 				// Left operation is shorter, retain left count and rewrite right
 				delta.retain(length1);
-				
+
 				right.replace(new ListRetain(length2 - length1));
 			}
 			else if(length1 > length2)
 			{
 				// Right operation is shorter, retain right and rewrite left
 				delta.retain(length2);
-				
+
 				left.replace(new ListRetain(length1 - length2));
 			}
 			else
@@ -131,7 +131,7 @@ public class ListTypeComposer
 			// Second operation is a delete, add it to the delta and replace ourselves
 			Object[] items2 = ((ListDelete) op2).getItems();
 			int length2 = items2.length;
-				
+
 			if(length1 < length2)
 			{
 				delta.deleteMultiple(Arrays.copyOfRange(items2, 0, length1));
@@ -155,7 +155,7 @@ public class ListTypeComposer
 	{
 		Object[] items1 = ((ListInsert) op1).getItems();
 		int length1 = items1.length;
-		
+
 		if(op2 instanceof ListRetain)
 		{
 			int length2 = ((ListRetain) op2).getLength();
@@ -196,7 +196,7 @@ public class ListTypeComposer
 		{
 			Object[] items2 = ((ListDelete) op2).getItems();
 			int length2 = items2.length;
-			
+
 			if(length1 > length2)
 			{
 				/*
@@ -219,7 +219,7 @@ public class ListTypeComposer
 			}
 		}
 	}
-	
+
 	private void handleDelete(Operation<ListHandler> op1, Operation<ListHandler> op2)
 	{
 		if(op2 instanceof ListRetain)

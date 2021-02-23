@@ -7,7 +7,7 @@ import se.l4.otter.operations.map.MapHandler;
 
 /**
  * Operation that sets a value in a {@link Map}.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -24,23 +24,23 @@ public class MapSet
 		this.oldValue = oldValue;
 		this.newValue = newValue;
 	}
-	
+
 	@Override
 	public String getKey()
 	{
 		return key;
 	}
-	
+
 	public Object getNewValue()
 	{
 		return newValue;
 	}
-	
+
 	public Object getOldValue()
 	{
 		return oldValue;
 	}
-	
+
 	@Override
 	public void apply(MapHandler handler)
 	{
@@ -53,19 +53,19 @@ public class MapSet
 			handler.put(key, oldValue, newValue);
 		}
 	}
-	
+
 	@Override
 	public Operation<MapHandler> invert()
 	{
 		return new MapSet(key, newValue, oldValue);
 	}
-	
+
 	@Override
 	public String toString()
 	{
 		return getClass().getSimpleName() + "[key=" + key + ", oldValue=" + oldValue + ", newValue=" + newValue + "]";
 	}
-	
+
 	@Override
 	public int hashCode()
 	{

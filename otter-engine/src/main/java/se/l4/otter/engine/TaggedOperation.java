@@ -7,37 +7,37 @@ public class TaggedOperation<Op extends Operation<?>>
 	private final long historyId;
 	private final String token;
 	private final Op operation;
-	
+
 	public TaggedOperation(long historyId, String token, Op operation)
 	{
 		this.historyId = historyId;
 		this.token = token;
 		this.operation = operation;
 	}
-	
+
 	/**
 	 * Get the identifier this data has in the history.
-	 * 
+	 *
 	 * @return
 	 */
 	public long getHistoryId()
 	{
 		return historyId;
 	}
-	
+
 	/**
 	 * Get the token provided by the client.
-	 * 
+	 *
 	 * @return
 	 */
 	public String getToken()
 	{
 		return token;
 	}
-	
+
 	/**
 	 * Get the operation.
-	 * 
+	 *
 	 * @return
 	 */
 	public Op getOperation()

@@ -20,7 +20,7 @@ import se.l4.otter.operations.string.StringType;
 /**
  * {@link Serializer} used for {@link StringType}. Uses the same format
  * that Google Wave once used as it is pretty compact.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -32,15 +32,15 @@ public class StringOperationSerializer
 		throws IOException
 	{
 		StringDelta<Operation<StringHandler>> delta = StringDelta.builder();
-		
+
 		in.next(Token.LIST_START);
 		while(in.peek() != Token.LIST_END)
 		{
 			in.next(Token.LIST_START);
-			
+
 			in.next(Token.VALUE);
 			String type = in.getString();
-			
+
 			switch(type)
 			{
 				case "retain":
@@ -59,36 +59,36 @@ public class StringOperationSerializer
 					readAnnotation(in, delta);
 					break;
 			}
-			
+
 			while(in.peek() != Token.LIST_END)
 			{
 				in.next();
 				in.skip();
 			}
-			
+
 			in.next(Token.LIST_END);
 		}
 		in.next(Token.LIST_END);
-		
+
 		return delta.done();
 	}
-	
+
 	private void readAnnotation(StreamingInput in, StringDelta<Operation<StringHandler>> delta)
 		throws IOException
 	{
 		AnnotationChangeBuilder<StringDelta<Operation<StringHandler>>> annotations = delta.updateAnnotations();
-		
+
 		in.next(Token.OBJECT_START);
 		while(in.peek() != Token.OBJECT_END)
 		{
 			in.next(Token.KEY);
 			String key = in.getString();
-			
+
 			in.next(Token.OBJECT_START);
-			
+
 			Object oldValue = null;
 			Object newValue = null;
-			
+
 			while(in.peek() != Token.OBJECT_END)
 			{
 				in.next(Token.KEY);
@@ -105,7 +105,7 @@ public class StringOperationSerializer
 						break;
 				}
 			}
-			
+
 			if(newValue == null)
 			{
 				annotations.remove(key, oldValue);
@@ -114,11 +114,11 @@ public class StringOperationSerializer
 			{
 				annotations.set(key, oldValue, newValue);
 			}
-			
+
 			in.next(Token.OBJECT_END);
 		}
 		in.next(Token.OBJECT_END);
-		
+
 		annotations.done();
 	}
 
@@ -156,10 +156,10 @@ public class StringOperationSerializer
 			}
 			out.writeListEnd("end");
 		}
-		
+
 		out.writeListEnd(name);
 	}
-	
+
 	private void writeAnnotationChange(StringAnnotationChange op, StreamingOutput out)
 		throws IOException
 	{
@@ -168,15 +168,15 @@ public class StringOperationSerializer
 		for(String key : change.keys())
 		{
 			ValueChange keyChange = change.getChange(key);
-			
+
 			out.writeObjectStart(key);
-			
+
 			DataSerializer.INSTANCE.write(keyChange.getOldValue(), "oldValue", out);
 			DataSerializer.INSTANCE.write(keyChange.getNewValue(), "newValue", out);
-			
+
 			out.writeObjectEnd(key);
 		}
 		out.writeObjectEnd("changes");
 	}
-	
+
 }

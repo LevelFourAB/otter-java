@@ -20,7 +20,7 @@ public class StringTransformTest
 			insert(21, 3, "1")
 		);
 	}
-	
+
 	@Test
 	public void testInsertionAtSameLocation()
 	{
@@ -31,7 +31,7 @@ public class StringTransformTest
 			insert(23, 5, "123")
 		);
 	}
-	
+
 	@Test
 	public void testInsertionWhenEmpty()
 	{
@@ -42,7 +42,7 @@ public class StringTransformTest
 			insert(1, 1, "b")
 		);
 	}
-	
+
 	@Test
 	public void testDelete()
 	{
@@ -53,7 +53,7 @@ public class StringTransformTest
 	        delete(23, 5, "de")
 		);
 	}
-	
+
 	@Test
 	public void testOther1()
 	{
@@ -64,7 +64,7 @@ public class StringTransformTest
 		    delete(15, 2, "fg")
 		);
 	}
-	
+
 	@Test
 	public void testOther2()
 	{
@@ -75,7 +75,7 @@ public class StringTransformTest
 			delete(15, 1, "fg")
 		);
 	}
-	
+
 	@Test
 	public void testOther3()
 	{
@@ -87,7 +87,7 @@ public class StringTransformTest
 			delete(15, 1, "fghi")
 		);
 	}
-	
+
 	@Test
 	public void testOther4()
 	{
@@ -99,7 +99,7 @@ public class StringTransformTest
 			retain(13)
 		);
 	}
-	
+
 	@Test
 	public void testOther5()
 	{
@@ -111,7 +111,7 @@ public class StringTransformTest
 			retain(13)
 		);
 	}
-	
+
 	@Test
 	public void testMix1()
 	{
@@ -121,26 +121,26 @@ public class StringTransformTest
 				.delete("World")
 				.insert("Cookies")
 				.done(),
-				
+
 			StringDelta.builder()
 				.retain(11)
 				.insert("!")
 				.done(),
-				
+
 			StringDelta.builder()
 				.retain(6)
 				.delete("World")
 				.insert("Cookies")
 				.retain(1)
 				.done(),
-				
+
 			StringDelta.builder()
 				.retain(13)
 				.insert("!")
 				.done()
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationRetain1()
 	{
@@ -151,7 +151,7 @@ public class StringTransformTest
 			retain(20)
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationDelete1()
 	{
@@ -163,7 +163,7 @@ public class StringTransformTest
 			delete(20, 7, "ab")
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationDelete2()
 	{
@@ -175,7 +175,7 @@ public class StringTransformTest
 			delete(20, 1, "ab")
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationDelete3()
 	{
@@ -187,7 +187,7 @@ public class StringTransformTest
 			delete(20, 6, "abc")
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationDelete4()
 	{
@@ -199,7 +199,7 @@ public class StringTransformTest
 			delete(20, 1, "abc")
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationDelete5()
 	{
@@ -211,7 +211,7 @@ public class StringTransformTest
 			delete(20, 1, "abcd")
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationDelete6()
 	{
@@ -223,7 +223,7 @@ public class StringTransformTest
 			delete(20, 1, "abcd")
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationInsert1()
 	{
@@ -235,7 +235,7 @@ public class StringTransformTest
 			insert(20, 2, "abcd")
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationInsert2()
 	{
@@ -247,7 +247,7 @@ public class StringTransformTest
 			insert(20, 4, "abcd")
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationInsert3()
 	{
@@ -259,7 +259,7 @@ public class StringTransformTest
 			insert(20, 3, "abcd")
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationInsert4()
 	{
@@ -271,7 +271,7 @@ public class StringTransformTest
 			insert(20, 5, "abcd")
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationAnnotation1()
 	{
@@ -283,7 +283,7 @@ public class StringTransformTest
 			setAnnotation(20, 5, 9, "hi", "initial", "there")
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationAnnotation2()
 	{
@@ -295,7 +295,7 @@ public class StringTransformTest
 			setAnnotation(20, 5, 7, "hi", "initial", "there")
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationAnnotation3()
 	{
@@ -307,7 +307,7 @@ public class StringTransformTest
 			setAnnotation(20, 6, 9, "hello", "initial", "there")
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationAnnotation4()
 	{
@@ -319,7 +319,7 @@ public class StringTransformTest
 			setAnnotation(20, 5, 9, "hello", "initial", "there")
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationAnnotation5()
 	{
@@ -331,7 +331,7 @@ public class StringTransformTest
 			setAnnotation(20, 5, 9, "hello", "initial",  "there")
 		);
 	}
-	
+
 	@Test
 	public void testAnnotationAnnotation6()
 	{
@@ -343,7 +343,7 @@ public class StringTransformTest
 			setAnnotation(20, 2, 9, "hello", "initial",  "there")
 		);
 	}
-	
+
 	private static Operation<StringHandler> retain(int i)
 	{
 		return StringDelta.builder()
@@ -359,7 +359,7 @@ public class StringTransformTest
 			.retain(size-location)
 			.done();
 	}
-	
+
 	public static Operation<StringHandler> delete(int size, int location, String characters)
 	{
 		return StringDelta.builder()
@@ -368,12 +368,12 @@ public class StringTransformTest
 			.retain(size-location-characters.length())
 			.done();
 	}
-	
+
 	private static Operation<StringHandler> setAnnotation(int size, int start, int end, String key, String oldValue, String newValue)
 	{
 		StringDelta<Operation<StringHandler>> delta = StringDelta.builder()
 			.retain(start);
-		
+
 		if(newValue == null)
 		{
 			delta.updateAnnotations()
@@ -386,42 +386,42 @@ public class StringTransformTest
 				.set(key, oldValue, newValue)
 				.done();
 		}
-		
+
 		delta.retain(end - start);
-		
+
 		if(newValue != null)
 		{
 			delta.updateAnnotations()
 				.remove(key, newValue)
 				.done();
 		}
-		
+
 		return delta.retain(size - end)
 			.done();
 	}
-	
+
 	private void test(Operation<StringHandler> left, Operation<StringHandler> right,
 			Operation<StringHandler> expectedLeft, Operation<StringHandler> expectedRight)
 	{
 		StringType type = new StringType();
-		
+
 		// Sanity check the test - needs to be composable
 		Operation<StringHandler> cLeft = type.compose(left, expectedRight);
 		Operation<StringHandler> rLeft = type.compose(right, expectedLeft);
 		assertThat("composed", cLeft, is(rLeft));
-		
+
 		OperationPair<Operation<StringHandler>> op = type.transform(left, right);
-		
+
 		// Then check that the values are what we expect
 		assertThat("left", op.getLeft(), is(expectedLeft));
 		assertThat("right", op.getRight(), is(expectedRight));
 	}
-	
+
 	private void reversibleTest(Operation<StringHandler> client, Operation<StringHandler> server,
 			Operation<StringHandler> expectedClient, Operation<StringHandler> expectedServer)
 	{
 		test(client, server, expectedClient, expectedServer);
 		test(server, client, expectedServer, expectedClient);
 	}
-	
+
 }

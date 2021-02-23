@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 /**
  * Extension to {@link Iterator} that can also be {@link #close() closed}.
- * 
+ *
  * @author Andreas Holstenson
  *
  * @param <T>
@@ -14,7 +14,7 @@ public interface CloseableIterator<T>
 {
 	/**
 	 * Close this iterator.
-	 * 
+	 *
 	 */
 	@Override
 	void close();

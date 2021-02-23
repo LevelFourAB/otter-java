@@ -5,7 +5,7 @@ import se.l4.otter.operations.list.ListHandler;
 
 /**
  * Retain a number of items in a list.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -18,24 +18,24 @@ public class ListRetain
 	{
 		this.length = count;
 	}
-	
+
 	public int getLength()
 	{
 		return length;
 	}
-	
+
 	@Override
 	public void apply(ListHandler target)
 	{
 		target.retain(length);
 	}
-	
+
 	@Override
 	public Operation<ListHandler> invert()
 	{
 		return this;
 	}
-	
+
 	@Override
 	public String toString()
 	{

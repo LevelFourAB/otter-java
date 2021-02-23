@@ -6,7 +6,7 @@ import se.l4.otter.operations.string.StringHandler;
 /**
  * Operation on a {@link String} where some characters are inserted into the
  * string at the current position.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -19,24 +19,24 @@ public class StringInsert
 	{
 		this.value = value;
 	}
-	
+
 	public String getValue()
 	{
 		return value;
 	}
-	
+
 	@Override
 	public void apply(StringHandler target)
 	{
 		target.insert(value);
 	}
-	
+
 	@Override
 	public Operation<StringHandler> invert()
 	{
 		return new StringDelete(value);
 	}
-	
+
 	@Override
 	public String toString()
 	{

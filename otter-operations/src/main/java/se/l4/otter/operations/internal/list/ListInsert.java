@@ -8,7 +8,7 @@ import se.l4.otter.operations.list.ListHandler;
 /**
  * Operation on a {@link String} where some characters are inserted into the
  * string at the current position.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -21,12 +21,12 @@ public class ListInsert
 	{
 		this.items = items;
 	}
-	
+
 	public Object[] getItems()
 	{
 		return items;
 	}
-	
+
 	@Override
 	public void apply(ListHandler target)
 	{
@@ -35,13 +35,13 @@ public class ListInsert
 			target.insert(o);
 		}
 	}
-	
+
 	@Override
 	public Operation<ListHandler> invert()
 	{
 		return new ListDelete(items);
 	}
-	
+
 	@Override
 	public String toString()
 	{

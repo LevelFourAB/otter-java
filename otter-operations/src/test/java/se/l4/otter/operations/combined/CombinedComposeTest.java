@@ -12,14 +12,14 @@ import se.l4.otter.operations.map.MapDelta;
 public class CombinedComposeTest
 {
 	private CombinedType type;
-	
+
 	@Before
 	public void setup()
 	{
 		type = new CombinedTypeBuilder().build();
-		
+
 	}
-	
+
 	@Test
 	public void testSimpleCompose()
 	{
@@ -29,14 +29,14 @@ public class CombinedComposeTest
 				.done()
 			)
 			.done();
-		
+
 		Operation<CombinedHandler> op2 = CombinedDelta.builder()
 			.update("1", "map", MapDelta.builder()
 				.set("one", null, "def")
 				.done()
 			)
 			.done();
-		
+
 		Operation<CombinedHandler> r = type.compose(op1, op2);
 		assertThat(r, is(CombinedDelta.builder()
 			.update("1", "map", MapDelta.builder()
@@ -46,7 +46,7 @@ public class CombinedComposeTest
 			.done()
 		));
 	}
-	
+
 	@Test
 	public void testComposeSeveral()
 	{
@@ -60,14 +60,14 @@ public class CombinedComposeTest
 				.done()
 			)
 			.done();
-		
+
 		Operation<CombinedHandler> op2 = CombinedDelta.builder()
 			.update("1", "map", MapDelta.builder()
 				.set("one", null, "def")
 				.done()
 			)
 			.done();
-		
+
 		Operation<CombinedHandler> r = type.compose(op1, op2);
 		assertThat(r, is(CombinedDelta.builder()
 			.update("1", "map", MapDelta.builder()

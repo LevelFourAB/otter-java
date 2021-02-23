@@ -11,7 +11,7 @@ import se.l4.otter.operations.Operation;
  * A {@link OperationHistory} that simply stores everything in memory without
  * any compaction. This class is useful for testing, but for long term storage
  * you will need something better.
- * 
+ *
  * @author Andreas Holstenson
  *
  * @param <Op>
@@ -25,17 +25,17 @@ public class InMemoryOperationHistory<Op extends Operation<?>>
 	public InMemoryOperationHistory(OTType<Op> type, Op initial)
 	{
 		this.type = type;
-		
+
 		operations = new ConcurrentSkipListMap<>();
 		operations.put(1l, initial);
 	}
-	
+
 	@Override
 	public OTType<Op> getType()
 	{
 		return type;
 	}
-	
+
 	@Override
 	public long store(Op op)
 	{
@@ -46,34 +46,34 @@ public class InMemoryOperationHistory<Op extends Operation<?>>
 			return id;
 		}
 	}
-	
+
 	@Override
 	public long getLatest()
 	{
 		return operations.lastKey();
 	}
-	
+
 	@Override
 	public CloseableIterator<Op> between(long start, long end)
 	{
 		SortedMap<Long, Op> map = operations.subMap(start, end);
 		return new IteratorImpl<>(map.values().iterator());
 	}
-	
+
 	@Override
 	public CloseableIterator<Op> from(long historyId)
 	{
 		SortedMap<Long, Op> map = operations.tailMap(historyId);
 		return new IteratorImpl<>(map.values().iterator());
 	}
-	
+
 	@Override
 	public CloseableIterator<Op> until(long historyId)
 	{
 		SortedMap<Long, Op> map = operations.headMap(historyId);
 		return new IteratorImpl<>(map.values().iterator());
 	}
-	
+
 	private static class IteratorImpl<T>
 		implements CloseableIterator<T>
 	{
@@ -83,18 +83,18 @@ public class InMemoryOperationHistory<Op extends Operation<?>>
 		{
 			this.it = it;
 		}
-		
+
 		@Override
 		public void close()
 		{
 		}
-		
+
 		@Override
 		public boolean hasNext()
 		{
 			return it.hasNext();
 		}
-		
+
 		@Override
 		public T next()
 		{

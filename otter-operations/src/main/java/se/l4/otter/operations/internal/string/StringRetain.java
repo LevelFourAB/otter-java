@@ -5,7 +5,7 @@ import se.l4.otter.operations.string.StringHandler;
 
 /**
  * Operation on a {@link String} where a number of characters are retained.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -18,28 +18,28 @@ public class StringRetain
 	{
 		this.length = count;
 	}
-	
+
 	public int getLength()
 	{
 		return length;
 	}
-	
+
 	@Override
 	public void apply(StringHandler target)
 	{
 		target.retain(length);
 	}
-	
+
 	@Override
 	public Operation<StringHandler> invert()
 	{
 		return this;
 	}
-	
+
 	@Override
 	public String toString()
 	{
-		return "_" + length; 
+		return "_" + length;
 	}
 
 	@Override

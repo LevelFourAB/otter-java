@@ -19,13 +19,13 @@ public class SharedListImpl<T>
 	implements SharedList<T>
 {
 	private final List<T> values;
-	
+
 	public SharedListImpl(SharedObjectEditor<Operation<ListHandler>> editor)
 	{
 		super(editor);
-		
+
 		values = new ArrayList<>();
-		
+
 		editor.getCurrent().apply(new ListHandler()
 		{
 			@Override
@@ -33,36 +33,36 @@ public class SharedListImpl<T>
 			{
 				throw new OperationException("Latest value invalid, must only contain inserts.");
 			}
-			
+
 			@SuppressWarnings("unchecked")
 			@Override
 			public void insert(Object item)
 			{
 				values.add((T) DataValues.fromData(editor, item));
 			}
-			
+
 			@Override
 			public void delete(Object item)
 			{
 				throw new OperationException("Latest value invalid, must only contain inserts.");
 			}
 		});
-		
+
 		editor.setOperationHandler(this::apply);
 	}
-	
+
 	private void apply(Operation<ListHandler> op, boolean local)
 	{
 		op.apply(new ListHandler()
 		{
 			int index = 0;
-			
+
 			@Override
 			public void retain(int length)
 			{
 				index += length;
 			}
-			
+
 			@SuppressWarnings("unchecked")
 			@Override
 			public void insert(Object item)
@@ -70,7 +70,7 @@ public class SharedListImpl<T>
 				values.add(index, (T) DataValues.fromData(editor, item));
 				index += 1;
 			}
-			
+
 			@Override
 			public void delete(Object item)
 			{
@@ -78,30 +78,30 @@ public class SharedListImpl<T>
 			}
 		});
 	}
-	
+
 	@Override
 	public int length()
 	{
 		return values.size();
 	}
-	
+
 	@Override
 	public T get(int index)
 	{
 		if(index >= values.size())
 		{
-            throw new IndexOutOfBoundsException("Index must be less than length. Was " + index + " but length is " + values.size());
+	throw new IndexOutOfBoundsException("Index must be less than length. Was " + index + " but length is " + values.size());
 		}
-		
+
 		return values.get(index);
 	}
-	
+
 	@Override
 	public boolean contains(T value)
 	{
 		return values.contains(value);
 	}
-	
+
 	@Override
 	public void clear()
 	{
@@ -112,11 +112,11 @@ public class SharedListImpl<T>
 			{
 				delta.delete(DataValues.toData(item));
 			}
-			
+
 			editor.apply(delta.done());
 		}
 	}
-	
+
 	@Override
 	public void add(T item)
 	{
@@ -129,7 +129,7 @@ public class SharedListImpl<T>
 			);
 		}
 	}
-	
+
 	@Override
 	public void addAll(Collection<? extends T> items)
 	{
@@ -137,16 +137,16 @@ public class SharedListImpl<T>
 		{
 			ListDelta<Operation<ListHandler>> delta = ListDelta.builder()
 				.retain(values.size());
-			
+
 			for(T item : items)
 			{
 				delta.insert(DataValues.toData(item));
 			}
-			
+
 			editor.apply(delta.done());
 		}
 	}
-	
+
 	@Override
 	public void insert(int index, T item)
 	{
@@ -161,7 +161,7 @@ public class SharedListImpl<T>
 			);
 		}
 	}
-	
+
 	@Override
 	public void insertAll(int index, Collection<? extends T> items)
 	{
@@ -170,17 +170,17 @@ public class SharedListImpl<T>
 			int length = length();
 			ListDelta<Operation<ListHandler>> delta = ListDelta.builder()
 				.retain(index);
-			
+
 			for(T item : items)
 			{
 				delta.insert(DataValues.toData(item));
 			}
-			
+
 			delta.retain(length - index);
 			editor.apply(delta.done());
 		}
 	}
-	
+
 	@Override
 	public void remove(int index)
 	{
@@ -195,7 +195,7 @@ public class SharedListImpl<T>
 			);
 		}
 	}
-	
+
 	@Override
 	public void removeRange(int fromIndex, int toIndex)
 	{
@@ -204,17 +204,17 @@ public class SharedListImpl<T>
 			int length = length();
 			ListDelta<Operation<ListHandler>> delta = ListDelta.builder()
 				.retain(fromIndex);
-			
+
 			for(int i=fromIndex; i<toIndex; i++)
 			{
 				delta.delete(DataValues.toData(values.get(i)));
 			}
-			
+
 			delta.retain(length - (toIndex - fromIndex));
 			editor.apply(delta.done());
 		}
 	}
-	
+
 	@Override
 	public void set(int index, T value)
 	{

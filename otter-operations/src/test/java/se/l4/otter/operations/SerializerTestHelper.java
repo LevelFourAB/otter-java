@@ -19,7 +19,7 @@ public class SerializerTestHelper
 	private SerializerTestHelper()
 	{
 	}
-	
+
 	public static <T> void testSymmetry(Serializer<T> serializer, T value)
 	{
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -31,7 +31,7 @@ public class SerializerTestHelper
 		{
 			throw Throwables.propagate(e);
 		}
-		
+
 		T readValue;
 		try(JsonInput in = new JsonInput(new ByteArrayInputStream(out.toByteArray())))
 		{
@@ -41,10 +41,10 @@ public class SerializerTestHelper
 		{
 			throw Throwables.propagate(e);
 		}
-		
+
 		assertThat(readValue, is(value));
 	}
-	
+
 	public static <T> void testStatic(String json, Serializer<T> serializer, T value)
 	{
 		T readValue;
@@ -56,7 +56,7 @@ public class SerializerTestHelper
 		{
 			throw Throwables.propagate(e);
 		}
-		
+
 		assertThat(readValue, is(value));
 	}
 }

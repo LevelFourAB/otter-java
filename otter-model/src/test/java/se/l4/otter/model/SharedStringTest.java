@@ -23,28 +23,28 @@ public class SharedStringTest
 	{
 		sync = ModelTestHelper.createSync();
 	}
-	
+
 	@After
 	public void close()
 		throws IOException
 	{
 		sync.close();
 	}
-	
+
 	public Model model()
 	{
 		return ModelTestHelper.createModel(sync);
 	}
-	
+
 	@Test
 	public void testInit()
 	{
 		Model m = model();
-		
+
 		SharedString string = m.newString();
 		assertThat(string, notNullValue());
 	}
-	
+
 
 	/**
 	 * Test that several concurrent appends resolve to the same string value.
@@ -54,23 +54,23 @@ public class SharedStringTest
 	{
 		Model m1 = model();
 		Model m2 = model();
-		
+
 		SharedString string1 = m1.newString();
 		m1.set("string", string1);
-		
+
 		sync.waitForEmpty();
-		
+
 		SharedString string2 = m2.get("string");
-		
+
 		sync.suspend();
-		
+
 		string1.append("a");
 		string2.append("b");
-		
+
 		sync.resume();
-		
+
 		sync.waitForEmpty();
-		
+
 		assertThat(string1.get(), is(string2.get()));
 	}
 }

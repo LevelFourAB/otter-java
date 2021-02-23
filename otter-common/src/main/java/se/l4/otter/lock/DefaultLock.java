@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * A lock implementation that wraps a {@link Lock} and returns a
  * {@link CloseableLock} for it.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -14,7 +14,7 @@ public class DefaultLock
 {
 	private final Lock lock;
 	private final CloseableLock instance;
-	
+
 	public DefaultLock()
 	{
 		this(new ReentrantLock());
@@ -23,10 +23,10 @@ public class DefaultLock
 	public DefaultLock(Lock lock)
 	{
 		this.lock = lock;
-		
+
 		this.instance = createInstance();
 	}
-	
+
 	private CloseableLock createInstance()
 	{
 		return new CloseableLock()
@@ -38,7 +38,7 @@ public class DefaultLock
 			}
 		};
 	}
-	
+
 	public CloseableLock acquire()
 	{
 		lock.lock();

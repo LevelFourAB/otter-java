@@ -17,7 +17,7 @@ public class DefaultAnnotationChange
 	{
 		this.changes = changes;
 	}
-	
+
 	@Override
 	public boolean isEmpty()
 	{
@@ -37,37 +37,37 @@ public class DefaultAnnotationChange
 		ValueChange change = getChange(key);
 		return change == null ? null : (T) change.getNewValue();
 	}
-	
+
 	@Override
 	public ValueChange getChange(String key)
 	{
 		return changes.get(key);
 	}
-	
+
 	@Override
 	public boolean isRemoval(String key)
 	{
 		ValueChange change = getChange(key);
 		return change == null ? false : change.getNewValue() == null;
 	}
-	
+
 	@Override
 	public Set<String> keys()
 	{
 		return changes.keySet();
 	}
-	
+
 	@Override
 	public AnnotationChange invert()
 	{
 		Map<String, ValueChange> result = new HashMap<>();
-		
+
 		for(Map.Entry<String, ValueChange> e : changes.entrySet())
 		{
 			ValueChange change = e.getValue();
 			result.put(e.getKey(), new ValueChange(change.getNewValue(), change.getOldValue()));
 		}
-		
+
 		return new DefaultAnnotationChange(result);
 	}
 
@@ -75,13 +75,13 @@ public class DefaultAnnotationChange
 	{
 		if(first == null) return second;
 		if(second == null) return first;
-		
+
 		Map<String, ValueChange> changes = new HashMap<>();
 		for(String key : first.keys())
 		{
 			changes.put(key, first.getChange(key));
 		}
-		
+
 		for(String key : second.keys())
 		{
 			ValueChange change = second.getChange(key);
@@ -106,7 +106,7 @@ public class DefaultAnnotationChange
 					continue;
 				}
 			}
-			
+
 			if(! Objects.equals(change.getOldValue(), change.getNewValue()))
 			{
 				changes.put(key, change);
@@ -116,7 +116,7 @@ public class DefaultAnnotationChange
 				changes.remove(key);
 			}
 		}
-		
+
 		return new DefaultAnnotationChange(changes);
 	}
 
@@ -154,6 +154,6 @@ public class DefaultAnnotationChange
 			return false;
 		return true;
 	}
-	
-	
+
+
 }

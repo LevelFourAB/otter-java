@@ -7,7 +7,7 @@ import se.l4.otter.operations.list.ListHandler;
 
 /**
  * Operation on a list that deletes one or more items.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -20,7 +20,7 @@ public class ListDelete
 	{
 		this.items = items;
 	}
-	
+
 	public Object[] getItems()
 	{
 		return items;
@@ -40,7 +40,7 @@ public class ListDelete
 	{
 		return new ListInsert(items);
 	}
-	
+
 	@Override
 	public String toString()
 	{
@@ -70,5 +70,5 @@ public class ListDelete
 			return false;
 		return true;
 	}
-	
+
 }

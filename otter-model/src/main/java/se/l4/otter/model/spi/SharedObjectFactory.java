@@ -5,7 +5,7 @@ import se.l4.otter.operations.Operation;
 
 /**
  * Factory for {@link SharedObject}s.
- * 
+ *
  * @author Andreas Holstenson
  *
  * @param <T>
@@ -15,7 +15,7 @@ public interface SharedObjectFactory<T extends SharedObject, Op extends Operatio
 {
 	/**
 	 * Create an object that uses the specified editor.
-	 * 
+	 *
 	 * @param editor
 	 * @return
 	 */

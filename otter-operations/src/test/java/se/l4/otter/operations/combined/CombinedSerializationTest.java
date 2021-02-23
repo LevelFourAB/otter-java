@@ -11,7 +11,7 @@ import se.l4.otter.operations.string.StringDelta;
 public class CombinedSerializationTest
 {
 	private static CombinedType TYPE = new CombinedTypeBuilder().build();
-	
+
 	@Test
 	public void test1()
 	{
@@ -22,7 +22,7 @@ public class CombinedSerializationTest
 			.done()
 		);
 	}
-	
+
 	@Test
 	public void test2()
 	{
@@ -33,7 +33,7 @@ public class CombinedSerializationTest
 			.done()
 		);
 	}
-	
+
 	@Test
 	public void test3()
 	{
@@ -47,7 +47,7 @@ public class CombinedSerializationTest
 			.done()
 		);
 	}
-	
+
 	@Test
 	public void test4()
 	{
@@ -58,13 +58,13 @@ public class CombinedSerializationTest
 			.done()
 		);
 	}
-	
+
 	private void test(Operation<CombinedHandler> op)
 	{
 		Serializer<Operation<CombinedHandler>> serializer = TYPE.getSerializer();
 		SerializerTestHelper.testSymmetry(serializer, op);
 	}
-	
+
 	private void test(String json, Operation<CombinedHandler> op)
 	{
 		Serializer<Operation<CombinedHandler>> serializer = TYPE.getSerializer();

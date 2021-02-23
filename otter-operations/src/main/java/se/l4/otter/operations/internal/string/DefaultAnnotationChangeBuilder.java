@@ -28,7 +28,7 @@ public class DefaultAnnotationChangeBuilder<ReturnPath>
 		{
 			throw new OperationException("New value can not be null, use remove to remove the annotation");
 		}
-		
+
 		changes.put(key, new ValueChange(oldValue, newValue));
 		return this;
 	}
@@ -40,7 +40,7 @@ public class DefaultAnnotationChangeBuilder<ReturnPath>
 		{
 			throw new OperationException("Current value can not be null");
 		}
-		
+
 		changes.put(key, new ValueChange(currentValue, null));
 		return this;
 	}

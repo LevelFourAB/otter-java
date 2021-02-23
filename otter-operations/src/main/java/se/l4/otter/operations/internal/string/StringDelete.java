@@ -6,7 +6,7 @@ import se.l4.otter.operations.string.StringHandler;
 /**
  * Operation on a {@link String} where some characters are deleted starting
  * at the current position.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -19,7 +19,7 @@ public class StringDelete
 	{
 		this.value = value;
 	}
-	
+
 	public String getValue()
 	{
 		return value;
@@ -36,7 +36,7 @@ public class StringDelete
 	{
 		return new StringInsert(value);
 	}
-	
+
 	@Override
 	public String toString()
 	{

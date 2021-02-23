@@ -2,7 +2,7 @@ package se.l4.otter.operations;
 
 /**
  * Exception for when a combine between two operations fail.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -34,5 +34,5 @@ public class TransformException
 	{
 		super(cause);
 	}
-	
+
 }

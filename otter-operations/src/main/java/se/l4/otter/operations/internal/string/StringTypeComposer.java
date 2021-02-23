@@ -21,37 +21,37 @@ import se.l4.otter.operations.util.MutableOperationIterator;
 public class StringTypeComposer
 {
 	private static final Logger log = LoggerFactory.getLogger(StringTypeComposer.class);
-	
+
 	private final MutableOperationIterator<StringHandler> left;
 	private final MutableOperationIterator<StringHandler> right;
 
 	private final AnnotationNormalizingDelta<Operation<StringHandler>> delta;
-	
+
 	private AnnotationChange annotationChanges;
-	
+
 	public StringTypeComposer(List<Operation<StringHandler>> first, List<Operation<StringHandler>> second)
 	{
 		log.debug("Composing {} with {}", first, second);
-		
+
 		delta = new AnnotationNormalizingDelta<>(StringDelta.builder(), () -> {
 			AnnotationChange change = annotationChanges;
 			annotationChanges = null;
 			return change;
 		});
-		
+
 		left = new MutableOperationIterator<>(first);
 		right = new MutableOperationIterator<>(second);
 	}
-	
+
 	public Operation<StringHandler> perform()
 	{
 		while(left.hasNext() && right.hasNext())
 		{
 			Operation<StringHandler> op1 = left.next();
 			Operation<StringHandler> op2 = right.next();
-			
+
 			log.trace("  Compose {} with {}", op1, op2);
-			
+
 			if(op1 instanceof StringRetain)
 			{
 				handleRetain(op1, op2);
@@ -69,7 +69,7 @@ public class StringTypeComposer
 				handleAnnotationChange(op1, op2);
 			}
 		}
-		
+
 		while(left.hasNext())
 		{
 			Operation<StringHandler> op1 = left.next();
@@ -86,39 +86,39 @@ public class StringTypeComposer
 				throw new ComposeException("Operation size mismatch");
 			}
 		}
-		
+
 		// Apply all of the remaining operations
 		while(right.hasNext())
 		{
 			Operation<StringHandler> op = right.next();
 			delta.adopt(op);
 		}
-		
+
 		return delta.done();
 	}
-	
+
 	private void handleRetain(Operation<StringHandler> op1,
 			Operation<StringHandler> op2)
 	{
 		int length1 = ((StringRetain) op1).getLength();
-		
+
 		if(op2 instanceof StringRetain)
 		{
 			// Both operations are retains
 			int length2 = ((StringRetain) op2).getLength();
-			
+
 			if(length1 < length2)
 			{
 				// Left operation is shorter, retain left count and rewrite right
 				delta.retain(length1);
-				
+
 				right.replace(new StringRetain(length2 - length1));
 			}
 			else if(length1 > length2)
 			{
 				// Right operation is shorter, retain right and rewrite left
 				delta.retain(length2);
-				
+
 				left.replace(new StringRetain(length1 - length2));
 			}
 			else
@@ -142,7 +142,7 @@ public class StringTypeComposer
 			// Second operation is a delete, add it to the delta and replace ourselves
 			String value2 = ((StringDelete) op2).getValue();
 			int length2 = value2.length();
-			
+
 			if(length1 < length2)
 			{
 				delta.delete(value2.substring(0, length1));
@@ -171,7 +171,7 @@ public class StringTypeComposer
 	{
 		String value1 = ((StringInsert) op1).getValue();
 		int length1 = value1.length();
-		
+
 		if(op2 instanceof StringRetain)
 		{
 			int length2 = ((StringRetain) op2).getLength();
@@ -213,7 +213,7 @@ public class StringTypeComposer
 		{
 			String value2 = ((StringDelete) op2).getValue();
 			int length2 = value2.length();
-			
+
 			if(length1 > length2)
 			{
 				/*
@@ -241,11 +241,11 @@ public class StringTypeComposer
 			left.back();
 		}
 	}
-	
+
 	private void handleDelete(Operation<StringHandler> op1, Operation<StringHandler> op2)
 	{
 		String value1 = ((StringDelete) op1).getValue();
-		
+
 		if(op2 instanceof StringRetain)
 		{
 			/*
@@ -279,11 +279,11 @@ public class StringTypeComposer
 			left.back();
 		}
 	}
-	
+
 	private void handleAnnotationChange(Operation<StringHandler> op1, Operation<StringHandler> op2)
 	{
 		AnnotationChange change1 = ((StringAnnotationChange) op1).getChange();
-		
+
 		if(op2 instanceof StringAnnotationChange)
 		{
 			/*

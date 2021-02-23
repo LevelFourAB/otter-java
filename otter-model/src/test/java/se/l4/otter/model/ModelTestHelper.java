@@ -15,7 +15,7 @@ public class ModelTestHelper
 {
 	private static final CombinedType TYPE = new CombinedTypeBuilder()
 		.build();
-	
+
 	public static LocalOperationSync<Operation<CombinedHandler>> createSync()
 	{
 		DefaultEditorControl<Operation<CombinedHandler>> control = new DefaultEditorControl<>(
@@ -23,7 +23,7 @@ public class ModelTestHelper
 		));
 		return new LocalOperationSync<>(control);
 	}
-	
+
 	public static Model createModel(OperationSync<Operation<CombinedHandler>> sync)
 	{
 		return Model.builder(new DefaultEditor<>(sync)).build();

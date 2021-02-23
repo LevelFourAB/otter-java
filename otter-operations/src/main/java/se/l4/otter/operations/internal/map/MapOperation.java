@@ -8,7 +8,7 @@ public interface MapOperation
 {
 	/**
 	 * Get the key this operation acts upon.
-	 * 
+	 *
 	 * @return
 	 */
 	String getKey();

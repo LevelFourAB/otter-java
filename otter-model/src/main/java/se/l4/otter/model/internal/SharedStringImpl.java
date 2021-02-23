@@ -20,13 +20,13 @@ public class SharedStringImpl
 	implements SharedString
 {
 	private static final DiffMatchPatch DIFF = new DiffMatchPatch();
-	
+
 	private StringBuilder value;
 
 	public SharedStringImpl(SharedObjectEditor<Operation<StringHandler>> editor)
 	{
 		super(editor);
-		
+
 		value = new StringBuilder();
 		editor.getCurrent().apply(new StringHandler()
 		{
@@ -35,54 +35,54 @@ public class SharedStringImpl
 			{
 				throw new OperationException("Latest value invalid, must only contain inserts.");
 			}
-			
+
 			@Override
 			public void insert(String s)
 			{
 				value.append(s);
 			}
-			
+
 			@Override
 			public void delete(String s)
 			{
 				throw new OperationException("Latest value invalid, must only contain inserts.");
 			}
-			
+
 			@Override
 			public void annotationUpdate(AnnotationChange change)
 			{
 				// Annotations are not currently handled
 			}
 		});
-		
+
 		editor.setOperationHandler(this::apply);
 	}
-	
+
 	private void apply(Operation<StringHandler> op, boolean local)
 	{
 		op.apply(new StringHandler()
 		{
 			int index = 0;
-			
+
 			@Override
 			public void retain(int count)
 			{
 				index += count;
 			}
-			
+
 			@Override
 			public void insert(String s)
 			{
 				value.insert(index, s);
 				index += s.length();
 			}
-			
+
 			@Override
 			public void delete(String s)
 			{
 				value.delete(index, index + s.length());
 			}
-			
+
 			@Override
 			public void annotationUpdate(AnnotationChange change)
 			{
@@ -90,13 +90,13 @@ public class SharedStringImpl
 			}
 		});
 	}
-	
+
 	@Override
 	public String get()
 	{
 		return value.toString();
 	}
-	
+
 	@Override
 	public void set(String newValue)
 	{
@@ -108,7 +108,7 @@ public class SharedStringImpl
 				DIFF.diff_cleanupSemantic(diffs);
 				DIFF.diff_cleanupEfficiency(diffs);
 			}
-			
+
 			StringDelta<Operation<StringHandler>> builder = StringDelta.builder();
 			for(Diff d : diffs)
 			{
@@ -125,18 +125,18 @@ public class SharedStringImpl
 						break;
 				}
 			}
-			
+
 			editor.apply(builder.done());
 		}
 	}
-	
+
 	@Override
 	public void append(String value)
 	{
 		try(CloseableLock lock = editor.lock())
 		{
 			int length = this.value.length();
-			
+
 			editor.apply(StringDelta.builder()
 				.retain(length)
 				.insert(value)
@@ -144,7 +144,7 @@ public class SharedStringImpl
 			);
 		}
 	}
-	
+
 	@Override
 	public void insert(int idx, String value)
 	{
@@ -152,7 +152,7 @@ public class SharedStringImpl
 		{
 			int length = this.value.length();
 			this.value.insert(idx, value);
-			
+
 			editor.apply(StringDelta.builder()
 				.retain(idx)
 				.insert(value)
@@ -161,7 +161,7 @@ public class SharedStringImpl
 			);
 		}
 	}
-	
+
 	@Override
 	public void remove(int fromIndex, int toIndex)
 	{
@@ -169,7 +169,7 @@ public class SharedStringImpl
 		{
 			int length = this.value.length();
 			String deleted = this.value.substring(fromIndex, toIndex);
-			
+
 			editor.apply(StringDelta.builder()
 				.retain(fromIndex)
 				.delete(deleted)

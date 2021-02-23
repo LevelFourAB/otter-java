@@ -6,7 +6,7 @@ import se.l4.otter.operations.string.StringHandler;
 
 /**
  * Change for the current annotations.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -24,13 +24,13 @@ public class StringAnnotationChange
 	{
 		return change;
 	}
-	
+
 	@Override
 	public void apply(StringHandler target)
 	{
 		target.annotationUpdate(change);
 	}
-	
+
 	@Override
 	public Operation<StringHandler> invert()
 	{

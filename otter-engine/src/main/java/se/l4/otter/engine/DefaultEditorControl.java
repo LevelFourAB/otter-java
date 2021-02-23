@@ -160,7 +160,7 @@ public class DefaultEditorControl<Op extends Operation<?>>
 		'M', 'N', 'O', 'P', 'Q', 'R',
 		'S', 'T', 'U', 'V', 'W', 'X',
 		'Y', 'Z'
-    };
+	};
 
 	private final static int MAX = DIGITS.length;
 

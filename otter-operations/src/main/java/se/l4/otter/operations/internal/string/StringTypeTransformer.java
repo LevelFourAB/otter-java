@@ -11,7 +11,7 @@ import se.l4.otter.operations.util.MutableOperationIterator;
 
 /**
  * Transformer used by {@link StringType}.
- * 
+ *
  * @author Andreas Holstenson
  *
  */
@@ -19,10 +19,10 @@ public class StringTypeTransformer
 {
 	private final MutableOperationIterator<StringHandler> left;
 	private final MutableOperationIterator<StringHandler> right;
-	
+
 	private final StringDelta<Operation<StringHandler>> deltaLeft;
 	private final StringDelta<Operation<StringHandler>> deltaRight;
-	
+
 	private AnnotationChange leftAnnotations;
 	private AnnotationChange rightAnnotations;
 
@@ -30,7 +30,7 @@ public class StringTypeTransformer
 	{
 		this.left = new MutableOperationIterator<>(left);
 		this.right = new MutableOperationIterator<>(right);
-		
+
 		deltaLeft = new AnnotationNormalizingDelta<>(StringDelta.builder(), () -> {
 			AnnotationChange result = leftAnnotations;
 			leftAnnotations = null;
@@ -42,17 +42,17 @@ public class StringTypeTransformer
 			return result;
 		});
 	}
-	
+
 	public OperationPair<Operation<StringHandler>> perform()
 	{
 		while(left.hasNext())
 		{
 			Operation<StringHandler> op1 = left.next();
-				
+
 			if(right.hasNext())
 			{
 				Operation<StringHandler> op2 = right.next();
-				
+
 				if(op1 instanceof StringRetain)
 				{
 					handleRetain(op1, op2);
@@ -88,7 +88,7 @@ public class StringTypeTransformer
 				}
 			}
 		}
-		
+
 		while(right.hasNext())
 		{
 			Operation<StringHandler> op2 = right.next();
@@ -103,7 +103,7 @@ public class StringTypeTransformer
 				throw new TransformException("Could not transform, mismatch in operation. Current right operation is: " + op2);
 			}
 		}
-		
+
 		return new OperationPair<>(deltaLeft.done(), deltaRight.done());
 	}
 
@@ -113,7 +113,7 @@ public class StringTypeTransformer
 		if(op2 instanceof StringRetain)
 		{
 			int length2 = ((StringRetain) op2).getLength();
-			
+
 			if(length1 > length2)
 			{
 				/*
@@ -122,7 +122,7 @@ public class StringTypeTransformer
 				 */
 				deltaLeft.retain(length2);
 				deltaRight.retain(length2);
-				
+
 				left.replace(new StringRetain(length1 - length2));
 			}
 			else if(length1 < length2)
@@ -133,7 +133,7 @@ public class StringTypeTransformer
 				 */
 				deltaLeft.retain(length1);
 				deltaRight.retain(length1);
-				
+
 				right.replace(new StringRetain(length2 - length1));
 			}
 			else
@@ -151,17 +151,17 @@ public class StringTypeTransformer
 			 */
 			String value2 = ((StringInsert) op2).getValue();
 			int length2 = value2.length();
-			
+
 			deltaLeft.retain(length2);
 			deltaRight.insert(value2);
-			
+
 			left.back();
 		}
 		else if(op2 instanceof StringDelete)
 		{
 			String value2 = ((StringDelete) op2).getValue();
 			int length2 = value2.length();
-			
+
 			if(length1 > length2)
 			{
 				/*
@@ -169,7 +169,7 @@ public class StringTypeTransformer
 				 * left with retain of remaining.
 				 */
 				deltaRight.delete(value2);
-				
+
 				left.replace(new StringRetain(length1 - length2));
 			}
 			else if(length1 < length2)
@@ -179,7 +179,7 @@ public class StringTypeTransformer
 				 * right with remaining.
 				 */
 				deltaRight.delete(value2.substring(0, length1));
-				
+
 				right.replace(new StringDelete(value2.substring(length1)));
 			}
 			else
@@ -194,12 +194,12 @@ public class StringTypeTransformer
 			left.back();
 		}
 	}
-	
+
 	private void handleInsert(Operation<StringHandler> op1, Operation<StringHandler> op2)
 	{
 		String value1 = ((StringInsert) op1).getValue();
 		int length1 = value1.length();
-		
+
 		if(op2 instanceof StringAnnotationChange)
 		{
 			rightAnnotations = DefaultAnnotationChange.merge(rightAnnotations, ((StringAnnotationChange) op2).getChange());
@@ -209,7 +209,7 @@ public class StringTypeTransformer
 		{
 			deltaLeft.insert(value1);
 			deltaRight.retain(length1);
-			
+
 			right.back();
 		}
 	}
@@ -218,7 +218,7 @@ public class StringTypeTransformer
 	{
 		String value1 = ((StringDelete) op1).getValue();
 		int length1 = value1.length();
-		
+
 		if(op2 instanceof StringRetain)
 		{
 			int length2 = ((StringRetain) op2).getLength();
@@ -229,7 +229,7 @@ public class StringTypeTransformer
 				 * and replace left with delete for remaining.
 				 */
 				deltaLeft.delete(value1.substring(0, length2));
-				
+
 				left.replace(new StringDelete(value1.substring(length2)));
 			}
 			else if(length1 < length2)
@@ -239,7 +239,7 @@ public class StringTypeTransformer
 				 * with retain of remaining.
 				 */
 				deltaLeft.delete(value1);
-				
+
 				right.replace(new StringRetain(length2 - length1));
 			}
 			else
@@ -256,17 +256,17 @@ public class StringTypeTransformer
 			 */
 			String value2 = ((StringInsert) op2).getValue();
 			int length2 = value2.length();
-			
+
 			deltaLeft.retain(length2);
 			deltaRight.insert(value2);
-			
+
 			left.back();
 		}
 		else if(op2 instanceof StringDelete)
 		{
 			String value2 = ((StringDelete) op2).getValue();
 			int length2 = value2.length();
-			
+
 			if(length1 > length2)
 			{
 				/*
@@ -294,11 +294,11 @@ public class StringTypeTransformer
 			left.back();
 		}
 	}
-	
+
 	private void handleAnnotationChange(Operation<StringHandler> op1, Operation<StringHandler> op2)
 	{
 		AnnotationChange change1 = ((StringAnnotationChange) op1).getChange();
-		
+
 		if(op2 instanceof StringAnnotationChange)
 		{
 			AnnotationChange change2 = ((StringAnnotationChange) op2).getChange();

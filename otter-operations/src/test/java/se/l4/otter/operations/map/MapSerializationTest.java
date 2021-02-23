@@ -17,7 +17,7 @@ public class MapSerializationTest
 			.done()
 		);
 	}
-	
+
 	@Test
 	public void test2()
 	{
@@ -26,7 +26,7 @@ public class MapSerializationTest
 			.done()
 		);
 	}
-	
+
 	@Test
 	public void test3()
 	{
@@ -35,7 +35,7 @@ public class MapSerializationTest
 			.done()
 		);
 	}
-	
+
 	@Test
 	public void test4()
 	{
@@ -45,7 +45,7 @@ public class MapSerializationTest
 			.done()
 		);
 	}
-	
+
 	@Test
 	public void test5()
 	{
@@ -55,14 +55,14 @@ public class MapSerializationTest
 			.done()
 		);
 	}
-	
+
 	private void test(Operation<MapHandler> op)
 	{
 		MapType type = new MapType();
 		Serializer<Operation<MapHandler>> serializer = type.getSerializer();
 		SerializerTestHelper.testSymmetry(serializer, op);
 	}
-	
+
 	private void test(String json, Operation<MapHandler> op)
 	{
 		MapType type = new MapType();
