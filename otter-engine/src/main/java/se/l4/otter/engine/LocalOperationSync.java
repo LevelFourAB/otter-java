@@ -76,7 +76,6 @@ public class LocalOperationSync<Op extends Operation<?>>
 
 	public void waitForEmpty()
 	{
-		System.out.println("zZzZZz");
 		while(! Thread.interrupted())
 		{
 			try
