@@ -1,7 +1,7 @@
 package se.l4.otter.operations;
 
-import java.util.Collections;
-import java.util.List;
+import org.eclipse.collections.api.factory.Lists;
+import org.eclipse.collections.api.list.ListIterable;
 
 /**
  * {@link Operation} that is composed of several other {@link Operation}s.
@@ -18,7 +18,20 @@ public interface CompoundOperation<Handler>
 	 *
 	 * @return
 	 */
-	List<Operation<Handler>> getOperations();
+	ListIterable<Operation<Handler>> getOperations();
+
+	/**
+	 * Create a compound operation over the give iterable.
+	 * 
+	 * @param ops
+	 * @return
+	 */
+	static <H> CompoundOperation<H> create(Iterable<Operation<H>> ops)
+	{
+		return new DefaultCompoundOperation<>(
+			Lists.immutable.ofAll(ops)
+		);
+	}
 
 	/**
 	 * Turn a operation into a list of operations.
@@ -27,7 +40,7 @@ public interface CompoundOperation<Handler>
 	 * @return
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	static <T> List<Operation<T>> toList(Operation<T> op)
+	static <T> ListIterable<Operation<T>> toList(Operation<T> op)
 	{
 		if(op instanceof CompoundOperation)
 		{
@@ -35,14 +48,14 @@ public interface CompoundOperation<Handler>
 		}
 		else if(op == null)
 		{
-			return Collections.emptyList();
+			return Lists.immutable.empty();
 		}
 
-		return Collections.singletonList(op);
+		return Lists.immutable.of(op);
 	}
 
 	static <T> Operation<T> empty()
 	{
-		return new DefaultCompoundOperation<>(Collections.emptyList());
+		return new DefaultCompoundOperation<>(Lists.immutable.empty());
 	}
 }

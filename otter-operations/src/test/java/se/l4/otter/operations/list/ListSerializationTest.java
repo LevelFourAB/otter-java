@@ -1,9 +1,11 @@
 package se.l4.otter.operations.list;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.junit.Test;
 
-import se.l4.commons.serialization.Serializer;
-import se.l4.otter.data.DataArray;
+import se.l4.exobytes.Serializer;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.SerializerTestHelper;
 
@@ -15,7 +17,7 @@ public class ListSerializationTest
 		test(ListDelta.builder()
 			.retain(2)
 			.insert("Hey!")
-			.delete(new DataArray())
+			.delete(new HashMap<>())
 			.done()
 		);
 	}
@@ -37,7 +39,7 @@ public class ListSerializationTest
 		test("[[\"retain\",2],[\"insert\",[\"Hey!\"]],[\"delete\",[[]]]]", ListDelta.builder()
 			.retain(2)
 			.insert("Hey!")
-			.delete(new DataArray())
+			.delete(new ArrayList<>())
 			.done()
 		);
 	}

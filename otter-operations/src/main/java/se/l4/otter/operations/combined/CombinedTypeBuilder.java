@@ -1,6 +1,7 @@
 package se.l4.otter.operations.combined;
 
-import com.google.common.collect.ImmutableMap;
+import org.eclipse.collections.api.factory.Maps;
+import org.eclipse.collections.api.map.MutableMap;
 
 import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
@@ -16,11 +17,11 @@ import se.l4.otter.operations.string.StringType;
  */
 public class CombinedTypeBuilder
 {
-	private final ImmutableMap.Builder<String, OTType<Operation<?>>> types;
+	private final MutableMap<String, OTType<Operation<?>>> types;
 
 	public CombinedTypeBuilder()
 	{
-		types = ImmutableMap.builder();
+		types = Maps.mutable.empty();
 
 		withSubType("map", new MapType());
 		withSubType("list", new ListType());
@@ -36,6 +37,6 @@ public class CombinedTypeBuilder
 
 	public CombinedType build()
 	{
-		return new CombinedType(types.build());
+		return new CombinedType(types.toImmutable());
 	}
 }

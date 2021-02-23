@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
-import se.l4.otter.operations.DefaultCompoundOperation;
+import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.list.ListDelta;
 import se.l4.otter.operations.list.ListHandler;
@@ -165,6 +165,6 @@ public class DefaultListDelta<ReturnPath>
 	public ReturnPath done()
 	{
 		flush();
-		return resultHandler.apply(new DefaultCompoundOperation<>(ops));
+		return resultHandler.apply(CompoundOperation.create(ops));
 	}
 }

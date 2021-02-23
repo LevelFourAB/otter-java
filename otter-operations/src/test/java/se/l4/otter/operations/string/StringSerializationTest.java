@@ -2,7 +2,7 @@ package se.l4.otter.operations.string;
 
 import org.junit.Test;
 
-import se.l4.commons.serialization.Serializer;
+import se.l4.exobytes.Serializer;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.SerializerTestHelper;
 

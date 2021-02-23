@@ -8,11 +8,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 
-import com.google.common.base.Throwables;
-
-import se.l4.commons.serialization.Serializer;
-import se.l4.commons.serialization.format.JsonInput;
-import se.l4.commons.serialization.format.JsonOutput;
+import se.l4.exobytes.Serializer;
+import se.l4.exobytes.internal.streaming.JsonInput;
+import se.l4.exobytes.internal.streaming.JsonOutput;
 
 public class SerializerTestHelper
 {
@@ -25,11 +23,11 @@ public class SerializerTestHelper
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try(JsonOutput json = new JsonOutput(out))
 		{
-			serializer.write(value, null, json);
+			serializer.write(value, json);
 		}
 		catch(IOException e)
 		{
-			throw Throwables.propagate(e);
+			throw new RuntimeException(e);
 		}
 
 		T readValue;
@@ -39,7 +37,7 @@ public class SerializerTestHelper
 		}
 		catch(IOException e)
 		{
-			throw Throwables.propagate(e);
+			throw new RuntimeException(e);
 		}
 
 		assertThat(readValue, is(value));
@@ -54,7 +52,7 @@ public class SerializerTestHelper
 		}
 		catch(IOException e)
 		{
-			throw Throwables.propagate(e);
+			throw new RuntimeException(e);
 		}
 
 		assertThat(readValue, is(value));

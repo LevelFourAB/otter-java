@@ -1,14 +1,14 @@
 package se.l4.otter.operations.internal.map;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import se.l4.commons.serialization.Serializer;
-import se.l4.commons.serialization.format.StreamingInput;
-import se.l4.commons.serialization.format.StreamingOutput;
-import se.l4.commons.serialization.format.Token;
-import se.l4.otter.data.DataSerializer;
+import org.eclipse.collections.api.factory.Lists;
+import org.eclipse.collections.api.list.MutableList;
+
+import se.l4.exobytes.Serializer;
+import se.l4.exobytes.streaming.StreamingInput;
+import se.l4.exobytes.streaming.StreamingOutput;
+import se.l4.exobytes.streaming.Token;
 import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.DefaultCompoundOperation;
 import se.l4.otter.operations.Operation;
@@ -27,11 +27,12 @@ public class MapOperationSerializer
 	{
 		in.next(Token.LIST_START);
 
-		List<Operation<MapHandler>> ops = new ArrayList<>();
+		MutableList<Operation<MapHandler>> ops = Lists.mutable.empty();
 
 		while(in.peek() != Token.LIST_END)
 		{
 			in.next(Token.LIST_START);
+			
 			int idx = 0;
 			String type = null;
 			while(in.peek() != Token.LIST_END)
@@ -40,7 +41,7 @@ public class MapOperationSerializer
 				{
 					case 0:
 						in.next(Token.VALUE);
-						type = in.getString();
+						type = in.readString();
 						break;
 					case 1:
 						switch(type)
@@ -49,88 +50,101 @@ public class MapOperationSerializer
 								ops.add(readSet(in));
 								break;
 							default:
-								in.skipValue();
+								in.skipNext();
 								break;
 						}
 						break;
 					default:
-						in.skipValue();
+						in.skipNext();
 						break;
 				}
 				idx++;
 			}
+
 			in.next(Token.LIST_END);
 		}
 
 		in.next(Token.LIST_END);
 		ops.sort(MapKeyComparator.INSTANCE);
-		return new DefaultCompoundOperation<>(ops);
+		return new DefaultCompoundOperation<>(ops.toImmutable());
 	}
 
 	private MapSet readSet(StreamingInput in)
 		throws IOException
 	{
 		in.next(Token.OBJECT_START);
+		
 		String setKey = null;
 		Object oldValue = null;
 		Object newValue = null;
+
 		while(in.peek() != Token.OBJECT_END)
 		{
-			in.next(Token.KEY);
-			String key = in.getString();
+			in.next(Token.VALUE);
+			String key = in.readString();
 
 			switch(key)
 			{
 				case "key":
 					in.next(Token.VALUE);
-					setKey = in.getString();
+					setKey = in.readString();
 					break;
 				case "oldValue":
-					oldValue = DataSerializer.INSTANCE.read(in);
+					in.next();
+					oldValue = in.readDynamic();
 					break;
 				case "newValue":
-					newValue = DataSerializer.INSTANCE.read(in);
+					in.next();
+					newValue = in.readDynamic();
 					break;
 				default:
-					in.skipValue();
+					in.skipNext();
 			}
 		}
+		
 		in.next(Token.OBJECT_END);
 
 		return new MapSet(setKey, oldValue, newValue);
 	}
 
 	@Override
-	public void write(Operation<MapHandler> object, String name, StreamingOutput out)
+	public void write(Operation<MapHandler> object, StreamingOutput out)
 		throws IOException
 	{
-		out.writeListStart(name);
+		out.writeListStart();
+		
 		for(Operation<MapHandler> op : CompoundOperation.toList(object))
 		{
 			if(op instanceof MapSet)
 			{
 				MapSet set = ((MapSet) op);
 
-				out.writeListStart("entry");
+				out.writeListStart();
 
-				out.write("type", "set");
+				out.writeString("set");
 
-				out.writeObjectStart("op");
+				out.writeObjectStart();
 
-				out.write("key", set.getKey());
-				DataSerializer.INSTANCE.write(set.getOldValue(), "oldValue", out);
-				DataSerializer.INSTANCE.write(set.getNewValue(), "newValue", out);
+				out.writeString("key");
+				out.writeString(set.getKey());
+				
+				out.writeString("oldValue");
+				out.writeDynamic(set.getOldValue());
 
-				out.writeObjectEnd("op");
+				out.writeString("newValue");
+				out.writeDynamic(set.getNewValue());
 
-				out.writeListEnd("entry");
+				out.writeObjectEnd();
+
+				out.writeListEnd();
 			}
 			else
 			{
 				throw new OperationException("Unsupported operation: " + op);
 			}
 		}
-		out.writeListEnd(name);
+		
+		out.writeListEnd();
 	}
 
 }

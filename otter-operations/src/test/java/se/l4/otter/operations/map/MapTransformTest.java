@@ -3,8 +3,7 @@ package se.l4.otter.operations.map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.Arrays;
-
+import org.eclipse.collections.api.factory.Lists;
 import org.junit.Test;
 
 import se.l4.otter.operations.CompoundOperation;
@@ -67,7 +66,7 @@ public class MapTransformTest
 
 	private static CompoundOperation<MapHandler> of(Operation<MapHandler>... ops)
 	{
-		return new DefaultCompoundOperation<>(Arrays.asList(ops));
+		return new DefaultCompoundOperation<>(Lists.immutable.of(ops));
 	}
 
 	private void test(Operation<?> client, Operation<?> server,

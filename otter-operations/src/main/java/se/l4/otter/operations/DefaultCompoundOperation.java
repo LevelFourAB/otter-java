@@ -1,8 +1,7 @@
 package se.l4.otter.operations;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.eclipse.collections.api.list.ImmutableList;
+import org.eclipse.collections.api.list.ListIterable;
 
 /**
  * Default implementation of {@link CompoundOperation}.
@@ -14,11 +13,13 @@ import java.util.List;
 public class DefaultCompoundOperation<Handler>
 	implements CompoundOperation<Handler>
 {
-	private final List<Operation<Handler>> operations;
+	private final ImmutableList<Operation<Handler>> operations;
 
-	public DefaultCompoundOperation(List<Operation<Handler>> operations)
+	public DefaultCompoundOperation(
+		ImmutableList<Operation<Handler>> operations
+	)
 	{
-		this.operations = Collections.unmodifiableList(new ArrayList<>(operations));
+		this.operations = operations;
 	}
 
 	@Override
@@ -31,7 +32,7 @@ public class DefaultCompoundOperation<Handler>
 	}
 
 	@Override
-	public List<Operation<Handler>> getOperations()
+	public ListIterable<Operation<Handler>> getOperations()
 	{
 		return operations;
 	}

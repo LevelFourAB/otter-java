@@ -1,9 +1,10 @@
 package se.l4.otter.operations.map;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
-import se.l4.commons.serialization.Serializer;
-import se.l4.otter.data.DataArray;
+import se.l4.exobytes.Serializer;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.SerializerTestHelper;
 
@@ -31,7 +32,7 @@ public class MapSerializationTest
 	public void test3()
 	{
 		test(MapDelta.builder()
-			.set("abc", null, new DataArray())
+			.set("abc", null, new ArrayList<>())
 			.done()
 		);
 	}
@@ -40,7 +41,7 @@ public class MapSerializationTest
 	public void test4()
 	{
 		test(MapDelta.builder()
-			.set("abc", null, new DataArray())
+			.set("abc", null, new ArrayList<>())
 			.set("def", null, "Cookies")
 			.done()
 		);
@@ -50,7 +51,7 @@ public class MapSerializationTest
 	public void test5()
 	{
 		test("[[\"set\",{\"key\":\"abc\",\"newValue\":[]}],[\"set\",{\"key\":\"def\",\"newValue\":\"Cookies\"}]]", MapDelta.builder()
-			.set("abc", null, new DataArray())
+			.set("abc", null, new ArrayList<>())
 			.set("def", null, "Cookies")
 			.done()
 		);

@@ -1,8 +1,8 @@
 package se.l4.otter.operations.internal.list;
 
 import java.util.Arrays;
-import java.util.List;
 
+import org.eclipse.collections.api.list.ListIterable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +31,10 @@ public class ListTypeComposer
 
 	private final ListDelta<Operation<ListHandler>> delta;
 
-	public ListTypeComposer(List<Operation<ListHandler>> first, List<Operation<ListHandler> >second)
+	public ListTypeComposer(
+		ListIterable<Operation<ListHandler>> first,
+		ListIterable<Operation<ListHandler>> second
+	)
 	{
 		log.debug("Composing {} with {}", first, second);
 

@@ -1,9 +1,10 @@
 package se.l4.otter.operations.util;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.ListIterator;
+
+import org.eclipse.collections.api.factory.Lists;
+import org.eclipse.collections.api.list.ListIterable;
 
 import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.Operation;
@@ -26,9 +27,9 @@ public class MutableOperationIterator<T>
 		this(CompoundOperation.toList(op));
 	}
 
-	public MutableOperationIterator(List<Operation<T>> ops)
+	public MutableOperationIterator(ListIterable<Operation<T>> ops)
 	{
-		this.it = new ArrayList<>(ops).listIterator();
+		this.it = Lists.mutable.ofAll(ops).listIterator();
 	}
 
 	@Override

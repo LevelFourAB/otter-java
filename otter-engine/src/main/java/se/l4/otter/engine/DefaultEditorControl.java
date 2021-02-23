@@ -3,13 +3,13 @@ package se.l4.otter.engine;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import se.l4.commons.id.LongIdGenerator;
-import se.l4.commons.id.SimpleLongIdGenerator;
 import se.l4.otter.lock.CloseableLock;
 import se.l4.otter.operations.Composer;
 import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationPair;
+import se.l4.ylem.ids.LongIdGenerator;
+import se.l4.ylem.ids.SimpleLongIdGenerator;
 
 /**
  * {@link EditorControl} implementation that stores operations using

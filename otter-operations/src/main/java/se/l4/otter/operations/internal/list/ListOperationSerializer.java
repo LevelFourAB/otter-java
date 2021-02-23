@@ -4,13 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.l4.commons.serialization.Serializer;
-import se.l4.commons.serialization.format.StreamingInput;
-import se.l4.commons.serialization.format.StreamingOutput;
-import se.l4.commons.serialization.format.Token;
-import se.l4.otter.data.DataSerializer;
+import org.eclipse.collections.api.factory.Lists;
+import org.eclipse.collections.api.list.MutableList;
+
+import se.l4.exobytes.Serializer;
+import se.l4.exobytes.streaming.StreamingInput;
+import se.l4.exobytes.streaming.StreamingOutput;
+import se.l4.exobytes.streaming.Token;
 import se.l4.otter.operations.CompoundOperation;
-import se.l4.otter.operations.DefaultCompoundOperation;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationException;
 import se.l4.otter.operations.list.ListHandler;
@@ -26,7 +27,9 @@ public class ListOperationSerializer
 	{
 		in.next(Token.LIST_START);
 
-		List<Operation<ListHandler>> ops = new ArrayList<>();
+		MutableList<Operation<ListHandler>> ops = Lists.mutable.ofInitialCapacity(
+			in.getLength().orElse(5)
+		);
 
 		while(in.peek() != Token.LIST_END)
 		{
@@ -39,14 +42,14 @@ public class ListOperationSerializer
 				{
 					case 0:
 						in.next(Token.VALUE);
-						type = in.getString();
+						type = in.readString();
 						break;
 					case 1:
 						switch(type)
 						{
 							case "retain":
 								in.next(Token.VALUE);
-								ops.add(new ListRetain(in.getInt()));
+								ops.add(new ListRetain(in.readInt()));
 								break;
 							case "insert":
 								ops.add(new ListInsert(readObjects(in)));
@@ -55,12 +58,12 @@ public class ListOperationSerializer
 								ops.add(new ListDelete(readObjects(in)));
 								break;
 							default:
-								in.skipValue();
+								in.skipNext();
 								break;
 						}
 						break;
 					default:
-						in.skipValue();
+						in.skipNext();
 						break;
 				}
 				idx++;
@@ -69,7 +72,7 @@ public class ListOperationSerializer
 		}
 
 		in.next(Token.LIST_END);
-		return new DefaultCompoundOperation<>(ops);
+		return CompoundOperation.create(ops);
 	}
 
 	private Object[] readObjects(StreamingInput in)
@@ -79,7 +82,8 @@ public class ListOperationSerializer
 		List<Object> result = new ArrayList<>();
 		while(in.peek() != Token.LIST_END)
 		{
-			result.add(DataSerializer.INSTANCE.read(in));
+			in.next();
+			result.add(in.readDynamic());
 		}
 		in.next(Token.LIST_END);
 
@@ -87,49 +91,49 @@ public class ListOperationSerializer
 	}
 
 	@Override
-	public void write(Operation<ListHandler> object, String name, StreamingOutput out)
+	public void write(Operation<ListHandler> object, StreamingOutput out)
 		throws IOException
 	{
-		out.writeListStart(name);
+		out.writeListStart();
 		for(Operation<ListHandler> op : CompoundOperation.toList(object))
 		{
-			out.writeListStart("op");
+			out.writeListStart();
 			if(op instanceof ListRetain)
 			{
-				out.write("type", "retain");
-				out.write("length", ((ListRetain) op).getLength());
+				out.writeString("retain");
+				out.writeInt(((ListRetain) op).getLength());
 			}
 			else if(op instanceof ListInsert)
 			{
-				out.write("type", "insert");
-				out.writeListStart("items");
+				out.writeString("insert");
+				out.writeListStart();
 
 				for(Object o : ((ListInsert) op).getItems())
 				{
-					DataSerializer.INSTANCE.write(o, "entry", out);
+					out.writeDynamic(o);
 				}
 
-				out.writeListEnd("items");
+				out.writeListEnd();
 			}
 			else if(op instanceof ListDelete)
 			{
-				out.write("type", "delete");
-				out.writeListStart("items");
+				out.writeString("delete");
+				out.writeListStart();
 
 				for(Object o : ((ListDelete) op).getItems())
 				{
-					DataSerializer.INSTANCE.write(o, "entry", out);
+					out.writeDynamic(o);
 				}
 
-				out.writeListEnd("items");
+				out.writeListEnd();
 			}
 			else
 			{
 				throw new OperationException("Unsupported operation: " + op);
 			}
-			out.writeListEnd("op");
+			out.writeListEnd();
 		}
-		out.writeListEnd(name);
+		out.writeListEnd();
 	}
 
 }

@@ -1,14 +1,13 @@
 package se.l4.otter.operations.internal.combined;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.google.common.collect.ImmutableList;
+import org.eclipse.collections.api.factory.Lists;
+import org.eclipse.collections.api.list.MutableList;
 
-import se.l4.otter.operations.DefaultCompoundOperation;
+import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationException;
 import se.l4.otter.operations.combined.CombinedDelta;
@@ -43,8 +42,8 @@ public class DefaultCombinedDelta<ReturnPath>
 	@Override
 	public ReturnPath done()
 	{
-		List<Operation<CombinedHandler>> list = new ArrayList<>(ops.values());
+		MutableList<Operation<CombinedHandler>> list = Lists.mutable.ofAll(ops.values());
 		list.sort(IdComparator.INSTANCE);
-		return resultHandler.apply(new DefaultCompoundOperation<>(ImmutableList.copyOf(list)));
+		return resultHandler.apply(CompoundOperation.create(list));
 	}
 }

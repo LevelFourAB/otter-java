@@ -1,6 +1,6 @@
 package se.l4.otter.operations.list;
 
-import se.l4.commons.serialization.Serializer;
+import se.l4.exobytes.Serializer;
 import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;

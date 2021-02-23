@@ -1,11 +1,11 @@
 package se.l4.otter.operations.string;
 
-import java.util.List;
+import org.eclipse.collections.api.list.ListIterable;
 
-import se.l4.commons.serialization.Serializer;
+import se.l4.exobytes.Serializer;
 import se.l4.otter.operations.CompoundOperation;
-import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OTType;
+import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationPair;
 import se.l4.otter.operations.internal.string.StringOperationSerializer;
 import se.l4.otter.operations.internal.string.StringTypeComposer;
@@ -30,7 +30,9 @@ public class StringType
 		);
 	}
 
-	private Operation<StringHandler> compose(List<Operation<StringHandler>> ops1, List<Operation<StringHandler>> ops2)
+	private Operation<StringHandler> compose(
+		ListIterable<Operation<StringHandler>> ops1,
+		ListIterable<Operation<StringHandler>> ops2)
 	{
 		return new StringTypeComposer(ops1, ops2).perform();
 	}

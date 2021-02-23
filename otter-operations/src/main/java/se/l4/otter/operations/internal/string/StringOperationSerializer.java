@@ -2,12 +2,13 @@ package se.l4.otter.operations.internal.string;
 
 import java.io.IOException;
 
-import se.l4.commons.serialization.SerializationException;
-import se.l4.commons.serialization.Serializer;
-import se.l4.commons.serialization.format.StreamingInput;
-import se.l4.commons.serialization.format.StreamingOutput;
-import se.l4.commons.serialization.format.Token;
-import se.l4.otter.data.DataSerializer;
+import org.eclipse.collections.api.list.ListIterable;
+
+import se.l4.exobytes.SerializationException;
+import se.l4.exobytes.Serializer;
+import se.l4.exobytes.streaming.StreamingInput;
+import se.l4.exobytes.streaming.StreamingOutput;
+import se.l4.exobytes.streaming.Token;
 import se.l4.otter.operations.CompoundOperation;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.ValueChange;
@@ -39,21 +40,21 @@ public class StringOperationSerializer
 			in.next(Token.LIST_START);
 
 			in.next(Token.VALUE);
-			String type = in.getString();
+			String type = in.readString();
 
 			switch(type)
 			{
 				case "retain":
 					in.next(Token.VALUE);
-					delta.retain(in.getInt());
+					delta.retain(in.readInt());
 					break;
 				case "insert":
 					in.next(Token.VALUE);
-					delta.insert(in.getString());
+					delta.insert(in.readString());
 					break;
 				case "delete":
 					in.next(Token.VALUE);
-					delta.delete(in.getString());
+					delta.delete(in.readString());
 					break;
 				case "annotations":
 					readAnnotation(in, delta);
@@ -81,8 +82,8 @@ public class StringOperationSerializer
 		in.next(Token.OBJECT_START);
 		while(in.peek() != Token.OBJECT_END)
 		{
-			in.next(Token.KEY);
-			String key = in.getString();
+			in.next(Token.VALUE);
+			String key = in.readString();
 
 			in.next(Token.OBJECT_START);
 
@@ -91,17 +92,19 @@ public class StringOperationSerializer
 
 			while(in.peek() != Token.OBJECT_END)
 			{
-				in.next(Token.KEY);
-				switch(in.getString())
+				in.next(Token.VALUE);
+				switch(in.readString())
 				{
 					case "oldValue":
-						oldValue = DataSerializer.INSTANCE.read(in);
+						in.next();
+						oldValue = in.readDynamic();
 						break;
 					case "newValue":
-						newValue = DataSerializer.INSTANCE.read(in);
+						in.next();
+						newValue = in.readDynamic();
 						break;
 					default:
-						in.skipValue();
+						in.skipNext();
 						break;
 				}
 			}
@@ -123,60 +126,67 @@ public class StringOperationSerializer
 	}
 
 	@Override
-	public void write(Operation<StringHandler> object, String name, StreamingOutput out)
+	public void write(Operation<StringHandler> object, StreamingOutput out)
 		throws IOException
 	{
-		out.writeListStart(name);
-		for(Operation<StringHandler> op : CompoundOperation.toList(object))
+		ListIterable<Operation<StringHandler>> list = CompoundOperation.toList(object);
+		out.writeListStart(list.size());
+
+		for(Operation<StringHandler> op : list)
 		{
-			out.writeListStart("op");
+			out.writeListStart();
 			if(op instanceof StringRetain)
 			{
-				out.write("type", "retain");
-				out.write("length", ((StringRetain) op).getLength());
+				out.writeString("retain");
+				out.writeInt(((StringRetain) op).getLength());
 			}
 			else if(op instanceof StringInsert)
 			{
-				out.write("type", "insert");
-				out.write("value", ((StringInsert) op).getValue());
+				out.writeString("insert");
+				out.writeString(((StringInsert) op).getValue());
 			}
 			else if(op instanceof StringDelete)
 			{
-				out.write("type", "delete");
-				out.write("value", ((StringDelete) op).getValue());
+				out.writeString("delete");
+				out.writeString(((StringDelete) op).getValue());
 			}
 			else if(op instanceof StringAnnotationChange)
 			{
-				out.write("type", "annotations");
+				out.writeString("annotations");
 				writeAnnotationChange((StringAnnotationChange) op, out);
 			}
 			else
 			{
 				throw new SerializationException("Unable to serialize operation; Received unsupported operation: " + op);
 			}
-			out.writeListEnd("end");
+			out.writeListEnd();
 		}
 
-		out.writeListEnd(name);
+		out.writeListEnd();
 	}
 
 	private void writeAnnotationChange(StringAnnotationChange op, StreamingOutput out)
 		throws IOException
 	{
-		out.writeObjectStart("changes");
+		out.writeObjectStart();
 		AnnotationChange change = op.getChange();
 		for(String key : change.keys())
 		{
+			out.writeString(key);
+
 			ValueChange keyChange = change.getChange(key);
 
-			out.writeObjectStart(key);
+			out.writeObjectStart();
 
-			DataSerializer.INSTANCE.write(keyChange.getOldValue(), "oldValue", out);
-			DataSerializer.INSTANCE.write(keyChange.getNewValue(), "newValue", out);
+			out.writeString("oldValue");
+			out.writeDynamic(keyChange.getOldValue());
 
-			out.writeObjectEnd(key);
+			out.writeString("newValue");
+			out.writeDynamic(keyChange.getNewValue());
+
+			out.writeObjectEnd();
 		}
-		out.writeObjectEnd("changes");
+		out.writeObjectEnd();
 	}
 
 }

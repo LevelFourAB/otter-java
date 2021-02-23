@@ -1,6 +1,8 @@
 package se.l4.otter.model.spi;
 
-import se.l4.otter.data.DataArray;
+import java.util.ArrayList;
+import java.util.List;
+
 import se.l4.otter.model.SharedObject;
 import se.l4.otter.operations.OperationException;
 
@@ -15,7 +17,7 @@ public class DataValues
 {
 	public static Object toData(Object value)
 	{
-		DataArray result = new DataArray();
+		List<Object> result = new ArrayList<>();
 		if(value instanceof SharedObject)
 		{
 			result.add("ref");
@@ -35,7 +37,7 @@ public class DataValues
 
 	public static Object fromData(SharedObjectEditor<?> editor, Object value)
 	{
-		DataArray array = (DataArray) value;
+		List<Object> array = (List<Object>) value;
 		String type = (String) array.get(0);
 
 		switch(type)

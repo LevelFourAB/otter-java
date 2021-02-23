@@ -1,7 +1,6 @@
 package se.l4.otter.operations.internal.string;
 
-import java.util.List;
-
+import org.eclipse.collections.api.list.ListIterable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +28,9 @@ public class StringTypeComposer
 
 	private AnnotationChange annotationChanges;
 
-	public StringTypeComposer(List<Operation<StringHandler>> first, List<Operation<StringHandler>> second)
+	public StringTypeComposer(
+		ListIterable<Operation<StringHandler>> first,
+		ListIterable<Operation<StringHandler>> second)
 	{
 		log.debug("Composing {} with {}", first, second);
 

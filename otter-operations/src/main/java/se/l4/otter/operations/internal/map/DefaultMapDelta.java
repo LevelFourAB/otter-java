@@ -1,12 +1,13 @@
 package se.l4.otter.operations.internal.map;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+
+import org.eclipse.collections.api.factory.Lists;
+import org.eclipse.collections.api.list.MutableList;
 
 import se.l4.otter.operations.DefaultCompoundOperation;
 import se.l4.otter.operations.Operation;
@@ -60,14 +61,16 @@ public class DefaultMapDelta<ReturnPath>
 	@Override
 	public ReturnPath done()
 	{
-		List<Operation<MapHandler>> operations = new ArrayList<>();
+		MutableList<Operation<MapHandler>> operations = Lists.mutable.empty();
+
 		for(Map.Entry<String, ValuePair> e : changes.entrySet())
 		{
 			operations.add(new MapSet(e.getKey(), e.getValue().oldValue, e.getValue().newValue));
 		}
+		
 		Collections.sort(operations, MapKeyComparator.INSTANCE);
 
-		return resultHandler.apply(new DefaultCompoundOperation<>(operations));
+		return resultHandler.apply(new DefaultCompoundOperation<>(operations.toImmutable()));
 	}
 
 	private static class ValuePair

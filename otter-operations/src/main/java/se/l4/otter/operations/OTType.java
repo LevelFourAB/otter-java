@@ -1,6 +1,6 @@
 package se.l4.otter.operations;
 
-import se.l4.commons.serialization.Serializer;
+import se.l4.exobytes.Serializer;
 import se.l4.otter.operations.internal.DefaultComposer;
 
 public interface OTType<Op extends Operation<?>>

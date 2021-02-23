@@ -1,8 +1,9 @@
 package se.l4.otter.operations.internal.string;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
+
+import org.eclipse.collections.api.factory.Lists;
+import org.eclipse.collections.api.list.MutableList;
 
 import se.l4.otter.operations.DefaultCompoundOperation;
 import se.l4.otter.operations.Operation;
@@ -24,7 +25,7 @@ public class DefaultStringDelta<ReturnPath>
 	}
 
 	private final Function<Operation<StringHandler>, ReturnPath> resultHandler;
-	private final List<Operation<StringHandler>> operations;
+	private final MutableList<Operation<StringHandler>> operations;
 
 	private State state;
 
@@ -36,7 +37,7 @@ public class DefaultStringDelta<ReturnPath>
 	public DefaultStringDelta(Function<Operation<StringHandler>, ReturnPath> resultHandler)
 	{
 		this.resultHandler = resultHandler;
-		operations = new ArrayList<>();
+		operations = Lists.mutable.empty();
 
 		characters = new StringBuilder();
 		state = State.EMPTY;
@@ -178,6 +179,6 @@ public class DefaultStringDelta<ReturnPath>
 	public ReturnPath done()
 	{
 		flush();
-		return resultHandler.apply(new DefaultCompoundOperation<>(operations));
+		return resultHandler.apply(new DefaultCompoundOperation<>(operations.toImmutable()));
 	}
 }

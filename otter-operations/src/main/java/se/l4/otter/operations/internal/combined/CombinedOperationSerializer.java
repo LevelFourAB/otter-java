@@ -3,14 +3,14 @@ package se.l4.otter.operations.internal.combined;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import se.l4.commons.serialization.Serializer;
-import se.l4.commons.serialization.format.StreamingInput;
-import se.l4.commons.serialization.format.StreamingOutput;
-import se.l4.commons.serialization.format.Token;
+import org.eclipse.collections.api.map.ImmutableMap;
+
+import se.l4.exobytes.Serializer;
+import se.l4.exobytes.streaming.StreamingInput;
+import se.l4.exobytes.streaming.StreamingOutput;
+import se.l4.exobytes.streaming.Token;
 import se.l4.otter.operations.CompoundOperation;
-import se.l4.otter.operations.DefaultCompoundOperation;
 import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationException;
@@ -19,9 +19,9 @@ import se.l4.otter.operations.combined.CombinedHandler;
 public class CombinedOperationSerializer
 	implements Serializer<Operation<CombinedHandler>>
 {
-	private final Map<String, OTType<Operation<?>>> types;
+	private final ImmutableMap<String, OTType<Operation<?>>> types;
 
-	public CombinedOperationSerializer(Map<String, OTType<Operation<?>>> types)
+	public CombinedOperationSerializer(ImmutableMap<String, OTType<Operation<?>>> types)
 	{
 		this.types = types;
 	}
@@ -45,7 +45,7 @@ public class CombinedOperationSerializer
 				{
 					case 0:
 						in.next(Token.VALUE);
-						type = in.getString();
+						type = in.readString();
 						break;
 					case 1:
 						if("update".equals(type))
@@ -55,10 +55,10 @@ public class CombinedOperationSerializer
 						}
 						else
 						{
-							in.skipValue();
+							in.skipNext();
 						}
 					default:
-						in.skipValue();
+						in.skipNext();
 						break;
 				}
 				idx++;
@@ -68,17 +68,17 @@ public class CombinedOperationSerializer
 
 		in.next(Token.LIST_END);
 		ops.sort(IdComparator.INSTANCE);
-		return new DefaultCompoundOperation<>(ops);
+		return CompoundOperation.create(ops);
 	}
 
 	private Operation<CombinedHandler> readUpdate(StreamingInput in)
 		throws IOException
 	{
 		in.next(Token.VALUE);
-		String id = in.getString();
+		String id = in.readString();
 
 		in.next(Token.VALUE);
-		String type = in.getString();
+		String type = in.readString();
 
 		Operation<?> op = serializer(type)
 			.read(in);
@@ -87,34 +87,34 @@ public class CombinedOperationSerializer
 	}
 
 	@Override
-	public void write(Operation<CombinedHandler> object, String name, StreamingOutput out)
+	public void write(Operation<CombinedHandler> object, StreamingOutput out)
 		throws IOException
 	{
-		out.writeListStart(name);
+		out.writeListStart();
 		for(Operation<CombinedHandler> op : CompoundOperation.toList(object))
 		{
 			if(op instanceof Update)
 			{
 				Update update = ((Update) op);
 
-				out.writeListStart("entry");
+				out.writeListStart();
 
-				out.write("type", "update");
+				out.writeString("update");
 
-				out.write("id", update.getId());
-				out.write("type", update.getType());
+				out.writeString(update.getId());
+				out.writeString(update.getType());
 
 				serializer(update.getType())
-					.write(update.getOperation(), "op", out);
+					.write(update.getOperation(), out);
 
-				out.writeListEnd("entry");
+				out.writeListEnd();
 			}
 			else
 			{
 				throw new OperationException("Unsupported operation: " + op);
 			}
 		}
-		out.writeListEnd(name);
+		out.writeListEnd();
 	}
 
 	private Serializer<Operation<?>> serializer(String type)

@@ -3,9 +3,11 @@ package se.l4.otter.operations.map;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.l4.commons.serialization.Serializer;
+import org.eclipse.collections.api.factory.Lists;
+import org.eclipse.collections.api.list.MutableList;
+
+import se.l4.exobytes.Serializer;
 import se.l4.otter.operations.CompoundOperation;
-import se.l4.otter.operations.DefaultCompoundOperation;
 import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationPair;
@@ -36,7 +38,7 @@ public class MapType
 		MutableOperationIterator<MapHandler> it1 = new MutableOperationIterator<>(CompoundOperation.toList(left));
 		MutableOperationIterator<MapHandler> it2 = new MutableOperationIterator<>(CompoundOperation.toList(right));
 
-		List<Operation<MapHandler>> result = new ArrayList<>();
+		MutableList<Operation<MapHandler>> result = Lists.mutable.empty();
 		while(it1.hasNext())
 		{
 			MapOperation op1 = (MapOperation) it1.next();
@@ -94,7 +96,7 @@ public class MapType
 			result.add(op);
 		}
 
-		return new DefaultCompoundOperation<>(result);
+		return CompoundOperation.create(result);
 	}
 
 	@Override
@@ -164,8 +166,8 @@ public class MapType
 		}
 
 		return new OperationPair<>(
-			new DefaultCompoundOperation<>(deltaLeft),
-			new DefaultCompoundOperation<>(deltaRight)
+			CompoundOperation.create(deltaLeft),
+			CompoundOperation.create(deltaRight)
 		);
 	}
 

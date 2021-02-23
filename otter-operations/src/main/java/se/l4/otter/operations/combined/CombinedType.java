@@ -2,12 +2,12 @@ package se.l4.otter.operations.combined;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import se.l4.commons.serialization.Serializer;
+import org.eclipse.collections.api.map.ImmutableMap;
+
+import se.l4.exobytes.Serializer;
 import se.l4.otter.operations.ComposeException;
 import se.l4.otter.operations.CompoundOperation;
-import se.l4.otter.operations.DefaultCompoundOperation;
 import se.l4.otter.operations.OTType;
 import se.l4.otter.operations.Operation;
 import se.l4.otter.operations.OperationPair;
@@ -29,10 +29,10 @@ import se.l4.otter.operations.util.MutableOperationIterator;
 public class CombinedType
 	implements OTType<Operation<CombinedHandler>>
 {
-	private final Map<String, OTType<Operation<?>>> types;
+	private final ImmutableMap<String, OTType<Operation<?>>> types;
 	private final CombinedOperationSerializer serializer;
 
-	public CombinedType(Map<String, OTType<Operation<?>>> types)
+	public CombinedType(ImmutableMap<String, OTType<Operation<?>>> types)
 	{
 		this.types = types;
 
@@ -121,7 +121,7 @@ public class CombinedType
 			result.add(op);
 		}
 
-		return new DefaultCompoundOperation<>(result);
+		return CompoundOperation.create(result);
 	}
 
 	@Override
@@ -205,8 +205,8 @@ public class CombinedType
 		}
 
 		return new OperationPair<>(
-			new DefaultCompoundOperation<>(deltaLeft),
-			new DefaultCompoundOperation<>(deltaRight)
+			CompoundOperation.create(deltaLeft),
+			CompoundOperation.create(deltaRight)
 		);
 	}
 
