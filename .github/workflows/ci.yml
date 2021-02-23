@@ -1,0 +1,31 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    name: CI
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up JDK 9
+      uses: actions/setup-java@v1
+      with:
+        java-version: 9
+
+    - name: Cache local Maven repository
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    - name: Build
+      run: mvn compile --file pom.xml
+    - name: Test
+      run: mvn test --file pom.xml
+    - name: Package
+      run: mvn -Prelease -DskipTests package --file pom.xml
