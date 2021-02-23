@@ -24,7 +24,7 @@ The engine contains editing control. It provides support for creating
 editors on top of any supported operational transformation.
 
 
-```
+```java
 OperationSync<Operation<StringHandler>> sync = new YourOperationSync(new StringType(), ...);
 Editor<Operation<StringHandler>> editor = new DefaultEditor<>(uniqueSessionId, sync);
 
@@ -39,9 +39,9 @@ try(CloseableLock lock = editor.lock()) {
 try(CloseableLock lock = editor.lock()) {
   // Use a lock to safely be able to create a delta
   editor.apply(StringDelta.builder()
-  	.retain(currentStringLength)
-  	.insert("abc")
-  	.done()
+    .retain(currentStringLength)
+    .insert("abc")
+    .done()
   );
 }
 ```
@@ -75,7 +75,7 @@ Here is a tiny example of working with the model:
 ```java
 Editor editor = new DefaultEditor(uniqueSessionId, sync); 
 Model model = Model.builder(editor)
-	.build();
+  .build();
 
 // Create a new string and store it in the root map
 SharedString title = model.newString();
